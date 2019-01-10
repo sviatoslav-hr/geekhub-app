@@ -1,13 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {UserService} from '../services/user.service';
-import {AuthenticationService} from '../services/authentication.service';
 
 @Component({
-  selector: 'app-user',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css']
+  selector: 'app-admin',
+  templateUrl: './admin.component.html',
+  styleUrls: ['./admin.component.css']
 })
-export class UserComponent implements OnInit {
+export class AdminComponent implements OnInit {
   board: string;
   errorMessage: string;
 
@@ -17,7 +16,7 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.getUserBoard().subscribe(
+    this.userService.getAdminBoard().subscribe(
       data => {
         this.board = data;
       }, error => {
@@ -25,5 +24,4 @@ export class UserComponent implements OnInit {
       }
     );
   }
-
 }

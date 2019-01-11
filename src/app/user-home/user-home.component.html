@@ -1,0 +1,18 @@
+<div class="row" *ngIf="loggedUser">
+  <div class="col-sm-3">
+    <div>
+      <img src="{{loggedUser.avatarUrl? loggedUser.avatarUrl : 'https://hornews.com/images/news_large/c1d4b2b8ec608ea72764c5678816d5c9.jpg.pagespeed.ce.F3X__0vZO7.jpg'}}" alt="user_avatar">
+    </div>
+    <div *ngIf="loggedUser.id === userHome.id">
+      <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
+    </div>
+
+    <div class="card">
+      <h5 class="card-title">{{userHome.firstName + '' + userHome.lastName}}</h5>
+      <p class="card-body">
+        <strong>Gender: </strong>{{userHome.gender}}<br>
+        <strong>Birth date: </strong>{{userHome.birthDate}}
+      </p>
+    </div>
+  </div>
+</div>

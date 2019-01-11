@@ -3,6 +3,7 @@ import {AuthenticationService} from '../services/authentication.service';
 import {AuthService} from '../services/auth/auth.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {AuthLoginInfo} from '../services/auth/login-info';
+import {log} from 'util';
 
 @Component({
   selector: 'app-login',
@@ -40,13 +41,18 @@ export class LoginComponent implements OnInit {
 
     this.authService.attemptAuth(this.loginInfo).subscribe(
       data => {
+        console.log('data___________________________________________________________');
+        console.log(data);
+
+
         this.tokenStorage.saveToken(data.accessToken);
         this.tokenStorage.saveUsername(data.username);
         this.tokenStorage.saveAuthorities(data.authorities);
 
         this.roles = this.tokenStorage.getAuthorities();
 
-        this.reloadPage();
+        setTimeout(this.reloadPage, 60000);
+        // this.reloadPage();
       }, error => {
         console.log(error);
         this.errorMessage = error.error.message;

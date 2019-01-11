@@ -7,7 +7,6 @@ import {TokenStorageService} from './services/auth/token-storage.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'geekhub-app';
   private roles: string[];
   private authority: string;
 
@@ -31,6 +30,7 @@ export class AppComponent implements OnInit {
         return true;
       });
     }
+    console.log(this.authority);
   }
 
 }

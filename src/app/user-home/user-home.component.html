@@ -1,18 +1,24 @@
 <div class="row" *ngIf="loggedUser">
   <div class="col-sm-3">
-    <div>
-      <img src="{{loggedUser.avatarUrl? loggedUser.avatarUrl : 'https://hornews.com/images/news_large/c1d4b2b8ec608ea72764c5678816d5c9.jpg.pagespeed.ce.F3X__0vZO7.jpg'}}" alt="user_avatar">
+    <img
+      src="{{loggedUser.avatarUrl ? loggedUser.avatarUrl : 'https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1606/tuktukdesign160600124/59070205-user-icon-man-profile-businessman-avatar-person-icon-in-vector-illustration.jpg?ver=6'}}"
+      alt="user_avatar" class="col border rounded">
+    <div class="mx-auto my-1">
+      <div *ngIf="loggedUser && userHome && (loggedUser.id === userHome.id)">
+        <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
+      </div>
+      <div *ngIf="loggedUser && userHome && (loggedUser.id != userHome.id)">
+        <a routerLink="profile" class="btn btn-success" style="text-decoration: none;">Friend request</a>
+      </div>
     </div>
-    <div *ngIf="loggedUser.id === userHome.id">
-      <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
-    </div>
+  </div>
 
-    <div class="card">
-      <h5 class="card-title">{{userHome.firstName + '' + userHome.lastName}}</h5>
-      <p class="card-body">
-        <strong>Gender: </strong>{{userHome.gender}}<br>
-        <strong>Birth date: </strong>{{userHome.birthDate}}
-      </p>
-    </div>
+  <div class="col-sm-4 card" *ngIf="userHome">
+    <h5 class="card-title text-center">{{userHome.firstName + ' ' + userHome.lastName}}</h5>
+    <p class="card-body">
+      <strong>ID: </strong>{{userHome.id}}<br>
+      <strong>Gender: </strong>{{userHome.gender}}<br>
+      <strong>Birth date: </strong>{{userHome.birthDate}}
+    </p>
   </div>
 </div>

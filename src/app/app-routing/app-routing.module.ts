@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'signin', component: LoginComponent},
   { path: 'signup', component: RegisterComponent},
   { path: '*', redirectTo: '', pathMatch: 'full'},
-  { path: ':id', component: UserHomeComponent}
+  { path: 'id/:id', component: UserHomeComponent}
 ];
 
 @NgModule({

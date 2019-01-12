@@ -10,8 +10,9 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
-  loggedUser: User;
-  userHome: User;
+  loggedUser: User = null;
+  userHome: User = null;
+
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -21,23 +22,25 @@ export class UserHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('trying to get logged user...');
     if (this.tokenStorage.getToken()) {
       this.getLoggedUser();
+      this.getUserFromURL();
     }
-    console.log('trying to load page user...');
-    this.getUserFromURL();
   }
 
   getUserFromURL() {
     const id = +this.route.snapshot.paramMap.get('id');
-    console.log('id from url: ' + id);
-    this.userService.getUserById(id).subscribe(value => this.userHome = value, error => error.log);
+    this.userService.getUserById(id).subscribe(value => {
+      this.userHome = value;
+    }, error => error.log);
   }
 
   getLoggedUser() {
-    this.userService.getUserByUsername(this.tokenStorage.getUsername())
-      .subscribe(value => this.loggedUser = value, error => error.log);
+    const username = this.tokenStorage.getUsername();
+    this.userService.getUserByUsername(username)
+      .subscribe(value => {
+        this.loggedUser = value;
+      }, error => console.log(error));
   }
 
 }

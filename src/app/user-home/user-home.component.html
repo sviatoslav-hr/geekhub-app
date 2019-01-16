@@ -8,7 +8,8 @@
         <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
       </div>
       <div *ngIf="loggedUser && userHome && (loggedUser.id != userHome.id)">
-        <a routerLink="profile" class="btn btn-success" style="text-decoration: none;">Friend request</a>
+        <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">Friend request</button>
+        <button class="btn btn-primary my-1" style="text-decoration: none;">Write Message</button>
       </div>
     </div>
   </div>
@@ -17,7 +18,7 @@
     <h5 class="card-title text-center">{{userHome.firstName + ' ' + userHome.lastName}}</h5>
     <p class="card-body">
       <strong>ID: </strong>{{userHome.id}}<br>
-      <strong>Gender: </strong>{{userHome.gender}}<br>
+      <strong>Gender: </strong>{{userHome.gender | titlecase}}<br>
       <strong>Birth date: </strong>{{userHome.birthDate}}
     </p>
   </div>

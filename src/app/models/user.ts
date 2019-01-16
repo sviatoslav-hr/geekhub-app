@@ -1,3 +1,5 @@
+import {FriendRequest} from './friend-request';
+
 export class User {
   constructor(
     public id?: number,
@@ -10,7 +12,9 @@ export class User {
     public birthDate?: string,
     public role?: Role,
     public activated?: boolean,
-    public avatarUrl?: string
+    public avatarUrl?: string,
+    public friends?: User[],
+    public friendRequests?: FriendRequest[]
   ) {
   }
 }

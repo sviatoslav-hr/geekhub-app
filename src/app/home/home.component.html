@@ -6,6 +6,14 @@
     <strong>Token:</strong> {{info.token}}
   </p>
   <button class="btn btn-secondary" (click)="logout()">Logout</button>
+
+
+  <div class="alert">Friends</div>
+  <div class="list-group">
+    <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
+      <a [href]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
+    </div>
+  </div>
 </div>
 
 <ng-template #loggedOut>

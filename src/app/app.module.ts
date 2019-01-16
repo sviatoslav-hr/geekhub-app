@@ -15,6 +15,7 @@ import { AdminComponent } from './admin/admin.component';
 import {AppRoutingModule} from './app-routing/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
+import { FriendsComponent } from './friends/friends.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { UserHomeComponent } from './user-home/user-home.component';
     HomeComponent,
     PmComponent,
     AdminComponent,
-    UserHomeComponent
+    UserHomeComponent,
+    FriendsComponent
   ],
   imports: [
     BrowserModule,

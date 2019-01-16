@@ -26,10 +26,12 @@ export class RegisterComponent implements OnInit {
     console.log(this.form);
 
     this.signupInfo = new SignUpInfo(
-      this.form.name,
-      this.form.username,
+      this.form.firstName,
+      this.form.lastName,
       this.form.email,
-      this.form.password
+      this.form.password,
+      this.form.gender,
+      this.form.date
     );
 
     this.authService.signUp(this.signupInfo).subscribe(

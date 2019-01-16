@@ -1,5 +1,5 @@
 <div *ngIf="isLoggedIn; else loggedOut">
-  Logged in as {{roles}}.
+  <p class="alert alert-secondary mx-auto">Logged in as {{roles[0].slice(5)}}.</p>
 </div>
 
 <ng-template #loggedOut>
@@ -37,9 +37,9 @@
         </div>
       </div>
     </form>
-    <hr>
+    <br>
     <p>Don't have an account?</p>
-    <a href="/signup" class="btn btn-success">
+    <a href="/signup" class="btn btn-success mx-1">
       Sign Up
     </a>
   </div>

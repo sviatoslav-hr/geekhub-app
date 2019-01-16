@@ -1,15 +1,12 @@
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a href="#" class="navbar-brand">GeekHub</a>
+      <a routerLink="" class="navbar-brand">GeekHub</a>
     </div>
   </div>
   <ul class="nav navbar-nav" routerLinkActive="active">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="home">Home</a>
-    </li>
-    <li *ngIf="authority === 'user'" class="nav-item">
-      <a class="nav-link" routerLink="user">User Board</a>
+    <li *ngIf="loggedUser" class="nav-item">
+      <a class="nav-link" routerLink="id/{{loggedUser.id}}">User Page</a>
     </li>
     <li *ngIf="authority === 'pm'" class="nav-item">
       <a class="nav-link" routerLink="pm">PM Board</a>
@@ -17,9 +14,15 @@
     <li *ngIf="authority === 'admin'" class="nav-item">
       <a class="nav-link" routerLink="admin">Admin Board</a>
     </li>
-    <li *ngIf="!authority" class="nav-item">
-      <a class="nav-link" routerLink="auth/login">LogIn</a>
+    <li *ngIf="!authority else logout" class="nav-item">
+      <a class="nav-link" routerLink="signin">Log In</a>
     </li>
+    <ng-template #logout>
+      <li class="nav-item">
+        <button class="btn btn-link" (click)="logOut()">Log Out</button>
+      </li>
+    </ng-template>
+
   </ul>
 </nav>
 <div class="container">

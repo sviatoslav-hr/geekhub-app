@@ -3,6 +3,8 @@ import {AuthenticationService} from '../services/authentication.service';
 import {AuthService} from '../services/auth/auth.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {AuthLoginInfo} from '../services/auth/login-info';
+import {log} from 'util';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +21,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private userService: UserService
   ) {
   }
 
@@ -31,8 +34,6 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.form);
-
     this.loginInfo = new AuthLoginInfo(
       this.form.username,
       this.form.password);
@@ -46,7 +47,7 @@ export class LoginComponent implements OnInit {
 
         this.roles = this.tokenStorage.getAuthorities();
 
-        this.reloadPage();
+        this.goToUserPage(data.username);
       }, error => {
         console.log(error);
         this.errorMessage = error.error.message;
@@ -57,6 +58,11 @@ export class LoginComponent implements OnInit {
 
   reloadPage() {
     window.location.reload();
+  }
+
+  goToUserPage(username: string) {
+    this.userService.getUserByUsername(username)
+      .subscribe(value => window.location.href = 'id/' + value.id, error => console.log(error));
   }
 
 }

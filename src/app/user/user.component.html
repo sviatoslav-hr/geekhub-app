@@ -1,3 +1,9 @@
-<h4>Connected from Server</h4>
-{{board}}
-{{errorMessage}}
+<div *ngIf="board">
+  <h4>Connected from Server</h4>
+  <p class="alert alert-primary">{{board}}</p>
+</div>
+
+<div *ngIf="errorMessage">
+  <h4>Got error while trying to connect to the server</h4>
+  <p class="alert alert-danger">{{errorMessage}}</p>
+</div>

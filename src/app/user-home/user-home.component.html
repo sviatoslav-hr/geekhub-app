@@ -8,7 +8,27 @@
         <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
       </div>
       <div *ngIf="loggedUser && userHome && (loggedUser.id != userHome.id)">
-        <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">Friend request</button>
+        <div *ngIf="loggedUser.friends && !checkFriend()">
+
+          <div *ngIf="loggedUser.incomingFriendRequests && checkIncomingRequests()">
+            <button class="btn btn-success" style="text-decoration: none;" (click)="acceptFriendRequest()">
+              Add to friends list
+            </button>
+          </div>
+
+          <div *ngIf="loggedUser.outgoingFriendRequests && checkOutgoingRequests()">
+            <button class="btn btn-success" style="text-decoration: none;" (click)="cancelFriendRequest()">
+              Cancel request
+            </button>
+          </div>
+
+          <div *ngIf="!checkIncomingRequests() && !checkOutgoingRequests()">
+            <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">
+              Send friend request
+            </button>
+          </div>
+
+        </div>
         <button class="btn btn-primary my-1" style="text-decoration: none;">Write Message</button>
       </div>
     </div>

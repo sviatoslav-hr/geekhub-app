@@ -38,7 +38,7 @@ export class FriendsComponent implements OnInit {
   }
 
   acceptFriendRequest(senderId: number) {
-    this.friendsService.acceptFrientRequest(senderId).subscribe();
+    this.friendsService.acceptFriendRequest(senderId).subscribe();
   }
 
 }

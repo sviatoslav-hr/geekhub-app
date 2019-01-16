@@ -17,6 +17,7 @@ import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import {UserHomeComponent} from './user-home/user-home.component';
 import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { SignUpVerificationComponent } from './sign-up-verification/sign-up-verification.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     HomeComponent,
     PmComponent,
     AdminComponent,
-    UserHomeComponent
+    UserHomeComponent,
+    SignUpVerificationComponent
   ],
   imports: [
     BrowserModule,

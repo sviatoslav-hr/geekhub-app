@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {AuthLoginInfo} from './login-info';
 import {SignUpInfo} from './signup-info';
@@ -16,6 +16,7 @@ export class AuthService {
 
   private loginUrl = 'http://localhost:8080/api/auth/signin';
   private signUpUrl = 'http://localhost:8080/api/auth/signup';
+  private verifyCodeUrl = 'http://localhost:8080/api/auth/send-verification-code';
 
   constructor(
     private http: HttpClient
@@ -30,6 +31,12 @@ export class AuthService {
 
   // SignUpInfo(name, username, email, role, password)
   signUp(info: SignUpInfo): Observable<string> {
+    console.log(info);
     return this.http.post<string>(this.signUpUrl, info, httpOptions);
+  }
+  sendCode(username: string, code: number): Observable<string> {
+    console.log(code);
+    const params = new HttpParams().set('username', username).set('code', code.toString());
+    return this.http.post<string>(this.verifyCodeUrl, params, httpOptions);
   }
 }

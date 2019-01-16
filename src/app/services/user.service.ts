@@ -13,6 +13,7 @@ export class UserService {
 
   private getUserByIdUrl = 'http://localhost:8080/api/user/';
   private getUserByUsernameUrl = 'http://localhost:8080/api/get-user-by-username';
+  private getAllUsersUrl = 'http://localhost:8080/api/users';
 
   constructor(
     private http: HttpClient
@@ -40,5 +41,8 @@ export class UserService {
     return this.http.get(this.adminUrl, {responseType: 'text'});
   }
 
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.getAllUsersUrl);
+  }
 
 }

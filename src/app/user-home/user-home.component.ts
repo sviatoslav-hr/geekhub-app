@@ -3,6 +3,8 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
 import {UserService} from '../services/user.service';
 import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
+import {FriendsService} from '../services/friends.service';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-user-home',
@@ -17,6 +19,7 @@ export class UserHomeComponent implements OnInit {
   constructor(
     private tokenStorage: TokenStorageService,
     private userService: UserService,
+    private friendsService: FriendsService,
     private route: ActivatedRoute,
   ) {
   }
@@ -41,6 +44,16 @@ export class UserHomeComponent implements OnInit {
       .subscribe(value => {
         this.loggedUser = value;
       }, error => console.log(error));
+  }
+
+  sendFriendRequest() {
+    if (this.userHome) {
+      console.log('sending friend request...');
+      let success: boolean;
+      this.friendsService.sendFriendRequest(this.userHome.id).subscribe(value => success = value, error => console.log(error));
+    } else {
+      console.log('user home is NULL');
+    }
   }
 
 }

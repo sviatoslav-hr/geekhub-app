@@ -14,8 +14,8 @@ export class SignUpVerificationComponent implements OnInit {
   ngOnInit() {
   }
 
-  onSubmit(){
-
-  }
+  // onSubmit(){
+  //
+  // }
 
 }

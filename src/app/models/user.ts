@@ -14,7 +14,8 @@ export class User {
     public activated?: boolean,
     public avatarUrl?: string,
     public friends?: User[],
-    public friendRequests?: FriendRequest[]
+    public outgoingFriendRequests?: FriendRequest[],
+    public incomingFriendRequests?: FriendRequest[]
   ) {
   }
 }

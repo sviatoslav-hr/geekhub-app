@@ -6,7 +6,7 @@
   </div>
   <ul class="nav navbar-nav" routerLinkActive="active">
     <li *ngIf="loggedUser" class="nav-item">
-      <a class="nav-link" routerLink="id/{{loggedUser.id}}">User Page</a>
+      <a class="nav-link" [href]="'id/' + loggedUser.id">User Page</a>
     </li>
     <li *ngIf="authority === 'pm'" class="nav-item">
       <a class="nav-link" routerLink="pm">PM Board</a>

@@ -1,16 +1,43 @@
-<div class="row" *ngIf="loggedUser">
+<div class="row" *ngIf="loggedUser && userHome">
   <div class="col-sm-3">
     <img
-      src="{{loggedUser.avatarUrl ? loggedUser.avatarUrl : 'https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1606/tuktukdesign160600124/59070205-user-icon-man-profile-businessman-avatar-person-icon-in-vector-illustration.jpg?ver=6'}}"
+      src="{{userHome.avatarUrl ? userHome.avatarUrl : 'https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1606/tuktukdesign160600124/59070205-user-icon-man-profile-businessman-avatar-person-icon-in-vector-illustration.jpg?ver=6'}}"
       alt="user_avatar" class="col border rounded">
     <div class="mx-auto my-1">
       <div *ngIf="loggedUser && userHome && (loggedUser.id === userHome.id)">
         <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
       </div>
-      <div *ngIf="loggedUser && userHome && (loggedUser.id != userHome.id)">
-        <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">Friend request</button>
+
+      <div *ngIf="loggedUser && userHome && (loggedUser.id !== userHome.id)">
+        <ng-container *ngIf="checkFriend(); else notFriends">
+          <button class="btn btn-danger" (click)="removeFromFriends()">Remove from friends list</button>
+        </ng-container>
+
+        <ng-template #notFriends>
+          <ng-container *ngIf="checkIncomingRequests(); else ifOutgoingRequests">
+            <button class="btn btn-success" style="text-decoration: none;" (click)="acceptFriendRequest()">
+              Accept request
+            </button>
+          </ng-container>
+
+          <ng-template #ifOutgoingRequests>
+            <ng-container *ngIf="checkOutgoingRequests(); else noFriendRequests">
+              <button class="btn btn-danger" style="text-decoration: none;" (click)="cancelFriendRequest()">
+                Cancel request
+              </button>
+            </ng-container>
+          </ng-template>
+
+          <ng-template #noFriendRequests>
+            <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">
+              Send friend request
+            </button>
+          </ng-template>
+        </ng-template>
+
         <button class="btn btn-primary my-1" style="text-decoration: none;">Write Message</button>
       </div>
+
     </div>
   </div>
 

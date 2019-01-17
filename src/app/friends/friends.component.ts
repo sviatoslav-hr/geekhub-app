@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FriendsService} from '../services/friends.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
-import {AppComponent} from '../app.component';
 import {FriendRequest} from '../models/friend-request';
 
 @Component({
@@ -12,7 +11,8 @@ import {FriendRequest} from '../models/friend-request';
 })
 export class FriendsComponent implements OnInit {
   friends: User[];
-  friendRequests: FriendRequest[];
+  incomingFriendRequests: FriendRequest[];
+  outgoingFriendRequests: FriendRequest[];
 
   constructor(
     private friendsService: FriendsService,
@@ -22,7 +22,8 @@ export class FriendsComponent implements OnInit {
 
   ngOnInit() {
     this.getFriends();
-    this.getFriendRequests();
+    this.getIncomingFriendRequests();
+    this.getOutgoingFriendRequests();
   }
 
   getFriends() {
@@ -32,13 +33,35 @@ export class FriendsComponent implements OnInit {
       });
   }
 
-  getFriendRequests() {
-    this.friendsService.getIncomingFriendRequests()
-      .subscribe(requests => this.friendRequests = requests, error => console.log(error));
+  getIncomingFriendRequests() {
+      this.friendsService.getIncomingFriendRequests()
+        .subscribe(requests => this.incomingFriendRequests = requests, error => console.log(error));
+  }
+
+  getOutgoingFriendRequests() {
+    this.friendsService.getOutgoingFriendRequests()
+      .subscribe(requests => this.outgoingFriendRequests = requests, error => console.log(error));
   }
 
   acceptFriendRequest(senderId: number) {
-    this.friendsService.acceptFrientRequest(senderId).subscribe();
+    this.friendsService.acceptFriendRequest(senderId).subscribe(value => {
+      this.getFriends();
+      this.getIncomingFriendRequests();
+    });
   }
+
+  removeFromFriends(friendId: number) {
+    this.friendsService.deleteFriend(friendId).subscribe(value => {
+      this.getFriends();
+      this.getIncomingFriendRequests();
+    });
+  }
+
+  cancelFriendRequest(receiverId: number) {
+    this.friendsService.cancelFriendRequest(receiverId).subscribe(value => {
+      this.getOutgoingFriendRequests();
+    });
+  }
+
 
 }

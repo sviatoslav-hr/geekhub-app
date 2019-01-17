@@ -40,7 +40,7 @@ export class AuthService {
     console.log(code);
     const params = new HttpParams().set('username', username).set('code', code.toString());
     console.log(params);
-    return this.http.post<string>(this.verifyCodeUrl, {username, code});
+    return this.http.post<string>(this.getVerificationCodeUrl, {username, code});
   }
 
   getCode(username: string): Observable<string> {

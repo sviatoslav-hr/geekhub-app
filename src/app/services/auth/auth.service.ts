@@ -17,6 +17,7 @@ export class AuthService {
   private loginUrl = 'http://localhost:8080/api/auth/signin';
   private signUpUrl = 'http://localhost:8080/api/auth/signup';
   private verifyCodeUrl = 'http://localhost:8080/api/auth/send-verification-code';
+  private getVerificationCodeUrl = 'http://localhost:8080/api/auth/get-verification-code';
 
   constructor(
     private http: HttpClient
@@ -34,9 +35,15 @@ export class AuthService {
     console.log(info);
     return this.http.post<string>(this.signUpUrl, info, httpOptions);
   }
+
   sendCode(username: string, code: number): Observable<string> {
     console.log(code);
     const params = new HttpParams().set('username', username).set('code', code.toString());
-    return this.http.post<string>(this.verifyCodeUrl, params, httpOptions);
+    console.log(params);
+    return this.http.post<string>(this.verifyCodeUrl, {username, code});
+  }
+
+  getCode(username: string): Observable<string> {
+    return this.http.post<string>(this.getVerificationCodeUrl, username, httpOptions);
   }
 }

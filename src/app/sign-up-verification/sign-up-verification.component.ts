@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../services/auth/auth.service';
+import {TokenStorageService} from '../services/auth/token-storage.service';
+import {error} from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-sign-up-verification',
@@ -7,15 +10,33 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SignUpVerificationComponent implements OnInit {
 
-  username: string;
   code: number;
-  constructor() { }
+  errorMessage = '';
 
-  ngOnInit() {
+  constructor(
+    private authService: AuthService,
+    private tokenService: TokenStorageService
+  ) {
   }
 
-  // onSubmit(){
-  //
-  // }
+  ngOnInit() {
+    // console.log('inside SignUpVerificationComponent');
+    // this.tokenService.
+  }
+
+
+  onSubmit() {
+    // this.authService.sendCode().subscribe(
+    //   data => {
+    //   }
+    // );
+    console.log(this.code);
+    console.log(this.tokenService.getUsername());
+
+    this.authService.sendCode(this.tokenService.getUsername(), this.code).subscribe(data => {
+        console.log(data);
+      },
+    );
+  }
 
 }

@@ -41,50 +41,58 @@ export class UserHomeComponent implements OnInit {
     this.userService.getUserByUsername(username)
       .subscribe(value => {
         this.loggedUser = value;
-        this.getFriendsList();
       }, error => console.log(error));
   }
 
-  sendFriendRequest() {
-    if (this.userHome) {
-      console.log('sending friend request...');
-      let success: boolean;
-      this.friendsService.sendFriendRequest(this.userHome.id)
-        .subscribe(value => success = value, error => console.log(error));
-    } else {
-      console.log('homeUser is NULL');
+  getFriendRequests() {
+    if (!this.loggedUser.incomingFriendRequests && this.loggedUser.incomingFriendRequests !== null) {
+      this.friendsService.getIncomingFriendRequests()
+        .subscribe(requests => this.loggedUser.incomingFriendRequests = requests, error => console.log(error));
+      if (!this.loggedUser.incomingFriendRequests) {
+        this.loggedUser.incomingFriendRequests = null;
+      }
+    }
+    if (!this.loggedUser.outgoingFriendRequests && this.loggedUser.outgoingFriendRequests !== null) {
+      this.friendsService.getOutgoingFriendRequests()
+        .subscribe(requests => {
+          this.loggedUser.outgoingFriendRequests = requests;
+        }, error => console.log(error));
+      if (!this.loggedUser.outgoingFriendRequests) {
+        this.loggedUser.outgoingFriendRequests = null;
+      }
     }
   }
 
-  getFriendRequests() {
-    console.log('getFriendRequests');
-    if (!this.loggedUser.incomingFriendRequests) {
-      console.log('getIncomingFriendRequests');
-      this.friendsService.getIncomingFriendRequests()
-        .subscribe(requests => this.loggedUser.incomingFriendRequests = requests, error => console.log(error));
-    }
-    if (this.loggedUser.outgoingFriendRequests) {
-      console.log('getOutgoingFriendRequests');
-      this.friendsService.getOutgoingFriendRequests()
-        .subscribe(requests => this.loggedUser.outgoingFriendRequests = requests, error => console.log(error));
+  getFriendsList() {
+    if (this.loggedUser.friends === undefined) {
+      this.friendsService.getFriendsList()
+        .subscribe(friends => {
+          this.loggedUser.friends = friends;
+        }, error => console.log(error));
+      if (!this.loggedUser.friends) {
+        this.loggedUser.friends = null;
+      }
     }
   }
 
   checkOutgoingRequests(): boolean {
-    console.log('comparing with outgoing requests');
     const requests = this.loggedUser.outgoingFriendRequests;
     if (requests) {
       for (const request of requests) {
-        if (request.sender.id === this.loggedUser.id) {
+        if (request.receiver.id === this.userHome.id) {
           return true;
         }
+      }
+    } else {
+      this.getFriendRequests();
+      if (this.loggedUser.outgoingFriendRequests) {
+        this.checkOutgoingRequests();
       }
     }
     return false;
   }
 
   checkIncomingRequests(): boolean {
-    console.log('comparing with incoming requests');
     const requests = this.loggedUser.incomingFriendRequests;
     if (requests) {
       for (const request of requests) {
@@ -92,35 +100,63 @@ export class UserHomeComponent implements OnInit {
           return true;
         }
       }
-    }
-    return false;
-  }
-
-  checkFriend(): boolean {
-    for (const friend of this.loggedUser.friends) {
-      if (friend.id === this.userHome.id) {
-        return true;
+    } else {
+      this.getFriendRequests();
+      if (this.loggedUser.incomingFriendRequests) {
+        this.checkIncomingRequests();
       }
     }
     return false;
   }
 
+  checkFriend(): boolean {
+    if (this.loggedUser.friends) {
+      for (const friend of this.loggedUser.friends) {
+        if (friend.id === this.userHome.id) {
+          return true;
+        }
+      }
+    } else {
+      this.getFriendsList();
+      if (this.loggedUser.friends) {
+        this.checkFriend();
+      }
+    }
+    return false;
+  }
+
+  sendFriendRequest() {
+    if (this.userHome) {
+      this.friendsService.sendFriendRequest(this.userHome.id)
+        .subscribe(value => {
+          this.loggedUser.outgoingFriendRequests = undefined;
+          this.getFriendRequests();
+        }, error => console.log(error));
+    } else {
+      console.log('homeUser is NULL');
+    }
+  }
+
   acceptFriendRequest() {
-    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe();
+    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(value => {
+      this.loggedUser.incomingFriendRequests = undefined;
+      this.loggedUser.friends = undefined;
+      this.getFriendRequests();
+      this.getFriendsList();
+    });
   }
 
   cancelFriendRequest() {
-    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe();
+    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(value => {
+      this.loggedUser.outgoingFriendRequests = undefined;
+      this.getFriendRequests();
+    });
   }
 
-  getFriendsList() {
-    console.log('getting friends list...');
-    if (!this.loggedUser.friends) {
-      this.friendsService.getFriendsList()
-        .subscribe(friends => {
-          this.loggedUser.friends = friends;
-          this.getFriendRequests();
-        }, error => console.log(error));
-    }
+  removeFromFriends() {
+    this.friendsService.deleteFriend(this.userHome.id).subscribe(value => {
+      this.loggedUser.friends = undefined;
+      this.getFriendsList();
+    });
   }
 }

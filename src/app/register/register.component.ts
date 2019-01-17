@@ -9,10 +9,14 @@ import {SignUpInfo} from '../services/auth/signup-info';
 })
 export class RegisterComponent implements OnInit {
   form: any = {};
-  signupInfo: SignUpInfo;
+  signupInfo = new SignUpInfo();
   isSignedUp = false;
   isSignUpFailed = false;
   errorMessage = '';
+  date: Date;
+  year: string;
+  month: string;
+  dt: string;
 
   constructor(
     private authService: AuthService
@@ -25,14 +29,24 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     console.log(this.form);
 
-    this.signupInfo = new SignUpInfo(
-      this.form.firstName,
-      this.form.lastName,
-      this.form.email,
-      this.form.password,
-      this.form.gender,
-      this.form.date
-    );
+    console.log(this.signupInfo);
+    this.date = new Date(this.signupInfo.date);
+    console.log('This date' + this.date);
+
+    this.year = '' + this.date.getFullYear();
+    this.month = '' + (this.date.getMonth() + 1);
+    this.dt = '' + this.date.getDate();
+
+    if (this.date.getDate() < 10) {
+      this.dt = '0' + this.dt;
+    }
+    if (this.date.getMonth() < 10) {
+      this.month = '0' + this.month;
+    }
+
+    console.log(this.dt + '-' + this.month + '-' + this.year);
+
+    this.signupInfo.date = (this.year + '-' + this.month + '-' + this.dt);
 
     this.authService.signUp(this.signupInfo).subscribe(
       data => {

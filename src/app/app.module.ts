@@ -15,7 +15,10 @@ import { AdminComponent } from './admin/admin.component';
 import {AppRoutingModule} from './app-routing/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
-import { FriendsComponent } from './friends/friends.component';
+import {SignUpVerificationComponent} from './sign-up-verification/sign-up-verification.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
+import {FriendsComponent} from './friends/friends.component';
 
 @NgModule({
   declarations: [
@@ -29,17 +32,24 @@ import { FriendsComponent } from './friends/friends.component';
     PmComponent,
     AdminComponent,
     UserHomeComponent,
-    FriendsComponent
+    FriendsComponent,
+    SignUpVerificationComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

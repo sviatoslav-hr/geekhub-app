@@ -18,6 +18,7 @@ export class AuthService {
   private signUpUrl = 'http://localhost:8080/api/auth/signup';
   private verifyCodeUrl = 'http://localhost:8080/api/auth/send-verification-code';
   private getVerificationCodeUrl = 'http://localhost:8080/api/auth/get-verification-code';
+  private getPasswordResetCodeUrl = 'http://localhost:8080/api/auth/get-password-reset-code';
 
   constructor(
     private http: HttpClient
@@ -41,6 +42,12 @@ export class AuthService {
     const params = new HttpParams().set('username', username).set('code', code.toString());
     console.log(params);
     return this.http.post<string>(this.getVerificationCodeUrl, {username, code});
+  }
+  sendUsernameForPasswordReset(username: string): Observable<string> {
+    // console.log(code);
+    // const params = new HttpParams().set('username', username).set('code', code.toString());
+    // console.log(params);
+    return this.http.post<string>(this.getPasswordResetCodeUrl, {username});
   }
 
   getCode(username: string): Observable<string> {

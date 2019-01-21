@@ -11,6 +11,7 @@ import {UserHomeComponent} from '../user-home/user-home.component';
 import {FriendsComponent} from '../friends/friends.component';
 import {SignUpVerificationComponent} from '../sign-up-verification/sign-up-verification.component';
 import {AppComponent} from '../app.component';
+import {PasswordResetComponent} from '../password-reset/password-reset.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent},
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'signin', component: LoginComponent},
   { path: 'signup', component: RegisterComponent},
   { path: 'verify', component: SignUpVerificationComponent},
+  { path: 'reset-password', component: PasswordResetComponent},
   { path: 'friends', component: FriendsComponent},
   { path: '*', redirectTo: '', pathMatch: 'full'},
   { path: 'id/:id', component: UserHomeComponent}

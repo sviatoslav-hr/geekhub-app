@@ -19,6 +19,7 @@ export class AuthService {
   private verifyCodeUrl = 'http://localhost:8080/api/auth/send-verification-code';
   private getVerificationCodeUrl = 'http://localhost:8080/api/auth/get-verification-code';
   private getPasswordResetCodeUrl = 'http://localhost:8080/api/auth/get-password-reset-code';
+  private setNewPasswordUrl = 'http://localhost:8080/api/auth/set-new-password';
 
   constructor(
     private http: HttpClient
@@ -43,11 +44,16 @@ export class AuthService {
     console.log(params);
     return this.http.post<string>(this.getVerificationCodeUrl, {username, code});
   }
+
   sendUsernameForPasswordReset(username: string): Observable<string> {
     // console.log(code);
     // const params = new HttpParams().set('username', username).set('code', code.toString());
     // console.log(params);
     return this.http.post<string>(this.getPasswordResetCodeUrl, {username});
+  }
+
+  sendNewPassword(code: number, newPassword: string, username: string): Observable<string> {
+    return this.http.post<string>(this.setNewPasswordUrl, {code, newPassword, username});
   }
 
   getCode(username: string): Observable<string> {

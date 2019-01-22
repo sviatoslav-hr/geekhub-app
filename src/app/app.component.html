@@ -7,6 +7,7 @@
   <ul class="nav navbar-nav" routerLinkActive="active">
     <li *ngIf="loggedUser" class="nav-item">
       <a class="nav-link" [href]="'id/' + loggedUser.id">User Page</a>
+      <app-conversations></app-conversations>
     </li>
     <li *ngIf="authority === 'pm'" class="nav-item">
       <a class="nav-link" routerLink="pm">PM Board</a>
@@ -31,3 +32,7 @@
 <div class="container">
   <router-outlet></router-outlet>
 </div>
+
+<!-- ------------------------------------------------ -->
+<hr>
+<app-ws-test></app-ws-test>

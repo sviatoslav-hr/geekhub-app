@@ -7,7 +7,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { HeaderComponent } from './header/header.component';
 import { ContentComponent } from './content/content.component';
 import { LoginComponent } from './login/login.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
 import { PmComponent } from './pm/pm.component';
@@ -16,6 +16,10 @@ import {AppRoutingModule} from './app-routing/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
 import { FriendsComponent } from './friends/friends.component';
+import { ConversationsComponent } from './conversations/conversations.component';
+import {WebsocketModule} from './websocket/websocket.module';
+import {environment} from '../environments/environment';
+import { WsTestComponent } from './ws-test/ws-test.component';
 
 @NgModule({
   declarations: [
@@ -29,13 +33,17 @@ import { FriendsComponent } from './friends/friends.component';
     PmComponent,
     AdminComponent,
     UserHomeComponent,
-    FriendsComponent
+    FriendsComponent,
+    ConversationsComponent,
+    WsTestComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    ReactiveFormsModule,
+    AppRoutingModule,
+    HttpClientModule,
+    WebsocketModule.config({url: 'ws://localhost:4200'})
   ],
   providers: [
     httpInterceptorProviders

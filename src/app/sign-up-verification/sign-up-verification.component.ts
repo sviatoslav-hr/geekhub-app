@@ -35,6 +35,10 @@ export class SignUpVerificationComponent implements OnInit {
 
     this.authService.sendCode(this.tokenService.getUsername(), this.code).subscribe(data => {
         console.log(data);
+
+        if (data.message === 'Code matches') {
+          window.location.href = '/signin';
+        }
       },
     );
   }

@@ -8,7 +8,6 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
   styleUrls: ['./password-reset.component.css']
 })
 export class PasswordResetComponent implements OnInit {
-
   username: string;
   code: number;
   newPassword = '';
@@ -30,17 +29,16 @@ export class PasswordResetComponent implements OnInit {
     console.log(this.username);
 
     this.authService.sendUsernameForPasswordReset(this.username).subscribe(data => {
-        console.log(data);
-      this.tokenStorage.saveUsername(this.username);
+        console.log(data.message);
+        this.tokenStorage.saveUsername(this.username);
         // console.log(data.message);
-        if (data.toString() === 'Code sent') {
+        if (data.message === 'Code sent') {
           console.log('true');
-          // this.codeSent = true;
+          this.codeSent = true;
         }
-        if (data === 'user not found') {
+        if (data.message === 'user not found') {
           console.log('user not found');
         }
-        this.codeSent = true;
       },
     );
   }
@@ -49,9 +47,11 @@ export class PasswordResetComponent implements OnInit {
     console.log('inside new password submit');
     console.log(this.code);
     console.log(this.newPassword);
-
     this.authService.sendNewPassword(this.code, this.newPassword, this.tokenStorage.getUsername()).subscribe(data => {
-      console.log('new password sent');
+      console.log(data);
+      if (data.message === 'Password was changed') {
+        window.location.href = '/signin';
+      }
     });
   }
 

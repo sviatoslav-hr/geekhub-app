@@ -159,4 +159,8 @@ export class UserHomeComponent implements OnInit {
       this.getFriendsList();
     });
   }
+
+  writeMsg() {
+    console.log('inside write msg');
+  }
 }

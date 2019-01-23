@@ -1,40 +1,29 @@
-<div class="container">
-  <h1>Angular WebSocket Starter Demo</h1>
-
-  <div class="row">
-    <div class="messages">
-      <ul *ngIf="messages$ | async as messages">
-        <li *ngFor="let message of messages">
-          <strong>№{{ message.id }}:</strong> {{ message.text }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="counter">
-      <strong *ngIf="counter$ | async as counter">Update websocket counter: {{ counter }}</strong>
-    </div>
+<div>
+  <div class="btn ml-3" [ngClass]="msgEnabled? 'btn-danger': 'btn-primary'" (click)="switchMsg()">
+    {{msgEnabled ? 'Disable messages' : 'Enable messages'}}
   </div>
 
-  <div class="row">
-    <form [formGroup]="form" autocomplete="off" novalidate (submit)="sendText()">
-      <div class="form-group">
-        <div class="form-control">
-          <textarea placeholder="Email" autocomplete="off" formControlName="text"></textarea>
-        </div>
-      </div>
-      <div class="form-group">
-        <button type="submit" [disabled]="form.invalid">Send text</button>
-      </div>
-    </form>
-
-    <div class="texts">
-      <ul *ngIf="texts$ | async as texts">
-        <li *ngFor="let text of texts; let i = index;">
-          {{ text }}
-          <span class="remove" (click)="removeText(i)">x</span>
-        </li>
-      </ul>
+  <div *ngIf="conversations" class="col">
+    <div class="alert alert-light text-center rounded-0">
+      <a [routerLink]="'/id/' + receiver.id">
+        {{receiver.firstName + ' ' + receiver.lastName}}
+      </a>
     </div>
+    <ul class="list-group col-2 ">
+      <li *ngFor="let conversation of conversations" class="list-group-item py-1"
+          [ngClass]="conversation.id === selectedConversation.id? 'active':''"
+          (click)="onConversation(conversation)" style="cursor: pointer;">
+        <p class="my-0"><strong>{{receiver.firstName + ': '}}</strong></p>
+        <p class="my-0">{{conversation.theLastMessage.content.slice(0, 10)}}</p>
+      </li>
+    </ul>
+
+    <div>
+      <div *ngIf="messages">
+
+      </div>
+    </div>
+
   </div>
 
 </div>

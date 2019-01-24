@@ -38,21 +38,21 @@ export class AuthService {
     return this.http.post<string>(this.signUpUrl, info, httpOptions);
   }
 
-  sendCode(username: string, code: number): Observable<string> {
+  sendCode(username: string, code: number): Observable<any> {
     console.log(code);
     const params = new HttpParams().set('username', username).set('code', code.toString());
     console.log(params);
     return this.http.post<string>(this.getVerificationCodeUrl, {username, code});
   }
 
-  sendUsernameForPasswordReset(username: string): Observable<string> {
+  sendUsernameForPasswordReset(username: string): Observable<any> {
     // console.log(code);
     // const params = new HttpParams().set('username', username).set('code', code.toString());
     // console.log(params);
-    return this.http.post<string>(this.getPasswordResetCodeUrl, {username});
+    return this.http.post<string>(this.getPasswordResetCodeUrl, {username}, {observe: 'response'});
   }
 
-  sendNewPassword(code: number, newPassword: string, username: string): Observable<string> {
+  sendNewPassword(code: number, newPassword: string, username: string): Observable<any> {
     return this.http.post<string>(this.setNewPasswordUrl, {code, newPassword, username});
   }
 

@@ -20,6 +20,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
 import {FriendsComponent} from './friends/friends.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
+import { UserSearchComponent } from './user-search/user-search.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { PasswordResetComponent } from './password-reset/password-reset.componen
     UserHomeComponent,
     FriendsComponent,
     SignUpVerificationComponent,
-    PasswordResetComponent
+    PasswordResetComponent,
+    UserSearchComponent
   ],
   imports: [
     BrowserModule,

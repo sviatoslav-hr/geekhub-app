@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth/auth.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
+import {HttpResponse} from '@angular/common/http';
+import {any} from 'codelyzer/util/function';
+
 
 @Component({
   selector: 'app-password-reset',
@@ -29,9 +32,9 @@ export class PasswordResetComponent implements OnInit {
     console.log(this.username);
 
     this.authService.sendUsernameForPasswordReset(this.username).subscribe(data => {
-        console.log(data.message);
         this.tokenStorage.saveUsername(this.username);
-        // console.log(data.message);
+        // console.log(data.ok);
+        console.log(data.statusText);
         if (data.message === 'Code sent') {
           console.log('true');
           this.codeSent = true;
@@ -40,6 +43,9 @@ export class PasswordResetComponent implements OnInit {
           console.log('user not found');
         }
       },
+      error => {
+        console.log(error);
+      }
     );
   }
 
@@ -48,11 +54,13 @@ export class PasswordResetComponent implements OnInit {
     console.log(this.code);
     console.log(this.newPassword);
     this.authService.sendNewPassword(this.code, this.newPassword, this.tokenStorage.getUsername()).subscribe(data => {
-      console.log(data);
-      if (data.message === 'Password was changed') {
-        window.location.href = '/signin';
-      }
-    });
+        if (data.message === 'Password was changed') {
+          window.location.href = '/signin';
+        }
+      },
+      error => {
+        console.log(error);
+      });
   }
 
 }

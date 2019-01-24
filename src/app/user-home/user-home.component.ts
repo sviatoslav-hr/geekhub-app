@@ -4,6 +4,9 @@ import {UserService} from '../services/user.service';
 import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
+import {WsMessageService} from '../websocket/ws-message.service';
+import {Message} from '../models/message';
+import {IncomingMessage} from '../models/incoming-message';
 
 @Component({
   selector: 'app-user-home',
@@ -11,14 +14,17 @@ import {FriendsService} from '../services/friends.service';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
+  private privateMsg: IncomingMessage;
   loggedUser: User = null;
   userHome: User = null;
+  privateMsgEnabled = false;
 
   constructor(
     private tokenStorage: TokenStorageService,
     private userService: UserService,
     private friendsService: FriendsService,
     private route: ActivatedRoute,
+    private msgService: WsMessageService
   ) {
   }
 
@@ -160,7 +166,30 @@ export class UserHomeComponent implements OnInit {
     });
   }
 
-  writeMsg() {
+  togglePrivateMsg() {
     console.log('inside write msg');
+    this.msgService.createConversationIfNotExists(this.userHome.id)
+      .subscribe(conversation => {
+        if (conversation) {
+          console.log('Creating conversation...');
+          console.log(conversation);
+          this.privateMsg = new IncomingMessage();
+          this.privateMsg.conversationId = conversation.id;
+          this.privateMsg.recipientId = this.userHome.id;
+          this.privateMsg.senderId = this.loggedUser.id;
+          this.privateMsgEnabled = !this.privateMsgEnabled;
+          console.log(this.privateMsgEnabled);
+        } else {
+          console.log('Something gone wrong during creating conversation :(');
+        }
+      }, error => {
+        console.error('Something gone wrong during creating conversation :(');
+        console.log(error);
+      });
+  }
+
+  private sendPrivateMsg() {
+    console.log(this.privateMsg.content);
+    this.msgService.sendPrivateMsg(this.privateMsg);
   }
 }

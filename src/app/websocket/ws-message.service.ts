@@ -4,6 +4,10 @@ import * as SockJS from 'sockjs-client';
 // import SockJS = require('sockjs-client');
 import {Message} from '../models/message';
 import {TokenStorageService} from '../services/auth/token-storage.service';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Conversation} from '../models/conversation';
+import {IncomingMessage} from '../models/incoming-message';
 
 const TOKEN_HEADER_KEY = 'Authorization';
 
@@ -12,10 +16,12 @@ const TOKEN_HEADER_KEY = 'Authorization';
 })
 export class WsMessageService implements OnDestroy {
   serverURL = 'localhost:8080/conversation-web-socket';
+  private privateMsg = '/message/private-message';
   private stompClient: any;
 
   constructor(
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private http: HttpClient
   ) {
     const socket = new SockJS('http://' + this.serverURL);
     // const socket = new WebSocket('ws://' + this.serverURL);
@@ -56,12 +62,34 @@ export class WsMessageService implements OnDestroy {
     this.stompClient.send('/conversation/conversations-request-for-' + username, {}, JSON.stringify({}));
   }
 
+  createConversationIfNotExists(receiverId: number): Observable<Conversation> {
+    const params = new HttpParams().set('friendId', receiverId.toString());
+    return this.http.post<Conversation>('http://localhost:8080/goto-conversation', params);
+  }
+
   ngOnDestroy() {
     this.stompClient.disconnect();
   }
 
   disconnect() {
     this.stompClient.disconnect();
+  }
+
+  sendPrivateMsg(msg: IncomingMessage) {
+    const socket = new SockJS('http://localhost:8080/message-web-socket');
+    const stompMsg = Stomp.over(socket);
+
+    console.log(msg);
+
+    stompMsg.connect({}, () => {
+      stompMsg.send('/message/private-message', {}, JSON.stringify(
+        {
+          content: msg.content,
+          senderId: msg.senderId,
+          recipientId: msg.recipientId,
+          conversationId: msg.conversationId
+        }));
+    });
   }
 
 }

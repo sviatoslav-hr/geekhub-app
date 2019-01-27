@@ -41,20 +41,15 @@ export class WsMessageService implements OnDestroy {
     }, error => console.log(error));
   }
 
-  getMessages(conversationId: number): Message[] {
+  getMessages(conversationId: number, callback) {
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
-
-    let messages: Message[];
     stompMsg.connect({}, () => {
       console.log('WS: Successfully connected to MessageWS');
-      stompMsg.subscribe('/chat/messages-list-for-conversation-id' + conversationId, answer => {
-        messages = answer;
-      });
+      stompMsg.subscribe('/chat/messages-list-for-conversation-id' + conversationId, answer => callback(JSON.parse(answer.body)));
       console.log('getting messages');
       stompMsg.send('/message/messages-for-conversation-id' + conversationId, {}, JSON.stringify({}));
     });
-    return messages;
   }
 
   private conversationRequest(username: string) {
@@ -76,6 +71,10 @@ export class WsMessageService implements OnDestroy {
   }
 
   sendPrivateMsg(msg: IncomingMessage) {
+    if (!msg.content) {
+      return;
+    }
+
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
 
@@ -92,4 +91,8 @@ export class WsMessageService implements OnDestroy {
     });
   }
 
+
+  // todo: reconnect
+
+  // todo: fix trouble when ws stuck on 'Opening WebSocket'
 }

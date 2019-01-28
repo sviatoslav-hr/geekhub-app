@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {AuthLoginInfo} from './login-info';
 import {SignUpInfo} from './signup-info';
 import {JwtResponse} from './jwt-response';
+import {CodeResponse} from './code-response';
 
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})
@@ -33,16 +34,14 @@ export class AuthService {
   }
 
   // SignUpInfo(name, username, email, role, password)
-  signUp(info: SignUpInfo): Observable<string> {
+  signUp(info: SignUpInfo): Observable<any> {
     console.log(info);
-    return this.http.post<string>(this.signUpUrl, info, httpOptions);
+    return this.http.post<any>(this.signUpUrl, info, {observe: 'response'});
   }
 
-  sendCode(username: string, code: number): Observable<any> {
+    sendCode(username: string, code: number): Observable<any> {
     console.log(code);
-    const params = new HttpParams().set('username', username).set('code', code.toString());
-    console.log(params);
-    return this.http.post<string>(this.getVerificationCodeUrl, {username, code});
+    return this.http.post<any>(this.getVerificationCodeUrl, {username, code}, {observe: 'response'});
   }
 
   sendUsernameForPasswordReset(username: string): Observable<any> {

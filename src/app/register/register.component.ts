@@ -51,9 +51,19 @@ export class RegisterComponent implements OnInit {
     this.authService.signUp(this.signupInfo).subscribe(
       data => {
         console.log(data);
-        this.isSignedUp = true;
-        this.isSignUpFailed = false;
-        this.tokenStorage.saveUsername(this.signupInfo.username);
+        console.log(data.statusText);
+        if (data.body.httpStatus === 'OK') {
+          console.log('User successfully signed up!!');
+          this.isSignUpFailed = false;
+          this.isSignedUp = true;
+          this.tokenStorage.saveUsername(this.signupInfo.username);
+        }
+        if (data.body.httpStatus === 'IM_USED') {
+          console.log('User already registered');
+          console.log(data.body.message);
+          this.isSignUpFailed = true;
+          this.errorMessage = data.body.message;
+        }
       },
       error => {
         console.log(error);

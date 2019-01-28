@@ -62,6 +62,8 @@ export class LoginComponent implements OnInit {
           console.log('User is not activated');
           this.errorMessage = 'user is not activated';
           this.isLoginFailed = true;
+          console.log(this.form.username);
+          this.tokenStorage.saveUsername(this.form.username);
           window.location.href = '/verify';
         }
         if (error.error.httpStatus === 'UNAUTHORIZED') {

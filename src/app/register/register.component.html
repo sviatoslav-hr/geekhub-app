@@ -60,11 +60,11 @@
       <div class="form-group">
       </div>
       <div class="form-group">
-        <a [routerLink]="f.form.valid ? '/verify' : null">
+        <a [routerLink]="(f.form.valid && isSignedUp) ? '/verify' : null">
           <button (click)="onSubmit()" class="btn btn-primary">Register</button>
         </a>
-        <div *ngIf="f.submitted && isSignUpFailed" class="alert alert-warning">
-          Signup failed!<br/>{{errorMessage}}
+        <div *ngIf="f.submitted && isSignUpFailed" class="alert alert-danger" style="color: red">
+          {{errorMessage}}
         </div>
       </div>
     </form>

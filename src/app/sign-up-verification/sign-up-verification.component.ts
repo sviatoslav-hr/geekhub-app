@@ -11,6 +11,8 @@ import {error} from '@angular/compiler/src/util';
 export class SignUpVerificationComponent implements OnInit {
 
   code: number;
+  errorMessage = '';
+  verificationIsFailed = false;
 
   // message = '';
 
@@ -35,13 +37,17 @@ export class SignUpVerificationComponent implements OnInit {
     console.log(this.tokenService.getUsername());
 
     this.authService.sendCode(this.tokenService.getUsername(), this.code).subscribe(data => {
-        console.log(data);
-        if (data.message === 'Code matches') {
+        // console.log(data);
+        // console.log(data.body.httpStatus);
+        if (data.body.httpStatus === 'OK') {
           window.location.href = '/signin';
         }
       },
       error => {
-
+        // console.log(error);
+        // console.log(error.error.httpStatus);
+        this.verificationIsFailed = true;
+        this.errorMessage = 'Code is incorrect';
       },
     )
     ;

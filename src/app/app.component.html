@@ -1,35 +1,5 @@
 <app-header></app-header>
 <app-content></app-content>
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a routerLink="" class="navbar-brand">GeekHub</a>
-    </div>
-  </div>
-  <ul class="nav navbar-nav" routerLinkActive="active">
-    <li *ngIf="loggedUser" class="nav-item">
-      <a class="nav-link" [href]="'id/' + loggedUser.id">User Page</a>
-    </li>
-    <li *ngIf="authority === 'pm'" class="nav-item">
-      <a class="nav-link" routerLink="pm">PM Board</a>
-    </li>
-    <li *ngIf="authority === 'admin'" class="nav-item">
-      <a class="nav-link" routerLink="admin">Admin Board</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="friends">Friends</a>
-    </li>
-    <li *ngIf="!authority else logout" class="nav-item">
-      <a class="nav-link" routerLink="signin">Log In</a>
-    </li>
-    <ng-template #logout>
-      <li class="nav-item">
-        <button class="btn btn-link" (click)="logOut()">Log Out</button>
-      </li>
-    </ng-template>
-
-  </ul>
-</nav>
 <div class="container">
   <router-outlet></router-outlet>
 </div>

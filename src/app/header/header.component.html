@@ -1,10 +1,18 @@
-<nav class="navbar navbar-dark bg-dark rounded-0">
+<nav class="navbar navbar-dark bg-dark rounded-0 text-left justify-content-start">
   <div class="col-md-1 offset-md-1">
     <a class="navbar-brand">
       <span style="color: white"><b>Geek </b></span>
       <span style="color: black" class="logo-orange"><b>hub</b></span>
     </a>
   </div>
+
+  <div *ngIf="isLoggedIn" class="col-md-2 offset-md-1" >
+    <form class="form-inline">
+      <input (input)="searchUser()" name="searchInput" class="form-control" [(ngModel)]="searchInput"
+             type="text" placeholder="Search" aria-label="Search">
+    </form>
+  </div>
+
 
   <div *ngIf="!isLoggedIn">
     <div class="col-md-5">
@@ -23,5 +31,13 @@
       </form>
     </div>
   </div>
+
+
+  <div *ngIf="isLoggedIn" class="col-md-1 offset-md-6">
+    <div class=""><input class="btn badge-primary" (click)="logOut()" type="submit" value="Log out">
+    </div>
+  </div>
+
+
 </nav>
 

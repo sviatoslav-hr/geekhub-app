@@ -14,6 +14,7 @@ export class HeaderComponent implements OnInit {
   private loginInfo: AuthLoginInfo;
   isLoggedIn = false;
   form: any = {};
+  searchInput = '';
 
 
   constructor(private tokenStorage: TokenStorageService,
@@ -59,4 +60,18 @@ export class HeaderComponent implements OnInit {
       .subscribe(value => window.location.href = 'id/' + value.id, error => console.log(error));
   }
 
+  public logOut() {
+    this.tokenStorage.signOut();
+    window.location.href = '/signin';
+  }
+
+  searchUser() {
+    console.log(this.searchInput);
+
+    this.userService.findUser(this.searchInput).subscribe(data => {
+      console.log(data);
+    });
+
+
+  }
 }

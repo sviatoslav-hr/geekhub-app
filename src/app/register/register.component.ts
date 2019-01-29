@@ -6,7 +6,11 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
+  styles: [`
+        input.ng-touched.ng-invalid {border:solid red 2px;}
+        input.ng-touched.ng-valid {border:solid green 2px;}
+    `],
 })
 export class RegisterComponent implements OnInit {
   signupInfo = new SignUpInfo();

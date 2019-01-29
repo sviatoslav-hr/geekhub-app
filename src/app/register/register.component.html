@@ -7,34 +7,32 @@
     <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
       <div class="form-group">
         <label for="firstname">Your name</label>
-        <input type="text" class="form-control" name="firstname" [(ngModel)]="signupInfo.firstname" id="firstname"
-               #firstname="ngModel" required/>
+        <input type="text" pattern="^(?=.{2,40}$)[a-zA-Zа-яА-ЯіІїЇ]+(?:[-'\s][a-zA-Zа-яА-ЯіІїЇ]+)*$" class="form-control" name="firstname" [(ngModel)]="signupInfo.firstname" id="firstname"
+               #firstname="ngModel" required placeholder="Your name"/>
         <div *ngIf="f.submitted && firstname.invalid">
           <div *ngIf="firstname.errors.required">Name is required!</div>
         </div>
       </div>
+
       <div class="form-group">
         <label for="lastname">Your surname</label>
-        <input type="text" class="form-control" name="lastname" [(ngModel)]="signupInfo.lastname" id="lastname"
-               #lastname="ngModel" required/>
+        <input type="text" pattern="^(?=.{2,40}$)[a-zA-Zа-яА-ЯіІїЇЄє]+(?:[-'\s][a-zA-Zа-яА-ЯіІїЇєЄ]+)*$" class="form-control" name="lastname" [(ngModel)]="signupInfo.lastname" id="lastname"
+               #lastname="ngModel" required placeholder="Your surname"/>
         <div *ngIf="f.submitted && lastname.invalid">
           <div *ngIf="lastname.errors.required">Name is required!</div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" name="username" [(ngModel)]="signupInfo.username" id="username"
-               #username="ngModel"
-               required/>
-        <div *ngIf="f.submitted && username.invalid">
-          <div *ngIf="username.errors.required">Username is required</div>
-        </div>
+      <div class="form-group" [class.has-error]="username.invalid && username.touched">
+        <label for="username">Email</label>
+        <input type="text" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" class="form-control" name="username" [(ngModel)]="signupInfo.username" id="username"
+               #username="ngModel" placeholder="Your email"
+               required />
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" class="form-control" name="password" [(ngModel)]="signupInfo.password" id="password"
-               #password="ngModel"
-               required minlength="6"/>
+        <input type="password" pattern="(?!^[0-9]*$)(?!^[a-zA-Zа-яА-ЯіІїЇЄє]*$)^([a-zA-Zа-яА-ЯіІїЇЄє0-9]{6,15})$" class="form-control" name="password" [(ngModel)]="signupInfo.password" id="password"
+               #password="ngModel" placeholder="Your password"
+               required />
         <div *ngIf="f.submitted && password.invalid">
           <div *ngIf="password.errors.required">Password is required</div>
           <div *ngIf="password.errors.minlength">Password must be at least 6 characters</div>
@@ -53,7 +51,7 @@
       </div>
       <mat-form-field>
         <label for="date">Date of birth</label>
-        <input matInput [matDatepicker]="myDatepicker" name="date" [(ngModel)]="signupInfo.date" id="date">
+        <input matInput [matDatepicker]="myDatepicker" pattern="" name="date" [(ngModel)]="signupInfo.date" id="date" required>
         <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
         <mat-datepicker #myDatepicker></mat-datepicker>
       </mat-form-field>
@@ -61,7 +59,8 @@
       </div>
       <div class="form-group">
         <a [routerLink]="(f.form.valid && isSignedUp) ? '/verify' : null">
-          <button (click)="onSubmit()" class="btn btn-primary">Register</button>
+          <button [disabled]="firstname.invalid|| lastname.invalid || username.invalid || password.invalid || gender.invalid "
+                  (click)="onSubmit()" class="btn btn-primary">Register</button>
         </a>
         <div *ngIf="f.submitted && isSignUpFailed" class="alert alert-danger" style="color: red">
           {{errorMessage}}

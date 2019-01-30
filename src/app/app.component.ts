@@ -31,7 +31,6 @@ export class AppComponent implements OnInit {
     } else if (!this.allowedURLs.includes(window.location.href)) {
       window.location.href = '/signin';
     }
-
   }
 
   private getUser() {

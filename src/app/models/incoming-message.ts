@@ -2,8 +2,8 @@ export class IncomingMessage {
   constructor(
     public content?: string,
     public conversationId?: number,
-    public recipientId?: number,
-    public senderId?: number
+    public recipientUsername?: string,
+    public senderUsername?: string
   ) {
   }
 }

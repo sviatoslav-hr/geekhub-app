@@ -7,7 +7,7 @@ export class Message {
     public conversation?: Conversation,
     public sender?: User,
     public content?: string,
-    public date?: string,
+    public date?: Date,
     public parentMsg?: Message
   ) {}
 }

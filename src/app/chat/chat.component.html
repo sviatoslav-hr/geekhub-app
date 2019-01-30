@@ -1,0 +1,68 @@
+<div>
+  <div class="btn ml-3" [ngClass]="msgEnabled? 'btn-danger': 'btn-primary'" (click)="switchMsg()">
+    {{msgEnabled ? 'Disable chats' : 'Enable chats'}}
+  </div>
+
+  <div *ngIf="conversations" class="container-fluid mt-1">
+    <div style="" class="row">
+      <div class="list-group" style="width: 240px ">
+        <div *ngFor="let conversation of conversations">
+          <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0"
+               [ngClass]="selectedConversation && conversation.id === selectedConversation.id? 'active':''"
+               (click)="selectedConversation? (selectedConversation.id !== conversation.id? onConversation(conversation): '') : onConversation(conversation)"
+               style="cursor: pointer;">
+            <p class="my-0">
+              <strong>{{conversation.users[0].username !== loggedUsername ?
+                conversation.users[0].firstName : conversation.users[1].firstName + ': '}}
+              </strong>
+            </p>
+            <p
+              class="my-0">{{(conversation.theLastMessage.sender.username === loggedUsername ? 'You: ' : '')
+            + (conversation.theLastMessage.content.length > 15 ?
+              conversation.theLastMessage.content.slice(0, 15) + '...' :
+              conversation.theLastMessage.content)}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedConversation; else conversationNotSelected" class="col">
+        <div class="alert alert-light text-center rounded-0 my-0">
+          <a [routerLink]="'/id/' + receiver.id">
+            {{receiver.firstName + ' ' + receiver.lastName}}
+          </a>
+        </div>
+        <div style="display: block" *ngFor="let message of messages"
+             [ngClass]="message.sender.username === loggedUsername?
+             'text-right':
+             'text-left'">
+          <div class="alert mb-1 py-1"
+               [ngClass]="message.sender.username === loggedUsername?
+              'alert-secondary mr-2':
+              'alert-primary ml-2'"
+               style="display: inline-block; max-width: 60%; word-wrap: break-word;">
+            {{message.content}}<span class="float-right text-secondary align-text-bottom" style="font-size: 10px; display: inline-block">{{message.date | date:"HH:mm"}}</span>
+          </div>
+        </div>
+
+        <div class="container-fluid input-group mb-1 px-2">
+          <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
+                 aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg()" id="#private-msg-input"
+                 [(ngModel)]="privateMsg.content">
+          <div class="input-group-append">
+            <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg()">Send</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #conversationNotSelected>
+        <p class="col text-center alert">Please select a chat to start messaging</p>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <div *ngIf="!conversations && msgEnabled" class="container-fluid row col spinner-border text-primary mx-auto mb-1"
+       role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>

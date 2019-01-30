@@ -1,8 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Stomp} from 'stompjs/lib/stomp.js';
 import * as SockJS from 'sockjs-client';
-// import SockJS = require('sockjs-client');
-import {Message} from '../models/message';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
@@ -23,19 +21,19 @@ export class WsMessageService implements OnDestroy {
     private tokenStorage: TokenStorageService,
     private http: HttpClient
   ) {
+  }
+
+  private init() {
     const socket = new SockJS('http://' + this.serverURL);
     // const socket = new WebSocket('ws://' + this.serverURL);
     this.stompClient = Stomp.over(socket);
   }
 
-
   getConversations(username: string, callback) {
-    // TOKEN_HEADER_KEY: 'Bearer ' + this.tokenStorage.getToken()
-    // const headers = {'/conversation-web-socket': {'target': 'http://localhost:8080', 'secure': false, 'ws': true, 'logLevel': 'debug'}};
+    this.init();
+
     this.stompClient.connect({}, () => {
-      console.log('WS: Successfully connected to ConversationWS');
-      // following the channel
-      this.stompClient.subscribe('/chat/conversations-list-for-' + username, answer => callback(answer), error => console.log(error));
+      this.stompClient.subscribe('/chat/requested-conversations-for-' + username, answer => callback(answer), error => console.log(error));
       this.conversationRequest(username);
 
     }, error => console.log(error));
@@ -45,15 +43,13 @@ export class WsMessageService implements OnDestroy {
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
     stompMsg.connect({}, () => {
-      console.log('WS: Successfully connected to MessageWS');
+
       stompMsg.subscribe('/chat/messages-list-for-conversation-id' + conversationId, answer => callback(JSON.parse(answer.body)));
-      console.log('getting messages');
       stompMsg.send('/message/messages-for-conversation-id' + conversationId, {}, JSON.stringify({}));
     });
   }
 
   private conversationRequest(username: string) {
-    console.log('LOADING CONVERSATIONS...');
     this.stompClient.send('/conversation/conversations-request-for-' + username, {}, JSON.stringify({}));
   }
 
@@ -72,23 +68,28 @@ export class WsMessageService implements OnDestroy {
 
   sendPrivateMsg(msg: IncomingMessage) {
     if (!msg.content) {
+      console.error('can not send empty message');
       return;
     }
 
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
-
-    console.log(msg);
-
+    const content = msg.content;
     stompMsg.connect({}, () => {
+      msg.content = content;
       stompMsg.send('/message/private-message', {}, JSON.stringify(
         {
           content: msg.content,
-          senderId: msg.senderId,
-          recipientId: msg.recipientId,
+          senderUsername: msg.senderUsername,
+          recipientUsername: msg.recipientUsername,
           conversationId: msg.conversationId
         }));
     });
+
+  }
+
+  subscribeForConversations(username: string, callback) {
+    this.stompClient.subscribe('/chat/update-conversation-for-' + username, answer => callback(JSON.parse(answer.body)));
   }
 
 

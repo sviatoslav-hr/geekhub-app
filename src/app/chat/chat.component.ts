@@ -7,11 +7,11 @@ import {User} from '../models/user';
 import {IncomingMessage} from '../models/incoming-message';
 
 @Component({
-  selector: 'app-ws-test',
-  templateUrl: './ws-test.component.html',
-  styleUrls: ['./ws-test.component.css']
+  selector: 'app-chat',
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.css']
 })
-export class WsTestComponent implements OnInit {
+export class ChatComponent implements OnInit {
   loggedUsername: string;
   msgEnabled = true;
   selectedConversation: Conversation;
@@ -27,11 +27,12 @@ export class WsTestComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getConversations();
     if (this.tokenService.getToken()) {
+      this.getConversations();
       this.loggedUsername = this.tokenService.getUsername();
+
     } else {
-      console.error('Please Log in!');
+      console.error('Please Log in to start messaging!');
     }
   }
 
@@ -46,32 +47,40 @@ export class WsTestComponent implements OnInit {
   }
 
   onConversation(conversation: Conversation) {
-    console.log('Selected conversation: ');
-    console.log(conversation);
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
       this.selectedConversation = conversation;
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessages(conversation.id, (messages) => {
-        console.log('Incoming messages:');
-        console.log(messages);
         this.messages = messages;
       });
+
       this.privateMsg = new IncomingMessage();
       this.privateMsg.conversationId = conversation.id;
-      this.privateMsg.recipientId = conversation.users[0].username === this.loggedUsername ?
-        conversation.users[1].id : conversation.users[0].id;
-      this.privateMsg.senderId = conversation.users[0].username === this.loggedUsername ?
-        conversation.users[0].id : conversation.users[1].id;
+      this.privateMsg.recipientUsername = conversation.users[0].username === this.loggedUsername ?
+        conversation.users[1].username : conversation.users[0].username;
+      this.privateMsg.senderUsername = conversation.users[0].username === this.loggedUsername ?
+        conversation.users[0].username : conversation.users[1].username;
     }
   }
 
   private getConversations() {
     this.messageService.getConversations(this.tokenService.getUsername(), (answer) => {
-      console.log(answer);
-      console.log(answer.body);
       this.conversations = JSON.parse(answer.body);
-      // this.getReceiver();
+
+      this.messageService.subscribeForConversations(this.loggedUsername, (conversation) => {
+        console.log('%c getting new conversation_________________________________________', 'color: blue;');
+        const isNewConversation = !this.conversations.filter(value => value.id === conversation.id);
+
+        if (!isNewConversation) {
+          console.log('%c creating new conversation', 'color: blue;');
+          this.conversations = this.conversations.filter(value => value.id !== conversation.id)
+            .sort((a, b) => {
+              return a.theLastMessage.date.getTime() - b.theLastMessage.date.getTime();
+            });
+        }
+        this.conversations.push(conversation);
+      });
     });
   }
 
@@ -91,7 +100,9 @@ export class WsTestComponent implements OnInit {
     if (this.msgEnabled) {
       this.getConversations();
     } else {
+      this.messages = null;
       this.conversations = null;
+      this.selectedConversation = null;
       this.clearConversations();
     }
   }

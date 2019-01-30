@@ -3,6 +3,7 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
 import {AuthService} from '../services/auth/auth.service';
 import {AuthLoginInfo} from '../services/auth/login-info';
 import {UserService} from '../services/user.service';
+import {UserSearchModel} from '../user-search/UserSearchModel';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ export class HeaderComponent implements OnInit {
   isLoggedIn = false;
   form: any = {};
   searchInput = '';
+  users: UserSearchModel[];
 
 
   constructor(private tokenStorage: TokenStorageService,
@@ -69,7 +71,8 @@ export class HeaderComponent implements OnInit {
     console.log(this.searchInput);
 
     this.userService.findUser(this.searchInput).subscribe(data => {
-      console.log(data);
+      this.users = data;
+      console.log(this.users);
     });
 
 

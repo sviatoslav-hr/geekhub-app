@@ -12,6 +12,22 @@
 .bg-lightyellow{
   background: lightyellow;
 }
-.color-black{
+.color-black {
   color: black;
+}
+.search-input {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-color: darkgray;
+  box-shadow: none;
+}
+.search-input:focus {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-bottom-color: darkgray;
 }

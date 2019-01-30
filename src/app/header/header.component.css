@@ -1,0 +1,33 @@
+.logo-orange {
+  background: orange;
+  border-radius: 5px;
+  padding: 0px 5px;
+}
+/*.navbar-brand{*/
+  /*float: left;*/
+/*}*/
+.login-container {
+  float: right;
+}
+.bg-lightyellow{
+  background: lightyellow;
+}
+.color-black {
+  color: black;
+}
+.search-input {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-color: darkgray;
+  box-shadow: none;
+}
+.search-input:focus {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-bottom-color: darkgray;
+}

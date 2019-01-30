@@ -1,9 +1,68 @@
-<strong>GEEKHUB</strong>
+<nav class="navbar navbar-dark bg-dark rounded-0 text-left justify-content-start py-1">
 
-<div *ngIf="true">
-  <a href="">Log In</a>
-</div>
+  <ul class="list-unstyled w-100 my-0">
+    <li class="d-inline">
+      <div class="float-left ml-5">
+        <a class="navbar-brand">
+          <span style="color: white"><b>Geek </b></span>
+          <span style="color: black" class="logo-orange"><b>hub</b></span>
+        </a>
+      </div>
+    </li>
+    <li class="d-inline">
+      <div *ngIf="isLoggedIn" class="float-left ml-5">
+        <form autocomplete="off" class="form-inline">
+          <input (input)="searchUser()" name="searchInput" class="form-control search-input" [(ngModel)]="searchInput"
+                 type="text" placeholder="Search" aria-label="Search" style="width: 200px">
+          <div class="list-group position-absolute" style="top: 45px; z-index: 10">
+            <div *ngFor="let user of users"
+                 class="bg-lightyellow list-group-item list-group-item-action list-group-item-secondary app"
+                 style="width: 200px">
+              <a [href]="'/id/' + user.id" class="color-black">
+                {{user.firstName + ' ' + user.lastName}}
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </li>
+    <li class="d-inline float-right">
+      <div *ngIf="!isLoggedIn" class="mr-3">
+        <form class="form-inline" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <div class="form-group text-center">
+            <div class="mr-1" style="">
+              <input id="mailId" class="form-control" name="username" [(ngModel)]="form.username"
+                     type="text" placeholder="email" aria-label="Search">
+            </div>
+            <div class="mr-1">
+              <input id="passId" name="password" class="form-control" [(ngModel)]="form.password"
+                     type="password" placeholder="password" aria-label="Search">
+            </div>
+            <div class=""><input class="btn border-light text-light" type="submit" value="Sign in"></div>
+          </div>
+        </form>
+      </div>
+    </li>
+    <li class="d-inline float-right">
+      <div *ngIf="isLoggedIn" class="mr-3">
+        <div class=""><input class="btn border-light text-light" (click)="logOut()" type="submit" value="Log out">
+        </div>
+      </div>
+    </li>
+  </ul>
 
-<div *ngIf="false">
-  <a href="">Profile</a>
-</div>
+
+  <!--<div *ngIf="isLoggedIn" class="col-md-1 offset-md-6">-->
+  <!--<div class="navbar-nav ml-auto nav-flex-icons">-->
+  <!--<div class="nav-item avatar dropdown">-->
+  <!--<a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown" aria-haspopup="true"-->
+  <!--aria-expanded="false">-->
+  <!--<img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0" alt="avatar image">-->
+  <!--</a>-->
+  <!--</div>-->
+  <!--</div>-->
+  <!--</div>-->
+
+
+</nav>
+

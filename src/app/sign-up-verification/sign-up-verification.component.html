@@ -1,0 +1,22 @@
+<p>
+  verify works!!!
+</p>
+<div class="row col-sm-6" style="max-width:350px;">
+  <form name="form" (ngSubmit)="onSubmit()" #f="ngForm">
+    <div class="form-group">
+      <label for="code">Verification code</label>
+      <input type="number" class="form-control" name="code" [(ngModel)]="code" id="code"
+             #codeId="ngModel" required/>
+      <!--<div *ngIf="f.submitted && firstname.invalid">-->
+      <!--<div *ngIf="firstname.errors.required">Name is required!</div>-->
+      <!--</div>-->
+    </div>
+    <div *ngIf="f.submitted && verificationIsFailed" class="alert alert-danger" style="color: red">
+      {{errorMessage}}
+    </div>
+    <div class="form-group">
+      <button class="btn btn-primary">Send Code</button>
+    </div>
+  </form>
+</div>
+

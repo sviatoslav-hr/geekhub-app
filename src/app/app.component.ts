@@ -15,7 +15,8 @@ export class AppComponent implements OnInit {
   private domen = 'http://localhost:4200';
   private allowedURLs: string[] = [
     this.domen + '/signin',
-    this.domen + '/signup'
+    this.domen + '/signup',
+    this.domen + '/verify'
   ];
 
   constructor(

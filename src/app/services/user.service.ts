@@ -12,6 +12,7 @@ export class UserService {
   private pmUrl = 'http://localhost:8080/api/test/pm';
   private adminUrl = 'http://localhost:8080/api/test/admin';
 
+  private getLoggedUserUrl = 'http://localhost:8080/api/auth-user/';
   private getUserByIdUrl = 'http://localhost:8080/api/user/';
   private getUserByUsernameUrl = 'http://localhost:8080/api/get-user-by-username';
   private getAllUsersUrl = 'http://localhost:8080/api/users';
@@ -29,6 +30,10 @@ export class UserService {
 
   getUserById(id: number): Observable<User> {
     return this.http.get<User>(this.getUserByIdUrl + id);
+  }
+
+  getLoggedUser(): Observable<User> {
+    return this.http.get<User>(this.getLoggedUserUrl);
   }
 
   getUserBoard(): Observable<string> {

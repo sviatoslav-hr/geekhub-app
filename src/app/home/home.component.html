@@ -7,17 +7,21 @@
   </p>
   <button class="btn btn-secondary" (click)="logout()">Logout</button>
 
-
-  <h3 class="alert">Users</h3>
-  <div class="list-group" *ngIf="usersList; else loadingUsers">
+  <!--<h3 class="alert">Users</h3>-->
+  <button class="btn mx-5" [ngClass]="usersEnabled? 'btn-danger': 'btn-primary'"
+          (click)="usersEnabled? emptyUsers(): getUsers()" [textContent]="usersEnabled? 'Hide users': 'Show users'">
+  </button>
+  <div class="list-group my-2" *ngIf="usersEnabled && usersList; else loadingUsers">
     <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
       <a [href]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
     </div>
   </div>
   <ng-template #loadingUsers>
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
+    <ng-container *ngIf="usersEnabled">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </ng-container>
   </ng-template>
 </div>
 

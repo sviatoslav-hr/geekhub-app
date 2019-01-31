@@ -8,5 +8,5 @@ describe('TokenStorageService', () => {
   it('should be created', () => {
     const service: TokenStorageService = TestBed.get(TokenStorageService);
     expect(service).toBeTruthy();
-  });
+});
 });

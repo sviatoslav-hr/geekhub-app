@@ -17,7 +17,14 @@ import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
 import {SignUpVerificationComponent} from './sign-up-verification/sign-up-verification.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatDatepickerModule, MatDividerModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatMenuModule,
+  MatNativeDateModule
+} from '@angular/material';
 import {FriendsComponent} from './friends/friends.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { UserSearchComponent } from './user-search/user-search.component';
@@ -48,7 +55,10 @@ import { UserSearchComponent } from './user-search/user-search.component';
     MatNativeDateModule,
     MatDatepickerModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatDividerModule
   ],
   providers: [
     httpInterceptorProviders

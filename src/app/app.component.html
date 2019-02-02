@@ -1,6 +1,6 @@
 <app-header></app-header>
 <app-chat *ngIf="loggedUser"></app-chat>
 <app-content></app-content>
-<div class="container">
+<div  style="overflow: auto" class="container-fluid mt-0" [ngStyle]="{'height': setContentHeight(content) + 'px'}" #content>
   <router-outlet></router-outlet>
 </div>

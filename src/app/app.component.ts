@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private tokenStorage: TokenStorageService,
-    private userService: UserService,
+    private userService: UserService
   ) {
   }
 
@@ -59,6 +59,9 @@ export class AppComponent implements OnInit {
     window.location.href = '/signin';
   }
 
-  // ---
+  setContentHeight(content): number {
+    console.log(content.offsetTop);
+    return window.innerHeight - content.offsetTop;
+  }
 
 }

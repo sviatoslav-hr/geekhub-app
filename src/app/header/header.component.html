@@ -1,9 +1,9 @@
-<nav class="navbar navbar-dark bg-dark rounded-0 text-left justify-content-start py-1">
-
+<nav class="navbar navbar-dark bg-dark rounded-0 text-left justify-content-start pt-1 position-fixed w-100 "
+     style="z-index: 9">
   <ul class="list-unstyled w-100 my-0">
     <li class="d-inline">
       <div class="float-left ml-5">
-        <a class="navbar-brand" routerLink="/">
+        <a class="navbar-brand">
           <span style="color: white"><b>Geek </b></span>
           <span style="color: black" class="logo-orange"><b>hub</b></span>
         </a>
@@ -26,7 +26,6 @@
         </form>
       </div>
     </li>
-
     <li class="d-inline float-right">
       <div *ngIf="!isLoggedIn" class="mr-3">
         <form class="form-inline" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
@@ -44,18 +43,41 @@
         </form>
       </div>
     </li>
-
+    <!--<li class="d-inline float-right">-->
+    <!--<div *ngIf="isLoggedIn" class="mr-3">-->
+    <!--<div class=""><input class="btn border-light text-light" (click)="logOut()" type="submit" value="Log out">-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</li> -->
     <li class="d-inline float-right">
       <div *ngIf="isLoggedIn" class="mr-3">
-        <div class=""><input class="btn border-light text-light" (click)="logOut()" type="submit" value="Log out">
-        </div>
+        <img [matMenuTriggerFor]="menu" src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg"
+             class="rounded-circle"
+             height="40px" alt="avatar image">
+        <mat-menu class="mt-1" style="position: fixed; overflow: hidden;" #menu="matMenu">
+            <button class="py-0" mat-menu-item>Item 1</button>
+            <mat-divider></mat-divider>
+            <button class="py-0" mat-menu-item>Settings</button>
+            <mat-divider></mat-divider>
+            <button (click)="logOut()" class="py-0" mat-menu-item>Log Out</button>
+            <mat-divider></mat-divider>
+        </mat-menu>
       </div>
     </li>
-
-    <li>
-
-    </li>
   </ul>
+
+
+  <!--<div *ngIf="isLoggedIn" class="col-md-1 offset-md-6">-->
+  <!--<div class="navbar-nav ml-auto nav-flex-icons">-->
+  <!--<div class="nav-item avatar dropdown">-->
+  <!--<a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown" aria-haspopup="true"-->
+  <!--aria-expanded="false">-->
+  <!--<img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0" alt="avatar image">-->
+  <!--</a>-->
+  <!--</div>-->
+  <!--</div>-->
+  <!--</div>-->
+
 
 </nav>
 

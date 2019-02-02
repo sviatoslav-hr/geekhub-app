@@ -31,3 +31,7 @@
   background: none;
   border-bottom-color: darkgray;
 }
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}

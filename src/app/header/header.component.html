@@ -3,7 +3,7 @@
   <ul class="list-unstyled w-100 my-0">
     <li class="d-inline">
       <div class="float-left ml-5">
-        <a class="navbar-brand">
+        <a class="navbar-brand" routerLink="/">
           <span style="color: white"><b>Geek </b></span>
           <span style="color: black" class="logo-orange"><b>hub</b></span>
         </a>
@@ -26,6 +26,7 @@
         </form>
       </div>
     </li>
+
     <li class="d-inline float-right">
       <div *ngIf="!isLoggedIn" class="mr-3">
         <form class="form-inline" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
@@ -43,26 +44,18 @@
         </form>
       </div>
     </li>
+
     <li class="d-inline float-right">
       <div *ngIf="isLoggedIn" class="mr-3">
         <div class=""><input class="btn border-light text-light" (click)="logOut()" type="submit" value="Log out">
         </div>
       </div>
     </li>
+
+    <li>
+
+    </li>
   </ul>
-
-
-  <!--<div *ngIf="isLoggedIn" class="col-md-1 offset-md-6">-->
-  <!--<div class="navbar-nav ml-auto nav-flex-icons">-->
-  <!--<div class="nav-item avatar dropdown">-->
-  <!--<a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown" aria-haspopup="true"-->
-  <!--aria-expanded="false">-->
-  <!--<img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0" alt="avatar image">-->
-  <!--</a>-->
-  <!--</div>-->
-  <!--</div>-->
-  <!--</div>-->
-
 
 </nav>
 

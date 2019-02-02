@@ -5,6 +5,7 @@ import {WsMessageService} from '../websocket/ws-message.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
 import {IncomingMessage} from '../models/incoming-message';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-chat',
@@ -105,5 +106,10 @@ export class ChatComponent implements OnInit {
       this.selectedConversation = null;
       this.clearConversations();
     }
+  }
+
+  getConversationsContentHeight(element): number {
+    const height = window.innerHeight - element.offsetTop;
+    return height;
   }
 }

@@ -21,6 +21,8 @@ import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateMo
 import {FriendsComponent} from './friends/friends.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { UserSearchComponent } from './user-search/user-search.component';
+import {ConversationsComponent} from './conversations/conversations.component';
+import {ChatComponent} from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,7 @@ import { UserSearchComponent } from './user-search/user-search.component';
     FriendsComponent,
     SignUpVerificationComponent,
     PasswordResetComponent,
-    UserSearchComponent
+    UserSearchComponent,
     FriendsComponent,
     ConversationsComponent,
     ChatComponent
@@ -51,7 +53,7 @@ import { UserSearchComponent } from './user-search/user-search.component';
     MatNativeDateModule,
     MatDatepickerModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
     AppRoutingModule,
     HttpClientModule,
   ],

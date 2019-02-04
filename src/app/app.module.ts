@@ -15,12 +15,9 @@ import { AdminComponent } from './admin/admin.component';
 import {AppRoutingModule} from './app-routing/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
-import {SignUpVerificationComponent} from './sign-up-verification/sign-up-verification.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
-import {FriendsComponent} from './friends/friends.component';
-import { PasswordResetComponent } from './password-reset/password-reset.component';
-
+import { FriendsComponent } from './friends/friends.component';
+import { ConversationsComponent } from './conversations/conversations.component';
+import { WsTestComponent } from './ws-test/ws-test.component';
 
 @NgModule({
   declarations: [
@@ -35,24 +32,18 @@ import { PasswordResetComponent } from './password-reset/password-reset.componen
     AdminComponent,
     UserHomeComponent,
     FriendsComponent,
-    SignUpVerificationComponent,
-    PasswordResetComponent
+    ConversationsComponent,
+    WsTestComponent
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
     FormsModule,
+    AppRoutingModule,
     HttpClientModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule
   ],
   providers: [
     httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

@@ -1,6 +1,9 @@
-<app-header></app-header>
-<app-chat *ngIf="loggedUser"></app-chat>
-<app-content></app-content>
-<div  style="overflow: auto" class="container-fluid mt-0" [ngStyle]="{'height': setContentHeight(content) + 'px'}" #content>
+<app-header #header></app-header>
+<!--<app-content></app-content>-->
+<app-chat style="position: absolute; width: 100%" [ngStyle]="{'top.px' : getTopPosition(header)}"></app-chat>
+<div style="overflow-y: auto; overflow-x: hidden; position: absolute; left: 240px"
+     [ngStyle]="{'height' : setContentHeight(content) + 'px',
+     'top.px' : getTopPosition(header),
+     'width.px': getContentWidth()}" #content>
   <router-outlet></router-outlet>
 </div>

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {Conversation} from '../models/conversation';
 import {Message} from '../models/message';
 import {WsMessageService} from '../websocket/ws-message.service';
@@ -20,10 +20,12 @@ export class ChatComponent implements OnInit {
   conversations: Conversation[];
   messages: Message[];
   privateMsg: IncomingMessage;
+  msgContainer: any;
 
   constructor(
     private messageService: WsMessageService,
-    private tokenService: TokenStorageService
+    private tokenService: TokenStorageService,
+    private elementRef: ElementRef
   ) {
   }
 
@@ -37,16 +39,6 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  getReceiver() {
-    if (this.conversations) {
-      // this.selectedConversation = this.conversations[this.conversations.length - 1];
-      this.receiver = this.conversations[this.conversations.length - 1]
-        .users.filter(user => user.username !== this.tokenService.getUsername())[0];
-    } else {
-      console.error('Can not get receiver: No conversations was found!');
-    }
-  }
-
   onConversation(conversation: Conversation) {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
       this.selectedConversation = conversation;
@@ -54,6 +46,9 @@ export class ChatComponent implements OnInit {
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessages(conversation.id, (messages) => {
         this.messages = messages;
+
+        const elementById = document.getElementById('msg-container');
+        elementById.scrollTo(0, elementById.scrollHeight);
       });
 
       this.privateMsg = new IncomingMessage();
@@ -85,9 +80,9 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  private sendPrivateMsg($event) {
-    console.log(this.privateMsg.content);
+  private sendPrivateMsg(input) {
     this.messageService.sendPrivateMsg(this.privateMsg);
+    input.value = '';
   }
 
   private clearConversations() {
@@ -108,8 +103,13 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  getConversationsContentHeight(element): number {
-    const height = window.innerHeight - element.offsetTop;
+  getHeightByTop(element): number {
+    const height = window.innerHeight - element.offsetTop - this.elementRef.nativeElement.offsetTop;
     return height;
+  }
+
+  closeConversation() {
+    this.selectedConversation = null;
+    this.messages = null;
   }
 }

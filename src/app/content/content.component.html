@@ -1,7 +1,9 @@
+
+<!--<app-chat *ngIf="loggedUser"></app-chat>-->
 <nav class="navbar navbar-inverse">
   <ul class="nav navbar-nav" routerLinkActive="active">
-    <li *ngIf="loggedUser" class="nav-item">
-      <a class="nav-link" [href]="'id/' + loggedUser.id">User Page</a>
+    <li *ngIf="isLoggedIn" class="nav-item">
+      <a class="nav-link" [routerLink]="'id/' + loggedUser.id">User Page</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="friends">Friends</a>

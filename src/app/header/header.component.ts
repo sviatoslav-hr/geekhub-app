@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {AuthService} from '../services/auth/auth.service';
 import {AuthLoginInfo} from '../services/auth/login-info';
@@ -19,9 +19,12 @@ export class HeaderComponent implements OnInit {
   users: UserSearchModel[];
 
 
-  constructor(private tokenStorage: TokenStorageService,
-              private authService: AuthService,
-              private userService: UserService) {
+  constructor(
+    private tokenStorage: TokenStorageService,
+    private authService: AuthService,
+    private userService: UserService,
+    private el: ElementRef
+  ) {
   }
 
   // ngOnInit() {
@@ -74,7 +77,9 @@ export class HeaderComponent implements OnInit {
       this.users = data;
       console.log(this.users);
     });
+  }
 
-
+  getHeight() {
+    return this.el.nativeElement.children[0].offsetHeight;
   }
 }

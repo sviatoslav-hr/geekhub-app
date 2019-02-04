@@ -28,6 +28,9 @@ import {
 import {FriendsComponent} from './friends/friends.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { UserSearchComponent } from './user-search/user-search.component';
+import {ConversationsComponent} from './conversations/conversations.component';
+import {ChatComponent} from './chat/chat.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,10 @@ import { UserSearchComponent } from './user-search/user-search.component';
     FriendsComponent,
     SignUpVerificationComponent,
     PasswordResetComponent,
-    UserSearchComponent
+    UserSearchComponent,
+    FriendsComponent,
+    ConversationsComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
@@ -58,12 +64,12 @@ import { UserSearchComponent } from './user-search/user-search.component';
     MatInputModule,
     MatMenuModule,
     MatButtonModule,
-    MatDividerModule
+    MatDividerModule,
+    DragDropModule
   ],
   providers: [
     httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

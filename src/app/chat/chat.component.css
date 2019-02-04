@@ -3,15 +3,30 @@
 }
 
 .switch-conversations-btn {
-  border-bottom: azure 1px solid;
+
 }
 
-.switch-conversations-btn:focus, .switch-conversations-btn:active{
-  border-bottom: azure 1px solid !important;
+.switch-conversations-btn:focus, .switch-conversations-btn:active {
   outline: none !important;
   box-shadow: none !important;
+}
+
+.conversations-btn-enabled {
+  border-bottom: azure 1px solid !important;
+}
+
+.conversations-btn-disabled {
+  color: dimgrey;
 }
 
 .conversations-block {
   overflow-y: auto !important;
 }
+
+#msg-container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+
+

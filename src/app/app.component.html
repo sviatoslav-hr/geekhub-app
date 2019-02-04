@@ -1,5 +1,5 @@
 <app-header></app-header>
 <app-content></app-content>
-<div  style="overflow: auto" class="container-fluid mt-0" [ngStyle]="{'height': setContentHeight(content) + 'px'}" #content>
+<div  style="overflow: auto; margin-top: 48px; padding-left: 10%" class="container-fluid" [ngStyle]="{'height': setContentHeight(content) + 'px'}" #content>
   <router-outlet></router-outlet>
 </div>

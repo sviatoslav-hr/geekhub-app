@@ -11,7 +11,7 @@
   <h3 class="alert">Users</h3>
   <div class="list-group" *ngIf="usersList; else loadingUsers">
     <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
-      <a [href]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
+      <a [routerLink] ="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
     </div>
   </div>
   <ng-template #loadingUsers>

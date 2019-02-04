@@ -19,9 +19,10 @@ export class AppComponent implements OnInit {
     this.domen + '/verify'
   ];
 
+
   constructor(
     private tokenStorage: TokenStorageService,
-    private userService: UserService,
+    private userService: UserService
   ) {
   }
 
@@ -32,7 +33,6 @@ export class AppComponent implements OnInit {
     } else if (!this.allowedURLs.includes(window.location.href)) {
       window.location.href = '/signin';
     }
-
   }
 
   private getUser() {
@@ -60,6 +60,9 @@ export class AppComponent implements OnInit {
     window.location.href = '/signin';
   }
 
-  // ---
+  setContentHeight(content): number {
+    console.log(content.offsetTop);
+    return window.innerHeight - content.offsetTop;
+  }
 
 }

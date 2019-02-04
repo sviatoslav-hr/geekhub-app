@@ -1,3 +1,16 @@
-<h1>Hello
-  there!</h1>
-<app-user *ngIf=""></app-user>
+<nav class="navbar navbar-inverse">
+  <ul class="nav navbar-nav" routerLinkActive="active">
+    <li *ngIf="loggedUser" class="nav-item">
+      <a class="nav-link" [href]="'id/' + loggedUser.id">User Page</a>
+    </li>
+    <li *ngIf="authority === 'pm'" class="nav-item">
+      <a class="nav-link" routerLink="pm">PM Board</a>
+    </li>
+    <li *ngIf="authority === 'admin'" class="nav-item">
+      <a class="nav-link" routerLink="admin">Admin Board</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="friends">Friends</a>
+    </li>
+  </ul>
+</nav>

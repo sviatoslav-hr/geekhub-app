@@ -15,9 +15,19 @@ import { AdminComponent } from './admin/admin.component';
 import {AppRoutingModule} from './app-routing/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
 import { UserHomeComponent } from './user-home/user-home.component';
-import { FriendsComponent } from './friends/friends.component';
-import { ConversationsComponent } from './conversations/conversations.component';
-import { WsTestComponent } from './ws-test/ws-test.component';
+import {SignUpVerificationComponent} from './sign-up-verification/sign-up-verification.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  MatButtonModule,
+  MatDatepickerModule, MatDividerModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatMenuModule,
+  MatNativeDateModule
+} from '@angular/material';
+import {FriendsComponent} from './friends/friends.component';
+import { PasswordResetComponent } from './password-reset/password-reset.component';
+import { UserSearchComponent } from './user-search/user-search.component';
 
 @NgModule({
   declarations: [
@@ -32,18 +42,28 @@ import { WsTestComponent } from './ws-test/ws-test.component';
     AdminComponent,
     UserHomeComponent,
     FriendsComponent,
-    ConversationsComponent,
-    WsTestComponent
+    SignUpVerificationComponent,
+    PasswordResetComponent,
+    UserSearchComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
+    FormsModule,
     HttpClientModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatDividerModule
   ],
   providers: [
     httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

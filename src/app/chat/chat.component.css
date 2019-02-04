@@ -1,0 +1,17 @@
+.conversations-container {
+  width: 160px;
+}
+
+.switch-conversations-btn {
+  border-bottom: azure 1px solid;
+}
+
+.switch-conversations-btn:focus, .switch-conversations-btn:active{
+  border-bottom: azure 1px solid !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.conversations-block {
+  overflow-y: auto !important;
+}

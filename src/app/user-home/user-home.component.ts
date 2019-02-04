@@ -4,6 +4,8 @@ import {UserService} from '../services/user.service';
 import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
+import {WsMessageService} from '../websocket/ws-message.service';
+import {IncomingMessage} from '../models/incoming-message';
 
 @Component({
   selector: 'app-user-home',
@@ -11,14 +13,17 @@ import {FriendsService} from '../services/friends.service';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
+  private privateMsg: IncomingMessage;
   loggedUser: User = null;
   userHome: User = null;
+  privateMsgEnabled = false;
 
   constructor(
     private tokenStorage: TokenStorageService,
     private userService: UserService,
     private friendsService: FriendsService,
     private route: ActivatedRoute,
+    private msgService: WsMessageService
   ) {
   }
 
@@ -158,5 +163,29 @@ export class UserHomeComponent implements OnInit {
       this.loggedUser.friends = undefined;
       this.getFriendsList();
     });
+  }
+
+  togglePrivateMsg() {
+    this.msgService.createConversationIfNotExists(this.userHome.id)
+      .subscribe(conversation => {
+        if (conversation) {
+          this.privateMsg = new IncomingMessage();
+          this.privateMsg.conversationId = conversation.id;
+          this.privateMsg.recipientUsername = this.userHome.username;
+          this.privateMsg.senderUsername = this.tokenStorage.getUsername();
+          this.privateMsgEnabled = !this.privateMsgEnabled;
+        } else {
+          console.log('Conversation equals null');
+        }
+      }, error => {
+        console.error('Something gone wrong during creating conversation :(');
+        console.log(error);
+      });
+  }
+
+  private sendPrivateMsg() {
+    console.log(this.privateMsg.content);
+    this.msgService.sendPrivateMsg(this.privateMsg);
+    this.privateMsg.content = null;
   }
 }

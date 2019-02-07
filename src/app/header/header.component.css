@@ -1,7 +1,18 @@
 .logo-orange {
   background: orange;
   border-radius: 5px;
-  padding: 0px 5px;
+  padding: 5px 10px;
+}
+.logo{
+  float: left;
+  font-size: 18px;
+  line-height: 20px;
+  padding: 15px 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.navbar{
+  min-height: 52px;
 }
 /*.navbar-brand{*/
   /*float: left;*/

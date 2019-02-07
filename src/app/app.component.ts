@@ -10,8 +10,6 @@ import {User} from './models/user';
 })
 export class AppComponent implements OnInit {
   loggedUser: User;
-  private roles: string[];
-  private authority: string;
   private domen = 'http://localhost:4200';
   private allowedURLs: string[] = [
     this.domen + '/signin',
@@ -28,7 +26,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     if (this.tokenStorage.getToken()) {
-      this.setAuthorities();
       this.getUser();
     } else if (!this.allowedURLs.includes(window.location.href)) {
       window.location.href = '/signin';
@@ -40,29 +37,20 @@ export class AppComponent implements OnInit {
       .subscribe(value => this.loggedUser = value);
   }
 
-  private setAuthorities() {
-    this.roles = this.tokenStorage.getAuthorities();
-    this.roles.every(role => {
-      if (role === 'ROLE_ADMIN') {
-        this.authority = 'admin';
-        return false;
-      } else if (role === 'ROLE_PM') {
-        this.authority = 'pm';
-        return false;
-      }
-      this.authority = 'user';
-      return true;
-    });
-  }
-
   public logOut() {
     this.tokenStorage.signOut();
     window.location.href = '/signin';
   }
 
   setContentHeight(content): number {
-    console.log(content.offsetTop);
     return window.innerHeight - content.offsetTop;
   }
 
+  getTopPosition(element) {
+    return element.getHeight();
+  }
+
+  getContentWidth() {
+    return window.innerWidth - 280;
+  }
 }

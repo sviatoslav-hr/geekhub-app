@@ -1,6 +1,6 @@
 <app-header #header></app-header>
 <!--<app-content></app-content>-->
 <app-chat style="position: absolute; width: 100%" [ngStyle]="{'top.px' : getTopPosition(header)}"></app-chat>
-<div  style="overflow-y: auto; overflow-x: hidden; position: absolute; margin-top: 48px; left: 240px" #content>
+<div style="overflow-y: auto; overflow-x: hidden; margin-top: 48px; margin-left: 240px">
   <router-outlet></router-outlet>
 </div>

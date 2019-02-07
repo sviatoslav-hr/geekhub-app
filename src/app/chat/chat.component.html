@@ -1,7 +1,8 @@
 <div class="conversations-container flex-column">
-  <button type="button" class="btn btn-primary rounded-0 w-100 switch-conversations-btn" (click)="switchMsg()">
-    {{msgEnabled ? 'Hide chats ' : 'Show chats '}}<i class="fas"
-                                                     [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
+  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="switchMsg()"
+          [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
+    {{msgEnabled ? 'Hide chats ' : 'Show chats '}}
+    <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
   </button>
   <div *ngIf="msgEnabled" [ngStyle]="{'height' : getHeightByTop(conversationsBlock) + 'px'}"
        class="bg-light conversations-block list-group" #conversationsBlock>
@@ -19,8 +20,8 @@
         </p>
         <p
           class="my-0">{{(conversation.theLastMessage.sender.username === loggedUsername ? 'You: ' : '')
-        + (conversation.theLastMessage.content.length > 15 ?
-          conversation.theLastMessage.content.slice(0, 15) + '...' :
+        + (conversation.theLastMessage.content.length > 9 ?
+          conversation.theLastMessage.content.slice(0, 9) + '...' :
           conversation.theLastMessage.content)}}</p>
       </div>
     </div>
@@ -57,7 +58,8 @@
 
         <div class="container-fluid input-group mb-1 px-2">
           <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
-                 aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)" id="#private-msg-input"
+                 aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
+                 id="#private-msg-input" autocomplete="off"
                  [(ngModel)]="privateMsg.content" #privateMsgInput>
           <div class="input-group-append">
             <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>

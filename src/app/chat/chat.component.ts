@@ -20,7 +20,8 @@ export class ChatComponent implements OnInit {
   conversations: Conversation[];
   messages: Message[];
   privateMsg: IncomingMessage;
-  msgContainer: any;
+
+
 
   constructor(
     private messageService: WsMessageService,
@@ -45,10 +46,9 @@ export class ChatComponent implements OnInit {
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessages(conversation.id, (messages) => {
-        this.messages = messages;
-
-        const elementById = document.getElementById('msg-container');
-        elementById.scrollTo(0, elementById.scrollHeight);
+        this.messages = messages.reverse();
+        // const elementById = document.getElementById('msg-container');
+        // elementById.scrollTo(0, elementById.scrollHeight);
       });
 
       this.privateMsg = new IncomingMessage();

@@ -13,7 +13,7 @@
   </button>
   <div class="list-group my-2" *ngIf="usersEnabled && usersList; else loadingUsers">
     <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
-      <a [href]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
+      <a [routerLink] ="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
     </div>
   </div>
   <ng-template #loadingUsers>

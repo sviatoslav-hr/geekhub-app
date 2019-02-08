@@ -1,21 +1,13 @@
 .logo-orange {
   background: orange;
   border-radius: 5px;
-  padding: 5px 10px;
+  /*padding: 4px 5px;*/
 }
 .logo{
-  float: left;
-  font-size: 18px;
-  line-height: 20px;
-  padding: 15px 15px;
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-.navbar{
-  min-height: 52px;
+  font-size: 19px;
 }
 /*.navbar-brand{*/
-  /*float: left;*/
+/*float: left;*/
 /*}*/
 .login-container {
   float: right;
@@ -46,3 +38,12 @@
 .example-button-row a {
   margin-right: 8px;
 }
+.navbar{
+  /*padding: 3px 1rem !important;*/
+}
+/*@media only screen and (min-width: 400px) {*/
+  /*.sign-in-form{*/
+    /*margin-top: 3px;*/
+  /*}*/
+/*}*/
+

@@ -1,6 +1,6 @@
-<app-header #header></app-header>
+<app-header></app-header>
 <!--<app-content></app-content>-->
-<app-chat style="position: absolute; width: 100%" [ngStyle]="{'top.px' : getTopPosition(header)}"></app-chat>
-<div style="overflow-y: auto; overflow-x: hidden; margin-top: 48px; margin-left: 240px">
+<app-chat *ngIf="loggedUser"></app-chat>
+<div style="overflow-y: auto; overflow-x: hidden; margin-top: 48px; margin-left: 240px" id="content-container">
   <router-outlet></router-outlet>
 </div>

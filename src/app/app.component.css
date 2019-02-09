@@ -1,3 +1,8 @@
+app-chat {
+  position: absolute;
+  top: 48px;
+}
+
 cont{
   overflow: auto;
   height: 100vh;

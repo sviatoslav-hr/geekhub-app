@@ -1,9 +1,7 @@
+/* Conversations List */
 .conversations-container {
   width: 160px;
-}
-
-.switch-conversations-btn {
-
+  margin-right: 0;
 }
 
 .switch-conversations-btn:focus, .switch-conversations-btn:active {
@@ -23,10 +21,56 @@
   overflow-y: auto !important;
 }
 
+/* Single Chat */
+
 #msg-container {
   display: flex;
   flex-direction: column-reverse;
 }
 
+.single-msg {
+  color: #2d2d2d;
+  display: inline-block;
+  max-width: 60%;
+  word-wrap: break-word;
+  font-size: 14px;
+}
 
+.single-msg-time {
+  color: darkgrey;
+  font-size: 10px;
+  display: inline-block;
+  margin-top: 8px;
+}
 
+.private-msg-input {
+
+}
+
+.chat-container-maximized {
+  height: 100%;
+  width: 100%;
+}
+
+.chat-container-minimized {
+  position: absolute;
+  left: 200px;
+  top: 50px;
+  z-index: 100;
+  width: 400px;
+  height: 400px;
+
+}
+
+#chat-boundary {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: none;
+}
+
+#chat-block-maximized {
+  width: 60%;
+  height: 100%;
+
+}

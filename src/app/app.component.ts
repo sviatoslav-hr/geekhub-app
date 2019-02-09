@@ -41,8 +41,9 @@ export class AppComponent implements OnInit {
     window.location.href = '/signin';
   }
 
-  setContentHeight(content): number {
-    return window.innerHeight - content.offsetTop;
+  getHeightByTop(element): number {
+    const height = window.innerHeight - element.offsetHeight;
+    return height;
   }
 
   getTopPosition(element) {

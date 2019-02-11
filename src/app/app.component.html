@@ -1,6 +1,6 @@
-<app-header></app-header>
+<app-header #header></app-header>
 <!--<app-content></app-content>-->
 <app-chat *ngIf="loggedUser"></app-chat>
-<div style="overflow-y: auto; overflow-x: hidden; margin-top: 48px; margin-left: 240px" id="content-container">
+<div style="overflow-y: auto; overflow-x: hidden; margin-left: 240px; z-index: 0">
   <router-outlet></router-outlet>
 </div>

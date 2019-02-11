@@ -24,7 +24,7 @@
 }
 
 .conversations-block {
-  height: 100%;
+  height: calc(100% - 38px);
   overflow-y: auto !important;
 }
 

@@ -9,7 +9,6 @@ import {UserService} from '../services/user.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  usersEnabled = false;
   info: any;
   usersList: User[];
 
@@ -25,21 +24,12 @@ export class HomeComponent implements OnInit {
       username: this.tokenStorage.getUsername(),
       authorities: this.tokenStorage.getAuthorities()
     };
+    this.userService.getAllUsers()
+      .subscribe(users => this.usersList = users, error => console.log(error));
   }
 
   logout() {
     this.tokenStorage.signOut();
     window.location.reload();
-  }
-
-  getUsers() {
-    this.usersEnabled = true;
-    this.userService.getAllUsers()
-      .subscribe(users => this.usersList = users, error => console.log(error));
-  }
-
-  emptyUsers() {
-    this.usersEnabled = false;
-    this.usersList = null;
   }
 }

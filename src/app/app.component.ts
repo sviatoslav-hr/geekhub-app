@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
     this.domen + '/verify'
   ];
 
+
   constructor(
     private tokenStorage: TokenStorageService,
     private userService: UserService

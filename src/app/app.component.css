@@ -1,6 +1,7 @@
 app-chat {
   position: absolute;
-  top: 48px;
+  height: 100%;
+  width: 100%;
 }
 
 cont{

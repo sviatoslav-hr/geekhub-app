@@ -4,7 +4,6 @@ import {Message} from '../models/message';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
-import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
 
 @Component({
@@ -20,7 +19,6 @@ export class ChatComponent implements OnInit {
   receiver: User;
   conversations: Conversation[];
   messages: Message[];
-  outgoingMessages: OutgoingMessage[];
   privateMsg: OutgoingMessage;
 
 

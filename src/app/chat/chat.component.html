@@ -44,14 +44,13 @@
         <a [routerLink]="'/id/' + receiver.id">
           {{receiver.firstName + ' ' + receiver.lastName}}
         </a>
-        <button class="btn border-0 px-2 py-0 text-center text-danger" style="position: absolute; top: 2px; right: 2px"
+        <button class="btn border-0 px-2 py-0 text-center text-danger close-chat-window-btn"
                 (click)="closeConversation()">
           <i class="fas fa-times"></i>
         </button>
-        <button class="btn border-0 px-2 py-0 text-center text-secondary"
-                style="position: absolute; top: 2px; right: 27px"
+        <button class="btn border-0 px-2 py-0 text-center text-secondary switch-chat-window-btn"
                 (click)="switchMsgWindow()">
-          <i class="fas fa-window-minimize" *ngIf="isMsgWindowMaximized"></i>
+          <i class="far fa-window-restore" *ngIf="isMsgWindowMaximized"></i>
           <i class="fas fa-window-maximize" *ngIf="!isMsgWindowMaximized"></i>
         </button>
       </div>

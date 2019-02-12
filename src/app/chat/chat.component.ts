@@ -5,7 +5,6 @@ import {WsMessageService} from '../websocket/ws-message.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
 import {IncomingMessage} from '../models/incoming-message';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-chat',
@@ -14,13 +13,13 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 })
 export class ChatComponent implements OnInit {
   loggedUsername: string;
-  msgEnabled = true;
+  msgEnabled = false;
+  isMsgWindowMaximized = true;
   selectedConversation: Conversation;
   receiver: User;
   conversations: Conversation[];
   messages: Message[];
   privateMsg: IncomingMessage;
-
 
 
   constructor(
@@ -34,7 +33,7 @@ export class ChatComponent implements OnInit {
     if (this.tokenService.getToken()) {
       this.getConversations();
       this.loggedUsername = this.tokenService.getUsername();
-
+      this.msgEnabled = this.tokenService.areConversationsEnabled() ? this.tokenService.areConversationsEnabled() : false;
     } else {
       console.error('Please Log in to start messaging!');
     }
@@ -57,6 +56,7 @@ export class ChatComponent implements OnInit {
         conversation.users[1].username : conversation.users[0].username;
       this.privateMsg.senderUsername = conversation.users[0].username === this.loggedUsername ?
         conversation.users[0].username : conversation.users[1].username;
+
     }
   }
 
@@ -92,24 +92,32 @@ export class ChatComponent implements OnInit {
 
   switchMsg() {
     this.msgEnabled = !this.msgEnabled;
+    this.tokenService.setConversationsEnabled(this.msgEnabled);
 
     if (this.msgEnabled) {
+      this.tokenService.setConversationsEnabled(this.msgEnabled);
       this.getConversations();
     } else {
-      this.messages = null;
+      if (this.isMsgWindowMaximized) {
+        this.messages = null;
+        this.selectedConversation = null;
+      }
       this.conversations = null;
-      this.selectedConversation = null;
       this.clearConversations();
     }
   }
 
   getHeightByTop(element): number {
-    const height = window.innerHeight - element.offsetTop - this.elementRef.nativeElement.offsetTop;
+    const height = window.innerHeight - (element.offsetTop ? element.offsetTop : this.elementRef.nativeElement.offsetTop);
     return height;
   }
 
   closeConversation() {
     this.selectedConversation = null;
     this.messages = null;
+  }
+
+  switchMsgWindow() {
+    this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
   }
 }

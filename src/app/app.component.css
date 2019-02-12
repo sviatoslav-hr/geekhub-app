@@ -1,6 +1,17 @@
+app-chat {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 cont{
   overflow: auto;
   height: 100vh;
   background: red;
+}
+app-header{
+  position: fixed;
+  width: 100%;
+  z-index: 99;
 }
 

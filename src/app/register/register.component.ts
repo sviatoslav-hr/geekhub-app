@@ -61,6 +61,7 @@ export class RegisterComponent implements OnInit {
           this.isSignUpFailed = false;
           this.isSignedUp = true;
           this.tokenStorage.saveUsername(this.signupInfo.username);
+          window.location.href = '/verify';
         }
         if (data.body.httpStatus === 'IM_USED') {
           console.log('User already registered');

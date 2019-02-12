@@ -35,7 +35,8 @@ export class PasswordResetComponent implements OnInit {
         this.tokenStorage.saveUsername(this.username);
         // console.log(data.ok);
         console.log(data.statusText);
-        if (data.message === 'Code sent') {
+        console.log(data);
+        if (data.body.message === 'Code sent') {
           console.log('true');
           this.codeSent = true;
         }

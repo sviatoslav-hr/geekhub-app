@@ -9,6 +9,8 @@
   z-index: 5;
   width: 160px;
   margin-right: 0;
+  height: calc(100% - 38px);
+  position: fixed;
 }
 
 .switch-conversations-btn:focus, .switch-conversations-btn:active {

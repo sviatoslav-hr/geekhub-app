@@ -12,8 +12,7 @@ export class AppComponent implements OnInit {
   loggedUser: User;
   private domen = 'http://localhost:4200';
   private allowedURLs: string[] = [
-    this.domen + '/signin',
-    this.domen + '/signup',
+    this.domen + '/',
     this.domen + '/verify'
   ];
 
@@ -28,7 +27,7 @@ export class AppComponent implements OnInit {
     if (this.tokenStorage.getToken()) {
       this.getUser();
     } else if (!this.allowedURLs.includes(window.location.href)) {
-      window.location.href = '/signin';
+      window.location.href = '/';
     }
   }
 

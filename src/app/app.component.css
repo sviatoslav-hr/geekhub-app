@@ -1,14 +1,15 @@
 app-chat {
 }
-
-cont{
-  overflow: auto;
-  height: 100vh;
-  background: red;
-}
 app-header{
   position: fixed;
   width: 100%;
   z-index: 99;
 }
-
+.content-container{
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 240px;
+  padding-right: 240px;
+  padding-top: 60px;
+  z-index: 0
+}

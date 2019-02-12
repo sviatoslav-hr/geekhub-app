@@ -58,15 +58,18 @@
 
       <div id="msg-container" class="mr-0">
         <div style="display: block" *ngFor="let message of messages"
-             [ngClass]="message.sender.username === loggedUsername?
+             [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
              'text-right':
              'text-left'">
           <div class="alert mb-1 py-1 px-2 text-left single-msg"
-               [ngClass]="message.sender.username === loggedUsername?
+               [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
               'alert-secondary mr-2':
               'alert-primary ml-2'">
             {{message.content}}
-            <span class="float-right align-text-bottom ml-1 single-msg-time">{{message.date | date:"HH:mm:ss"}}</span>
+            <span class="float-right align-text-bottom ml-1 single-msg-time">
+              {{message.date | date:"HH:mm:ss"}} <i *ngIf="message.constructor.name === 'OutgoingMessage'" class="fas fa-clock"></i>
+              <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername" class="fas fa-check"></i>
+            </span>
           </div>
         </div>
 

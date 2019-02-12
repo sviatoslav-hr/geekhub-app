@@ -5,6 +5,7 @@ import {WsMessageService} from '../websocket/ws-message.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
 import {IncomingMessage} from '../models/incoming-message';
+import {OutgoingMessage} from '../models/outgoing-message';
 
 @Component({
   selector: 'app-chat',
@@ -19,7 +20,8 @@ export class ChatComponent implements OnInit {
   receiver: User;
   conversations: Conversation[];
   messages: Message[];
-  privateMsg: IncomingMessage;
+  outgoingMessages: OutgoingMessage[];
+  privateMsg: OutgoingMessage;
 
 
   constructor(
@@ -41,24 +43,19 @@ export class ChatComponent implements OnInit {
 
   onConversation(conversation: Conversation) {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
+      this.setNewPrivateMessage(conversation);
       this.selectedConversation = conversation;
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessages(conversation.id, (messages) => {
         this.messages = messages.reverse();
 
-        if (this.messages[0].sender.username === this.loggedUsername) {
-          const elementById = document.getElementById('msg-container');
-          elementById.scrollTo(0, elementById.scrollHeight);
-        }
-      });
+        // if (this.messages[0].sender.username === this.loggedUsername) {
+        //   const elementById = document.getElementById('msg-container');
+        //   elementById.scrollTo(0, elementById.scrollHeight);
+        // }
 
-      this.privateMsg = new IncomingMessage();
-      this.privateMsg.conversationId = conversation.id;
-      this.privateMsg.recipientUsername = conversation.users[0].username === this.loggedUsername ?
-        conversation.users[1].username : conversation.users[0].username;
-      this.privateMsg.senderUsername = conversation.users[0].username === this.loggedUsername ?
-        conversation.users[0].username : conversation.users[1].username;
+      });
 
     }
   }
@@ -82,8 +79,18 @@ export class ChatComponent implements OnInit {
   }
 
   private sendPrivateMsg(input) {
+    this.privateMsg.date = new Date();
     this.messageService.sendPrivateMsg(this.privateMsg);
     input.value = '';
+
+    this.messages.unshift(this.privateMsg);
+
+    const elementById = document.getElementById('msg-container');
+    elementById.scrollTo(0, elementById.scrollHeight);
+
+    this.setNewPrivateMessage(this.selectedConversation);
+
+    console.log(this.messages);
   }
 
   private clearConversations() {
@@ -116,6 +123,15 @@ export class ChatComponent implements OnInit {
   closeConversation() {
     this.selectedConversation = null;
     this.messages = null;
+  }
+
+  setNewPrivateMessage(conversation: Conversation) {
+    this.privateMsg = new OutgoingMessage();
+    this.privateMsg.conversationId = conversation.id;
+    this.privateMsg.recipientUsername = conversation.users[0].username === this.loggedUsername ?
+      conversation.users[1].username : conversation.users[0].username;
+    this.privateMsg.senderUsername = conversation.users[0].username === this.loggedUsername ?
+      conversation.users[0].username : conversation.users[1].username;
   }
 
   switchMsgWindow() {

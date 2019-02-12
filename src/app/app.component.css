@@ -1,15 +1,17 @@
 app-chat {
 }
-app-header{
+
+app-header {
   position: fixed;
   width: 100%;
   z-index: 99;
 }
-.content-container{
+
+.content-container {
   overflow-y: auto;
   overflow-x: hidden;
+  z-index: 0;
   padding-left: 240px;
-  padding-right: 240px;
   padding-top: 60px;
-  z-index: 0
+  padding-right: 320px;
 }

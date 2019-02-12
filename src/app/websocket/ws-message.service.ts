@@ -6,6 +6,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Conversation} from '../models/conversation';
 import {IncomingMessage} from '../models/incoming-message';
+import {OutgoingMessage} from '../models/outgoing-message';
 
 const TOKEN_HEADER_KEY = 'Authorization';
 
@@ -66,7 +67,7 @@ export class WsMessageService implements OnDestroy {
     this.stompClient.disconnect();
   }
 
-  sendPrivateMsg(msg: IncomingMessage) {
+  sendPrivateMsg(msg: OutgoingMessage) {
     if (!msg.content) {
       console.error('can not send empty message');
       return;

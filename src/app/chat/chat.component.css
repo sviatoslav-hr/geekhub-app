@@ -9,7 +9,8 @@
   z-index: 5;
   width: 160px;
   margin-right: 0;
-  height: calc(100% - 38px);
+  top: 48px;
+  height: calc(100% - 48px);
   position: fixed;
 }
 
@@ -66,10 +67,12 @@
 
 .chat-container-maximized {
   position: fixed;
-  padding-left: 160px;
+  left: 160px;
+  top: 48px;
   height: calc(100% - 48px);
   z-index: 100;
-  width: 100%;
+  /* 100% - chats list with - ads width */
+  width: calc(100% - 160px - 320px);
   background: none;
 }
 
@@ -80,5 +83,16 @@
   top: 50px;
   width: 300px;
   height: 400px;
+}
 
+.switch-chat-window-btn {
+  position: absolute;
+  top: 2px;
+  right: 27px
+}
+
+.close-chat-window-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px
 }

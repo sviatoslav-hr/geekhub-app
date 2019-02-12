@@ -1,10 +1,10 @@
-export class IncomingMessage {
+import {Message} from './message';
+
+export class IncomingMessage extends Message {
   constructor(
-    public content?: string,
-    public conversationId?: number,
-    public recipientUsername?: string,
-    public senderUsername?: string
+    public isRead?: boolean
   ) {
+    super();
   }
 }
 

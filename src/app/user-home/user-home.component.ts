@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {IncomingMessage} from '../models/incoming-message';
+import {OutgoingMessage} from '../models/outgoing-message';
 
 @Component({
   selector: 'app-user-home',
@@ -13,7 +14,7 @@ import {IncomingMessage} from '../models/incoming-message';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
-  private privateMsg: IncomingMessage;
+  private privateMsg: OutgoingMessage;
   loggedUser: User = null;
   userHome: User = null;
   privateMsgEnabled = false;
@@ -169,7 +170,7 @@ export class UserHomeComponent implements OnInit {
     this.msgService.createConversationIfNotExists(this.userHome.id)
       .subscribe(conversation => {
         if (conversation) {
-          this.privateMsg = new IncomingMessage();
+          this.privateMsg = new OutgoingMessage();
           this.privateMsg.conversationId = conversation.id;
           this.privateMsg.recipientUsername = this.userHome.username;
           this.privateMsg.senderUsername = this.tokenStorage.getUsername();

@@ -1,4 +1,3 @@
-<div class="app-chat d-flex flex-row" #chat>
   <div class="conversations-container flex-column">
     <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="switchMsg()"
             [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
@@ -39,8 +38,7 @@
   <div *ngIf="selectedConversation"
        [ngClass]="{'chat-container-maximized border-left' : isMsgWindowMaximized,
      'chat-container-minimized': !isMsgWindowMaximized}"
-       cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized"
-       [style]="isMsgWindowMaximized? 'transform: translate3d(0,0,0)': ''">
+       cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized" id="chat-outer-container">
     <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between bg-light">
       <div class="alert alert-light text-center rounded-0 my-0" cdkDragHandle (dblclick)="switchMsgWindow()">
         <a [routerLink]="'/id/' + receiver.id">
@@ -91,4 +89,3 @@
     </div>
   </div>
 
-</div>

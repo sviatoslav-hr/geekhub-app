@@ -119,6 +119,7 @@ export class ChatComponent implements OnInit {
   }
 
   switchMsgWindow() {
+    document.getElementById('chat-outer-container').removeAttribute('style');
     this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
   }
 }

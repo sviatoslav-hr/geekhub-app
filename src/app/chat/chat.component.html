@@ -1,4 +1,4 @@
-<div class="app-chat d-flex flex-row" [ngStyle]="{'width': isMsgWindowMaximized? '100%': ''}" #chat>
+<div class="app-chat d-flex flex-row" #chat>
   <div class="conversations-container flex-column">
     <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="switchMsg()"
             [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
@@ -25,18 +25,24 @@
             conversation.theLastMessage.content)}}</p>
         </div>
       </div>
+
+      <!--conversations loading spinner-->
+      <div *ngIf="!conversations && msgEnabled" class="spinner-border text-primary mx-auto mt-5"
+           role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
       <!--<div>{{isMsgWindowMaximized}}</div>-->
-      <div style="height: 20px; margin-top: 1px; background: burlywood" *ngFor="let div of [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]">{{div}}</div>
+      <!--<div style="height: 20px; margin-top: 1px; background: burlywood" *ngFor="let div of [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]">{{div}}</div>-->
     </div>
   </div>
 
-  <div *ngIf="selectedConversation" [id]="isMsgWindowMaximized? 'chat-block-maximized' :'chat-boundary'">
-    <div class="bg-light pr-0 d-flex flex-column justify-content-between"
-         [ngClass]="{'chat-container-maximized border-left' : isMsgWindowMaximized,
+  <div *ngIf="selectedConversation"
+       [ngClass]="{'chat-container-maximized border-left' : isMsgWindowMaximized,
      'chat-container-minimized': !isMsgWindowMaximized}"
-         cdkDragBoundary="" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized" id="chat-container"
-         [style]="isMsgWindowMaximized? 'transform: translate3d(0,0,0)': ''">
-      <div class="alert alert-light text-center rounded-0 my-0" cdkDragHandle>
+       cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized"
+       [style]="isMsgWindowMaximized? 'transform: translate3d(0,0,0)': ''">
+    <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between bg-light">
+      <div class="alert alert-light text-center rounded-0 my-0" cdkDragHandle (dblclick)="switchMsgWindow()">
         <a [routerLink]="'/id/' + receiver.id">
           {{receiver.firstName + ' ' + receiver.lastName}}
         </a>
@@ -52,8 +58,7 @@
         </button>
       </div>
 
-      <div style="overflow: auto"
-           id="msg-container" class="mr-0 flex-grow-1">
+      <div id="msg-container" class="mr-0">
         <div style="display: block" *ngFor="let message of messages"
              [ngClass]="message.sender.username === loggedUsername?
              'text-right':
@@ -65,6 +70,12 @@
             {{message.content}}
             <span class="float-right align-text-bottom ml-1 single-msg-time">{{message.date | date:"HH:mm:ss"}}</span>
           </div>
+        </div>
+
+        <!--conversations loading spinner-->
+        <div *ngIf="conversations && !messages" class="spinner-border text-primary mx-auto mb-5"
+             role="status">
+          <span class="sr-only">Loading...</span>
         </div>
       </div>
 
@@ -78,11 +89,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div *ngIf="!conversations && msgEnabled" class="container-fluid row col spinner-border text-primary mx-auto mb-1"
-       role="status">
-    <span class="sr-only">Loading...</span>
   </div>
 
 </div>

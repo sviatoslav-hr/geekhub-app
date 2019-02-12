@@ -46,8 +46,11 @@ export class ChatComponent implements OnInit {
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessages(conversation.id, (messages) => {
         this.messages = messages.reverse();
-        // const elementById = document.getElementById('msg-container');
-        // elementById.scrollTo(0, elementById.scrollHeight);
+
+        if (this.messages[0].sender.username === this.loggedUsername) {
+          const elementById = document.getElementById('msg-container');
+          elementById.scrollTo(0, elementById.scrollHeight);
+        }
       });
 
       this.privateMsg = new IncomingMessage();
@@ -65,11 +68,9 @@ export class ChatComponent implements OnInit {
       this.conversations = JSON.parse(answer.body);
 
       this.messageService.subscribeForConversations(this.loggedUsername, (conversation) => {
-        console.log('%c getting new conversation_________________________________________', 'color: blue;');
         const isNewConversation = !this.conversations.filter(value => value.id === conversation.id);
 
         if (!isNewConversation) {
-          console.log('%c creating new conversation', 'color: blue;');
           this.conversations = this.conversations.filter(value => value.id !== conversation.id)
             .sort((a, b) => {
               return a.theLastMessage.date.getTime() - b.theLastMessage.date.getTime();

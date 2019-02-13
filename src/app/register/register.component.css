@@ -16,7 +16,7 @@
   margin:20px;
 }
 .inner-section {
-  background-color:#f96332;
+  background-color:#343a40;
   width:450px;
   display:block;
   margin:0 auto;
@@ -97,18 +97,18 @@ input::placeholder {
   color: #fff !important;
 }
 .btn-lg {
-  font-size: 1em;
+  font-size: 1.25em;
   border-radius: 0.25rem;
   padding: 15px 48px;
 }
 .btn-round {
   border-width: 1px;
   border-radius: 30px !important;
-  padding: 11px 23px;
+  padding: 8px 23px;
 }
 .btn-neutral,.btn-neutral:focus,.btn-neutral:hover {
-  background-color: #FFFFFF;
-  color: #f96332;
+  background-color: orange;
+  color: #212529;
 }
 
 .name-input{

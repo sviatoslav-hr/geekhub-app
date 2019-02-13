@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit {
   form: any = {};
   searchInput = '';
   users: UserSearchModel[];
+  username = this.tokenStorage.getUsername();
 
 
   constructor(

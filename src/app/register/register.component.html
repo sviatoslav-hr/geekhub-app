@@ -39,12 +39,11 @@
                      name="password" [(ngModel)]="signupInfo.password">
             </div>
             <div class="input-group">
-              <select class="form-control input-group custom-select"
+              <select class="form-control custom-select"
                       name="gender" [(ngModel)]="signupInfo.gender" #gender="ngModel"
                       required>
-                <option selected hidden disabled>Gender</option>
-                <option style="color: black" selected value="MALE">Male</option>
-                <option style="color: black" value="FEMALE">Female</option>
+                <option class="gender-select" [value]="0">Male</option>
+                <option class="gender-select" [value]="1">Female</option>
               </select>
               <!--<div *ngIf="f.submitted && gender.untouched">-->
                 <!--<div *ngIf="gender.untouched">Select your gender</div>-->

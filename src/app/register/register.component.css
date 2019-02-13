@@ -114,3 +114,7 @@ input::placeholder {
 .name-input{
   width: 45% !important;
 }
+.gender-select{
+  color: seashell;
+  background: #343a40;
+}

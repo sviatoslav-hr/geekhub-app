@@ -78,17 +78,17 @@ export class ChatComponent implements OnInit {
 
   private sendPrivateMsg(input) {
     this.privateMsg.date = new Date();
-    this.messageService.sendPrivateMsg(this.privateMsg);
-    input.value = '';
 
-    this.messages.unshift(this.privateMsg);
+    if (this.privateMsg.content && this.privateMsg.content.length > 0) {
+      this.messageService.sendPrivateMsg(this.privateMsg);
+      this.messages.unshift(this.privateMsg);
+    }
+    input.value = '';
 
     const elementById = document.getElementById('msg-container');
     elementById.scrollTo(0, elementById.scrollHeight);
 
     this.setNewPrivateMessage(this.selectedConversation);
-
-    console.log(this.messages);
   }
 
   private clearConversations() {

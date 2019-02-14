@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth/auth.service';
 import {SignUpInfo} from '../services/auth/signup-info';
 import {TokenStorageService} from '../services/auth/token-storage.service';
+import {Gender} from '../models/user';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +22,6 @@ export class RegisterComponent implements OnInit {
   year: string;
   month: string;
   dt: string;
-
   constructor(
     private authService: AuthService,
     private tokenStorage: TokenStorageService

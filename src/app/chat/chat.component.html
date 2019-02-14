@@ -70,7 +70,7 @@
               {{message.date | date:"HH:mm:ss"}}
               <i *ngIf="message.constructor.name === 'OutgoingMessage'" class="fas fa-clock"></i>
               <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
-              message.sender.username === loggedUsername && message.isRead; else notChecked" class="fas fa-check-double"></i>
+              message.sender.username === loggedUsername && message.notSeenByUsers.length < selectedConversation.users.length - 1; else notChecked" class="fas fa-check-double"></i>
               <ng-template #notChecked>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername" class="fas fa-check"></i>
               </ng-template>

@@ -48,7 +48,6 @@ export class ChatComponent implements OnInit {
       this.messageService.getMessagesForConversation(conversation.id, (messages: Message[]) => {
         this.messages = messages.reverse();
 
-        this.checkIfMessagesAreRead();
         // if (this.messages[0].sender.username === this.loggedUsername) {
         //   const elementById = document.getElementById('msg-container');
         //   elementById.scrollTo(0, elementById.scrollHeight);
@@ -67,10 +66,9 @@ export class ChatComponent implements OnInit {
         const oldMessageIndex = this.messages.findIndex(message => {
           console.log(message);
           return message.constructor.name === 'OutgoingMessage'
-            && message.parentMessage && message.parentMessage.id === newMessage.parentMessage.id;
+            && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
         });
         this.messages[oldMessageIndex] = newMessage;
-        this.checkIfMessagesAreRead();
       } else {
         this.messages.unshift(newMessage);
       }
@@ -97,7 +95,7 @@ export class ChatComponent implements OnInit {
 
   private sendPrivateMsg(input) {
     if (this.messages) {
-      this.privateMsg.parentMessage = this.messages[0];
+      this.privateMsg.parentMessageId = this.messages[0].id;
     }
     this.privateMsg.date = new Date();
     if (this.privateMsg.content && this.privateMsg.content.length > 0) {
@@ -156,19 +154,5 @@ export class ChatComponent implements OnInit {
   switchMsgWindow() {
     document.getElementById('chat-outer-container').removeAttribute('style');
     this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
-  }
-
-  private checkIfMessagesAreRead() {
-    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].notSeenByUsers.filter(user => user.username === this.receiver.username).length === 0) {
-        for (let j = i; j < this.messages.length; j++) {
-          if (this.messages[j].isRead === true) {
-            break;
-          }
-          this.messages[j].isRead = true;
-        }
-        break;
-      }
-    }
   }
 }

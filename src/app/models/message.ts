@@ -8,8 +8,7 @@ export class Message {
     public sender?: User,
     public content?: string,
     public date?: Date,
-    public parentMessage?: Message,
+    public parentMessageId?: number,
     public notSeenByUsers?: User[],
-    public isRead?: boolean
   ) {}
 }

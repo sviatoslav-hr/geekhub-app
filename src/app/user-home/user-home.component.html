@@ -47,8 +47,12 @@
             <span class="btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg()">Send</span>
           </div>
         </div>
-      </div>
 
+        <form>
+          <input id="myForm" type="file" name="file" (change)="uploadImage($event.target.files)">
+          <button>upload</button>
+        </form>
+      </div>
     </div>
   </div>
 

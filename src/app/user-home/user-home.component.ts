@@ -7,6 +7,7 @@ import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-user-home',
@@ -18,13 +19,16 @@ export class UserHomeComponent implements OnInit {
   loggedUser: User = null;
   userHome: User = null;
   privateMsgEnabled = false;
+  fileToUpload: File;
+  formData = new FormData();
 
   constructor(
     private tokenStorage: TokenStorageService,
     private userService: UserService,
     private friendsService: FriendsService,
     private route: ActivatedRoute,
-    private msgService: WsMessageService
+    private msgService: WsMessageService,
+    private http: HttpClient
   ) {
   }
 
@@ -164,6 +168,19 @@ export class UserHomeComponent implements OnInit {
       this.loggedUser.friends = undefined;
       this.getFriendsList();
     });
+  }
+
+    uploadImage(files: FileList) {
+    this.fileToUpload = files.item(0);
+      console.log(files.item(0));
+      // let formData = new FormData();
+      console.log(this.formData);
+      this.formData.append('file', files.item(0), this.fileToUpload.name);
+    this.http.post('http://localhost:8080/api/save-photo', this.formData).subscribe((val) => {
+
+      console.log(val);
+    });
+    return false;
   }
 
   togglePrivateMsg() {

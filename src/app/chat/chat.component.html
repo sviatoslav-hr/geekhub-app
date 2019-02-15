@@ -5,8 +5,7 @@
       <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
     </button>
     <div *ngIf="msgEnabled"
-         class="bg-light conversations-block list-group" #conversationsBlock>
-
+         class="bg-light conversations-block list-group">
       <div *ngFor="let conversation of conversations">
         <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0"
              [ngClass]="selectedConversation && conversation.id === selectedConversation.id? 'active':''"
@@ -40,6 +39,7 @@
      'chat-container-minimized': !isMsgWindowMaximized}"
        cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized" id="chat-outer-container">
     <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between bg-light">
+      <!--chat window header-->
       <div class="alert alert-light text-center rounded-0 my-0" cdkDragHandle (dblclick)="switchMsgWindow()">
         <a [routerLink]="'/id/' + receiver.id">
           {{receiver.firstName + ' ' + receiver.lastName}}
@@ -55,6 +55,7 @@
         </button>
       </div>
 
+      <!--container for messages list-->
       <div id="msg-container" class="mr-0">
         <div style="display: block" *ngFor="let message of messages"
              [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
@@ -66,20 +67,26 @@
               'alert-primary ml-2'">
             {{message.content}}
             <span class="float-right align-text-bottom ml-1 single-msg-time">
-              {{message.date | date:"HH:mm:ss"}} <i *ngIf="message.constructor.name === 'OutgoingMessage'" class="fas fa-clock"></i>
-              <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername" class="fas fa-check"></i>
+              {{message.date | date:"HH:mm:ss"}}
+              <i *ngIf="message.constructor.name === 'OutgoingMessage'" class="fas fa-clock"></i>
+              <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
+              message.sender.username === loggedUsername && message.notSeenByUsers.length < selectedConversation.users.length - 1; else notChecked" class="fas fa-check-double"></i>
+              <ng-template #notChecked>
+                <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername" class="fas fa-check"></i>
+              </ng-template>
             </span>
           </div>
         </div>
 
-        <!--conversations loading spinner-->
+        <!--conversations loading spinner if array messages is not assigned-->
         <div *ngIf="conversations && !messages" class="spinner-border text-primary mx-auto mb-5"
              role="status">
           <span class="sr-only">Loading...</span>
         </div>
       </div>
 
-      <div class="container-fluid input-group pb-1 px-2" #chatInputContainer>
+      <!--input for new message-->
+      <div class="container-fluid input-group pb-1 px-2">
         <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
                aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
                id="#private-msg-input" autocomplete="off"

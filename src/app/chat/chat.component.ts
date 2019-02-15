@@ -45,17 +45,34 @@ export class ChatComponent implements OnInit {
       this.selectedConversation = conversation;
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
-      this.messageService.getMessages(conversation.id, (messages) => {
+      this.messageService.getMessagesForConversation(conversation.id, (messages: Message[]) => {
         this.messages = messages.reverse();
 
         // if (this.messages[0].sender.username === this.loggedUsername) {
         //   const elementById = document.getElementById('msg-container');
         //   elementById.scrollTo(0, elementById.scrollHeight);
         // }
+        this.getNewMessage(conversation);
 
       });
 
     }
+  }
+
+  private getNewMessage(conversation: Conversation) {
+    this.messageService.subscribeForNewMessages(conversation.id, (newMessage: Message) => {
+      console.log(newMessage);
+      if (newMessage.sender.username === this.loggedUsername) {
+        const oldMessageIndex = this.messages.findIndex(message => {
+          console.log(message);
+          return message.constructor.name === 'OutgoingMessage'
+            && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
+        });
+        this.messages[oldMessageIndex] = newMessage;
+      } else {
+        this.messages.unshift(newMessage);
+      }
+    });
   }
 
   private getConversations() {
@@ -77,24 +94,26 @@ export class ChatComponent implements OnInit {
   }
 
   private sendPrivateMsg(input) {
+    if (this.messages) {
+      this.privateMsg.parentMessageId = this.messages[0].id;
+    }
     this.privateMsg.date = new Date();
-    this.messageService.sendPrivateMsg(this.privateMsg);
+    if (this.privateMsg.content && this.privateMsg.content.length > 0) {
+      this.messageService.sendPrivateMsg(this.privateMsg);
+      this.messages.unshift(this.privateMsg);
+    }
     input.value = '';
-
-    this.messages.unshift(this.privateMsg);
 
     const elementById = document.getElementById('msg-container');
     elementById.scrollTo(0, elementById.scrollHeight);
 
     this.setNewPrivateMessage(this.selectedConversation);
-
-    console.log(this.messages);
   }
 
   private clearConversations() {
+    this.conversations = null;
     this.messageService.disconnect();
   }
-
 
   switchMsg() {
     this.msgEnabled = !this.msgEnabled;
@@ -123,7 +142,7 @@ export class ChatComponent implements OnInit {
     this.messages = null;
   }
 
-  setNewPrivateMessage(conversation: Conversation) {
+  private setNewPrivateMessage(conversation: Conversation) {
     this.privateMsg = new OutgoingMessage();
     this.privateMsg.conversationId = conversation.id;
     this.privateMsg.recipientUsername = conversation.users[0].username === this.loggedUsername ?

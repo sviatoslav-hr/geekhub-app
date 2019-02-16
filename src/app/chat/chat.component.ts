@@ -18,6 +18,7 @@ export class ChatComponent implements OnInit {
   selectedConversation: Conversation;
   receiver: User;
   conversations: Conversation[];
+  areNewMessages = false;
   messages: Message[];
   privateMsg: OutgoingMessage;
 
@@ -40,12 +41,15 @@ export class ChatComponent implements OnInit {
   }
 
   onConversation(conversation: Conversation) {
+    // console.log('%cinside OnConversation', 'color: green; font-size: 20px');
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
       this.setNewPrivateMessage(conversation);
       this.selectedConversation = conversation;
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
       this.messageService.getMessagesForConversation(conversation.id, (messages: Message[]) => {
+        // console.log('%cinside getting messages list', 'color: red; font-size: 20px');
+
         this.messages = messages.reverse();
 
         // if (this.messages[0].sender.username === this.loggedUsername) {
@@ -54,25 +58,46 @@ export class ChatComponent implements OnInit {
         // }
         this.getNewMessage(conversation);
 
+        this.messageService.subscribeIfMessageWasRead(conversation.id, (readMessages: Message[]) => {
+          readMessages.forEach(message => {
+            const findIndex = this.messages.findIndex(value => value.id === message.id);
+            this.messages[findIndex] = message;
+          });
+        });
+
+        if (this.messages[0].notSeenByUsers.filter(user => user.username === this.loggedUsername).length > 0) {
+          this.messageService.setMessageAsRead(this.messages[0].id);
+        }
       });
 
     }
   }
 
   private getNewMessage(conversation: Conversation) {
+    // console.log('%cinside subscribing for new message', 'color: blue; font-size: 20px;');
+    // fixme: websocket subscribes from anonymous window to current
     this.messageService.subscribeForNewMessages(conversation.id, (newMessage: Message) => {
-      console.log(newMessage);
-      if (newMessage.sender.username === this.loggedUsername) {
-        const oldMessageIndex = this.messages.findIndex(message => {
-          console.log(message);
-          return message.constructor.name === 'OutgoingMessage'
-            && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
-        });
-        this.messages[oldMessageIndex] = newMessage;
+      if (this.messages[0].id !== newMessage.id) {
+        // console.log('%cinside getting new message', 'color: blue; font-size: 20px;');
+        // console.log(this.messages);
+        // console.log(newMessage);
+        if (newMessage.sender.username === this.loggedUsername) {
+          const oldMessageIndex = this.messages.findIndex(message => {
+            return message.constructor.name === 'OutgoingMessage'
+              && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
+          });
+          console.log(oldMessageIndex);
+          this.messages[oldMessageIndex] = newMessage;
+        } else {
+          console.log('unshifting');
+          this.messages.unshift(newMessage);
+        }
+        this.privateMsg.parentMessageId = newMessage.id;
       } else {
-        this.messages.unshift(newMessage);
+        console.log('%cError: trying to add already added message.', 'color: red; font-size: 16px;');
       }
     });
+
   }
 
   private getConversations() {
@@ -154,5 +179,16 @@ export class ChatComponent implements OnInit {
   switchMsgWindow() {
     document.getElementById('chat-outer-container').removeAttribute('style');
     this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
+  }
+
+  checkIfNewMessage(message: Message, messageBlock: HTMLDivElement) {
+    const msgInput = document.getElementById('private-msg-input');
+    console.log(messageBlock.offsetTop + ' ' + msgInput.offsetTop + ' ' + msgInput.offsetHeight);
+    if (messageBlock.offsetTop > msgInput.offsetTop) {
+      if (message.notSeenByUsers.filter(user => user.username === this.loggedUsername).length > 0) {
+        console.log('message is not read!');
+        this.messageService.setMessageAsRead(message.id);
+      }
+    }
   }
 }

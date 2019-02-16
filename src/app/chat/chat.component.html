@@ -60,7 +60,7 @@
         <div style="display: block" *ngFor="let message of messages"
              [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
              'text-right':
-             'text-left'">
+             'text-left'" #singleMessage (wheel)="checkIfNewMessage(message, singleMessage)">
           <div class="alert mb-1 py-1 px-2 text-left single-msg"
                [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
               'alert-secondary mr-2':
@@ -68,9 +68,12 @@
             {{message.content}}
             <span class="float-right align-text-bottom ml-1 single-msg-time">
               {{message.date | date:"HH:mm:ss"}}
-              <i *ngIf="message.constructor.name === 'OutgoingMessage'" class="fas fa-clock"></i>
-              <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
-              message.sender.username === loggedUsername && message.notSeenByUsers.length < selectedConversation.users.length - 1; else notChecked" class="fas fa-check-double"></i>
+              <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
+              <ng-template #notTemporaryMsg>
+                <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
+              message.sender.username === loggedUsername && message.notSeenByUsers.length < selectedConversation.users.length - 1;
+              else notChecked" class="fas fa-check-double"></i>
+              </ng-template>
               <ng-template #notChecked>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername" class="fas fa-check"></i>
               </ng-template>
@@ -86,10 +89,10 @@
       </div>
 
       <!--input for new message-->
-      <div class="container-fluid input-group pb-1 px-2">
+      <div class="container-fluid input-group pb-1 px-2" id="private-msg-input">
         <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
                aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
-               id="#private-msg-input" autocomplete="off"
+               autocomplete="off"
                [(ngModel)]="privateMsg.content" #privateMsgInput>
         <div class="input-group-append private-msg-input">
           <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>

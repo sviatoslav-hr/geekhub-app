@@ -97,6 +97,14 @@ export class WsMessageService implements OnDestroy {
     this.stompClient.subscribe('/chat/update-conversation-for-' + username, answer => callback(JSON.parse(answer.body)));
   }
 
+  subscribeIfMessageWasRead(conversationId: number, callback) {
+    this.stompClient.subscribe('/chat/message-is-read-in-conversation-' + conversationId, answer => callback(JSON.parse(answer.body)));
+  }
+
+  setMessageAsRead(messageId: number) {
+    this.stompClient.send('/message/set-message-' + messageId + '-as-read', {}, JSON.stringify({}));
+  }
+
 
   // todo: reconnect
 

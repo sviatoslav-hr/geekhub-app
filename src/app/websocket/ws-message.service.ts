@@ -5,7 +5,6 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Conversation} from '../models/conversation';
-import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
 
 const TOKEN_HEADER_KEY = 'Authorization';
@@ -40,7 +39,7 @@ export class WsMessageService implements OnDestroy {
     }, error => console.log(error));
   }
 
-  getMessages(conversationId: number, callback) {
+  getMessagesForConversation(conversationId: number, callback) {
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
     stompMsg.connect({}, () => {
@@ -86,11 +85,24 @@ export class WsMessageService implements OnDestroy {
           conversationId: msg.conversationId
         }));
     });
+  }
 
+  subscribeForNewMessages(conversationId: number, callback) {
+    this.stompClient.subscribe('/chat/private-messages-for-conversation-id' + conversationId, answer => {
+      callback(JSON.parse(answer.body));
+    });
   }
 
   subscribeForConversations(username: string, callback) {
     this.stompClient.subscribe('/chat/update-conversation-for-' + username, answer => callback(JSON.parse(answer.body)));
+  }
+
+  subscribeIfMessageWasRead(conversationId: number, callback) {
+    this.stompClient.subscribe('/chat/message-is-read-in-conversation-' + conversationId, answer => callback(JSON.parse(answer.body)));
+  }
+
+  setMessageAsRead(messageId: number) {
+    this.stompClient.send('/message/set-message-' + messageId + '-as-read', {}, JSON.stringify({}));
   }
 
 

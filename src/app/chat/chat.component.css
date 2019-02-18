@@ -56,10 +56,6 @@
   margin-top: 8px;
 }
 
-.private-msg-input {
-
-}
-
 #chat-container {
   background: none;
   height: 100%;
@@ -72,10 +68,16 @@
   height: calc(100% - 48px);
   z-index: 100;
   /* 100% - chats list with - ads width */
-  width: calc(100% - 160px - 320px);
+  width: calc(100% - 160px - 160px);
   background: none;
 }
 
+@media screen and (max-width: 928px){
+  .chat-container-maximized {
+    /* 100% - chats list with */
+    width: calc(100% - 160px);
+  }
+}
 .chat-container-minimized {
   z-index: 100;
   position: fixed;

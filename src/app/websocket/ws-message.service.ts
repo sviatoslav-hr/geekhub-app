@@ -13,9 +13,10 @@ const TOKEN_HEADER_KEY = 'Authorization';
   providedIn: 'root'
 })
 export class WsMessageService implements OnDestroy {
-  serverURL = 'localhost:8080/conversation-web-socket';
-  private privateMsg = '/message/private-message';
-  private stompClient: any;
+  conversationsURL = 'localhost:8080/conversation-web-socket';
+  messagesURL = 'localhost:8080/message-web-socket';
+  private conversationsStompClient: any;
+  private messagesStompClient: any;
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -23,34 +24,37 @@ export class WsMessageService implements OnDestroy {
   ) {
   }
 
-  private init() {
-    const socket = new SockJS('http://' + this.serverURL);
-    // const socket = new WebSocket('ws://' + this.serverURL);
-    this.stompClient = Stomp.over(socket);
+  private initStompForConversations() {
+    const socket = new SockJS('http://' + this.conversationsURL);
+    // const socket = new WebSocket('ws://' + this.conversationsURL);
+    this.conversationsStompClient = Stomp.over(socket);
+  }
+
+  private initStompForMessages() {
+    const socket = new SockJS('http://' + this.messagesURL);
+    // const socket = new WebSocket('ws://' + this.messagesURL);
+    this.messagesStompClient = Stomp.over(socket);
   }
 
   getConversations(username: string, callback) {
-    this.init();
+    this.initStompForConversations();
 
-    this.stompClient.connect({}, () => {
-      this.stompClient.subscribe('/chat/requested-conversations-for-' + username, answer => callback(answer), error => console.log(error));
-      this.conversationRequest(username);
-
+    this.conversationsStompClient.connect({}, () => {
+      this.conversationsStompClient.subscribe('/chat/requested-conversations-for-' + username,
+        answer => callback(answer), error => console.log(error));
+      this.conversationsStompClient.send('/conversation/conversations-request-for-' + username, {}, JSON.stringify({}));
     }, error => console.log(error));
   }
 
   getMessagesForConversation(conversationId: number, callback) {
-    const socket = new SockJS('http://localhost:8080/message-web-socket');
-    const stompMsg = Stomp.over(socket);
-    stompMsg.connect({}, () => {
+    this.initStompForMessages();
 
-      stompMsg.subscribe('/chat/messages-list-for-conversation-id' + conversationId, answer => callback(JSON.parse(answer.body)));
-      stompMsg.send('/message/messages-for-conversation-id' + conversationId, {}, JSON.stringify({}));
+    this.messagesStompClient.connect({}, () => {
+
+      this.messagesStompClient.subscribe('/chat/messages-list-for-conversation-id' + conversationId,
+        answer => callback(JSON.parse(answer.body)));
+      this.messagesStompClient.send('/message/messages-for-conversation-id' + conversationId, {}, JSON.stringify({}));
     });
-  }
-
-  private conversationRequest(username: string) {
-    this.stompClient.send('/conversation/conversations-request-for-' + username, {}, JSON.stringify({}));
   }
 
   createConversationIfNotExists(receiverId: number): Observable<Conversation> {
@@ -58,20 +62,11 @@ export class WsMessageService implements OnDestroy {
     return this.http.post<Conversation>('http://localhost:8080/goto-conversation', params);
   }
 
-  ngOnDestroy() {
-    this.stompClient.disconnect();
-  }
-
-  disconnect() {
-    this.stompClient.disconnect();
-  }
-
   sendPrivateMsg(msg: OutgoingMessage) {
     if (!msg.content) {
       console.error('can not send empty message');
       return;
     }
-
     const socket = new SockJS('http://localhost:8080/message-web-socket');
     const stompMsg = Stomp.over(socket);
     const content = msg.content;
@@ -88,25 +83,40 @@ export class WsMessageService implements OnDestroy {
   }
 
   subscribeForNewMessages(conversationId: number, callback) {
-    this.stompClient.subscribe('/chat/private-messages-for-conversation-id' + conversationId, answer => {
-      callback(JSON.parse(answer.body));
-    });
+    this.messagesStompClient.subscribe('/chat/private-messages-for-conversation-id' + conversationId,
+      answer => callback(JSON.parse(answer.body)));
   }
 
   subscribeForConversations(username: string, callback) {
-    this.stompClient.subscribe('/chat/update-conversation-for-' + username, answer => callback(JSON.parse(answer.body)));
+    this.conversationsStompClient.subscribe('/chat/update-conversation-for-' + username,
+      answer => callback(JSON.parse(answer.body)));
   }
 
-  subscribeIfMessageWasRead(conversationId: number, callback) {
-    this.stompClient.subscribe('/chat/message-is-read-in-conversation-' + conversationId, answer => callback(JSON.parse(answer.body)));
+  subscribeForReadMessagesUpdates(conversationId: number, callback) {
+    this.messagesStompClient.subscribe('/chat/get-read-messages-in-conversation-' + conversationId,
+      answer => callback(JSON.parse(answer.body)));
   }
 
-  setMessageAsRead(messageId: number) {
-    this.stompClient.send('/message/set-message-' + messageId + '-as-read', {}, JSON.stringify({}));
+  saveMessagesAsRead(conversationId: number, username: string) {
+    this.messagesStompClient.send('/message/set-messages-as-read-in-conversation-' + conversationId + '-for-' + username,
+      {}, JSON.stringify({}));
+  }
+
+  conversationsDisconnect() {
+    this.conversationsStompClient.disconnect();
+  }
+
+  messagesDisconnect() {
+    this.messagesStompClient.disconnect();
+  }
+
+  ngOnDestroy() {
+    this.conversationsStompClient.disconnect();
+    this.messagesStompClient.disconnect();
   }
 
 
   // todo: reconnect
 
-  // todo: fix trouble when ws stuck on 'Opening WebSocket'
+  // todo: fix messages duplications receiving
 }

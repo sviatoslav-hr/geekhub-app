@@ -18,8 +18,8 @@ export class ChatComponent implements OnInit {
   selectedConversation: Conversation;
   receiver: User;
   conversations: Conversation[];
-  areNewMessages = false;
   messages: Message[];
+  newMessages: Message[] = [];
   privateMsg: OutgoingMessage;
 
 
@@ -34,7 +34,7 @@ export class ChatComponent implements OnInit {
     if (this.tokenService.getToken()) {
       this.getConversations();
       this.loggedUsername = this.tokenService.getUsername();
-      this.msgEnabled = this.tokenService.areConversationsEnabled() ? this.tokenService.areConversationsEnabled() : false;
+      this.msgEnabled = this.tokenService.areConversationsEnabled();
     } else {
       console.error('Please Log in to start messaging!');
     }
@@ -47,57 +47,22 @@ export class ChatComponent implements OnInit {
       this.selectedConversation = conversation;
       this.receiver = conversation.users[0].username !== this.loggedUsername ?
         conversation.users[0] : conversation.users[1];
+
       this.messageService.getMessagesForConversation(conversation.id, (messages: Message[]) => {
         // console.log('%cinside getting messages list', 'color: red; font-size: 20px');
-
         this.messages = messages.reverse();
 
-        // if (this.messages[0].sender.username === this.loggedUsername) {
-        //   const elementById = document.getElementById('msg-container');
-        //   elementById.scrollTo(0, elementById.scrollHeight);
-        // }
-        this.getNewMessage(conversation);
+        this.subscribeForNewMessages(conversation);
 
-        this.messageService.subscribeIfMessageWasRead(conversation.id, (readMessages: Message[]) => {
+        this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUsername);
+        this.messageService.subscribeForReadMessagesUpdates(conversation.id, (readMessages: Message[]) => {
           readMessages.forEach(message => {
             const findIndex = this.messages.findIndex(value => value.id === message.id);
             this.messages[findIndex] = message;
           });
         });
-
-        if (this.messages[0].notSeenByUsers.filter(user => user.username === this.loggedUsername).length > 0) {
-          this.messageService.setMessageAsRead(this.messages[0].id);
-        }
       });
-
     }
-  }
-
-  private getNewMessage(conversation: Conversation) {
-    // console.log('%cinside subscribing for new message', 'color: blue; font-size: 20px;');
-    // fixme: websocket subscribes from anonymous window to current
-    this.messageService.subscribeForNewMessages(conversation.id, (newMessage: Message) => {
-      if (this.messages[0].id !== newMessage.id) {
-        // console.log('%cinside getting new message', 'color: blue; font-size: 20px;');
-        // console.log(this.messages);
-        // console.log(newMessage);
-        if (newMessage.sender.username === this.loggedUsername) {
-          const oldMessageIndex = this.messages.findIndex(message => {
-            return message.constructor.name === 'OutgoingMessage'
-              && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
-          });
-          console.log(oldMessageIndex);
-          this.messages[oldMessageIndex] = newMessage;
-        } else {
-          console.log('unshifting');
-          this.messages.unshift(newMessage);
-        }
-        this.privateMsg.parentMessageId = newMessage.id;
-      } else {
-        console.log('%cError: trying to add already added message.', 'color: red; font-size: 16px;');
-      }
-    });
-
   }
 
   private getConversations() {
@@ -118,6 +83,42 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  private clearConversations() {
+    this.conversations = null;
+    this.messageService.conversationsDisconnect();
+  }
+
+  switchMsgWindow() {
+    document.getElementById('chat-outer-container').removeAttribute('style');
+    this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
+  }
+
+  switchConversations() {
+    this.msgEnabled = !this.msgEnabled;
+    this.tokenService.setConversationsEnabled(this.msgEnabled);
+
+    if (this.msgEnabled) {
+      this.getConversations();
+    } else {
+      if (this.isMsgWindowMaximized) {
+        this.messages = null;
+        this.selectedConversation = null;
+      }
+      this.conversations = null;
+      this.clearConversations();
+    }
+  }
+
+  getHeightByTop(element): number {
+    return window.innerHeight - (element.offsetTop ? element.offsetTop : this.elementRef.nativeElement.offsetTop);
+  }
+
+  closeConversation() {
+    this.selectedConversation = null;
+    this.messages = null;
+    this.messageService.messagesDisconnect();
+  }
+
   private sendPrivateMsg(input) {
     if (this.messages) {
       this.privateMsg.parentMessageId = this.messages[0].id;
@@ -135,38 +136,6 @@ export class ChatComponent implements OnInit {
     this.setNewPrivateMessage(this.selectedConversation);
   }
 
-  private clearConversations() {
-    this.conversations = null;
-    this.messageService.disconnect();
-  }
-
-  switchMsg() {
-    this.msgEnabled = !this.msgEnabled;
-    this.tokenService.setConversationsEnabled(this.msgEnabled);
-
-    if (this.msgEnabled) {
-      this.tokenService.setConversationsEnabled(this.msgEnabled);
-      this.getConversations();
-    } else {
-      if (this.isMsgWindowMaximized) {
-        this.messages = null;
-        this.selectedConversation = null;
-      }
-      this.conversations = null;
-      this.clearConversations();
-    }
-  }
-
-  getHeightByTop(element): number {
-    const height = window.innerHeight - (element.offsetTop ? element.offsetTop : this.elementRef.nativeElement.offsetTop);
-    return height;
-  }
-
-  closeConversation() {
-    this.selectedConversation = null;
-    this.messages = null;
-  }
-
   private setNewPrivateMessage(conversation: Conversation) {
     this.privateMsg = new OutgoingMessage();
     this.privateMsg.conversationId = conversation.id;
@@ -176,19 +145,51 @@ export class ChatComponent implements OnInit {
       conversation.users[0].username : conversation.users[1].username;
   }
 
-  switchMsgWindow() {
-    document.getElementById('chat-outer-container').removeAttribute('style');
-    this.isMsgWindowMaximized = !this.isMsgWindowMaximized;
+  private subscribeForNewMessages(conversation: Conversation) {
+    // console.log('%cinside subscribing for new message', 'color: blue; font-size: 20px;');
+    // fixme: websocket subscribes from anonymous window to current
+    this.messageService.subscribeForNewMessages(conversation.id, (newMessage: Message) => {
+      if (this.messages[0].id !== newMessage.id) {
+        if (this.newMessages.length > 0 && this.newMessages[0].id === newMessage.id) {
+          console.log('%cError: trying to add already added new message.', 'color: red; font-size: 16px;');
+          return;
+        }
+        if (newMessage.sender.username === this.loggedUsername) {
+          const oldMessageIndex = this.messages.findIndex(message => {
+            return message.constructor.name === 'OutgoingMessage'
+              && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
+          });
+          this.messages[oldMessageIndex] = newMessage;
+        } else {
+          const elementById = document.getElementById('msg-container');
+          // if messages was scrolled to bottom
+          // fixme: replace '30' with height of the last msg block
+          if (elementById.scrollHeight - elementById.scrollTop < elementById.offsetHeight + 30) {
+            this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUsername);
+            this.messages.unshift(newMessage);
+          } else {
+            this.newMessages.unshift(newMessage);
+          }
+        }
+        this.privateMsg.parentMessageId = newMessage.id;
+      } else {
+        console.log('%cError: trying to add already added message.', 'color: red; font-size: 16px;');
+      }
+    });
+
   }
 
-  checkIfNewMessage(message: Message, messageBlock: HTMLDivElement) {
-    const msgInput = document.getElementById('private-msg-input');
-    console.log(messageBlock.offsetTop + ' ' + msgInput.offsetTop + ' ' + msgInput.offsetHeight);
-    if (messageBlock.offsetTop > msgInput.offsetTop) {
-      if (message.notSeenByUsers.filter(user => user.username === this.loggedUsername).length > 0) {
-        console.log('message is not read!');
-        this.messageService.setMessageAsRead(message.id);
-      }
+  checkIfNewMessage() {
+    const newMessagesBlock = document.getElementById('new-messages-block');
+    const msgContainer = document.getElementById('msg-container');
+    // if was scrolled to block of new messages
+    if (msgContainer.scrollHeight - msgContainer.scrollTop < msgContainer.offsetHeight + newMessagesBlock.offsetHeight) {
+      console.log('%cmessage is in view', 'color: blue; font-size: 16px;');
+      this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUsername);
+      this.newMessages.forEach(newMessage => this.messages.unshift(newMessage));
+      this.newMessages = [];
+    } else {
+      console.log('%cmessage is not in view', 'color: red; font-size: 16px;');
     }
   }
 }

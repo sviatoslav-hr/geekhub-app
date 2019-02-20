@@ -5,7 +5,6 @@ import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
-import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
 import {HttpClient} from '@angular/common/http';
 
@@ -136,6 +135,7 @@ export class UserHomeComponent implements OnInit {
   }
 
   sendFriendRequest() {
+    console.log(console.log('logged user image+++++++++++' + this.loggedUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(value => {

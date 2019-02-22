@@ -16,6 +16,7 @@
 
 .switch-conversations-btn:focus, .switch-conversations-btn:active {
   outline: none !important;
+
   box-shadow: none !important;
 }
 
@@ -25,6 +26,7 @@
 
 .conversations-btn-disabled {
   color: dimgrey;
+  background-color: #212529;
 }
 
 .conversations-block {

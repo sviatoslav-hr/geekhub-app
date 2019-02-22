@@ -11,9 +11,9 @@ app-header {
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 0;
-  padding-left: 320px;
-  padding-right: 320px;
-  padding-top: 60px;
+  /*padding-left: 320px;*/
+  /*padding-right: 320px;*/
+  padding: 60px 3% 3%;
 }
   /*@media (min-width: 600px) and (max-width: 800px) {*/
 /*html { background: red; !important;}*/

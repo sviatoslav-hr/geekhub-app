@@ -1,5 +1,5 @@
 <div class="conversations-container flex-column">
-  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="switchConversations()"
+  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn " (click)="switchConversations()"
           [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
     {{msgEnabled ? 'Hide chats ' : 'Show chats '}}
     <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>

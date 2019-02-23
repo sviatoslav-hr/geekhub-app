@@ -121,7 +121,7 @@
     <div class="container-fluid input-group pb-1 px-2">
       <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
              aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
-             autocomplete="off" id="private-msg-input" (keydown.control.enter)="doStuff()"
+             autocomplete="off" id="private-msg-input" (keydown.control.enter)="doStuff()" [disabled]="pendingMessages.length > 7"
              [(ngModel)]="privateMsg.content" #privateMsgInput>
       <div class="input-group-append private-msg-input">
         <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>

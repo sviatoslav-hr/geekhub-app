@@ -166,7 +166,11 @@ export class ChatComponent implements OnInit {
     }
     this.privateMsg.date = new Date();
     if (this.privateMsg.content && this.privateMsg.content.length > 0) {
-      this.pendingMessages.push(this.privateMsg);
+      if (this.messages[0].constructor.name !== 'OutgoingMessage') {
+        this.messageService.sendPrivateMsg(this.privateMsg);
+      } else {
+        this.pendingMessages.push(this.privateMsg);
+      }
       this.messages.unshift(this.privateMsg);
     }
     input.value = '';
@@ -205,24 +209,29 @@ export class ChatComponent implements OnInit {
         }
         // if message was sent by loggedUser, then simply replace temporary message
         if (newMessage.sender.username === this.loggedUser.username) {
-          let oldMessageIndex = this.messages.findIndex(message => {
+          // find index of pending message to replace
+          const oldMessageIndex = this.messages.findIndex(message => {
+            if (!message.parentMessageId && message.constructor.name !== 'OutgoingMessage') {
+              return false;
+            }
             return message.constructor.name === 'OutgoingMessage'
-              && message.parentMessageId && message.parentMessageId === newMessage.parentMessageId;
+              && message.parentMessageId === newMessage.parentMessageId;
           });
 
-          if (oldMessageIndex < 0) {
-            if (this.messages) {
-              // fixme: doesnt working correctly
-              oldMessageIndex = this.messages.findIndex(message => {
-                return message.constructor.name !== 'OutgoingMessage' && message.parentMessageId !== null;
-              }) - 1;
-              this.messages[oldMessageIndex] = newMessage;
-            } else {
-              // todo: add stuff for condition
-            }
-          } else {
-            this.messages[oldMessageIndex] = newMessage;
+          this.messages[oldMessageIndex] = newMessage;
+
+          // if there if another pending messages
+          if (this.pendingMessages.length > 0) {
+            console.log(this.pendingMessages.length);
+            const firstPendingMsg = this.pendingMessages.shift();
+            console.log(this.pendingMessages.length);
+            console.log('%cSending next pending message', 'color: blue; font-size: 16px;');
+            console.log(newMessage);
+            console.log(firstPendingMsg);
+            firstPendingMsg.parentMessageId = newMessage.id;
+            this.messageService.sendPrivateMsg(firstPendingMsg);
           }
+
         } else {
           const elementById = document.getElementById('msg-container');
           // if messages was scrolled to bottom

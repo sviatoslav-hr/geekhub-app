@@ -6,6 +6,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Conversation} from '../models/conversation';
 import {OutgoingMessage} from '../models/outgoing-message';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Injectable({
   providedIn: 'root'
@@ -65,19 +66,28 @@ export class WsMessageService implements OnDestroy {
       console.error('can not send empty message');
       return;
     }
-    const socket = new SockJS('http://localhost:8080/message-web-socket');
-    const stompMsg = Stomp.over(socket);
-    const content = msg.content;
-    stompMsg.connect({}, () => {
-      msg.content = content;
-      stompMsg.send('/message/private-message', {}, JSON.stringify(
+    if (!this.messagesStompClient) {
+      this.initStompForMessages();
+      const content = msg.content;
+      this.messagesStompClient.connect({}, () => {
+        msg.content = content;
+        this.messagesStompClient.send('/message/private-message', {}, JSON.stringify(
+          {
+            content: msg.content,
+            senderUsername: msg.senderUsername,
+            recipientUsername: msg.recipientUsername,
+            conversationId: msg.conversationId
+          }));
+      });
+    } else {
+      this.messagesStompClient.send('/message/private-message', {}, JSON.stringify(
         {
           content: msg.content,
           senderUsername: msg.senderUsername,
           recipientUsername: msg.recipientUsername,
           conversationId: msg.conversationId
         }));
-    });
+    }
   }
 
   subscribeForNewMessages(conversationId: number, callback) {

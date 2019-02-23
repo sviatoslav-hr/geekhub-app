@@ -27,12 +27,15 @@ export class WsMessageService implements OnDestroy {
     const socket = new SockJS('http://' + this.conversationsURL);
     // const socket = new WebSocket('ws://' + this.conversationsURL);
     this.conversationsStompClient = Stomp.over(socket);
+    // console.log('%cshit', 'color:blue; font-size:16px');
+    // this.messagesStompClient.debug = () => {}; // fixme: disable log
   }
 
   private initStompForMessages() {
     const socket = new SockJS('http://' + this.messagesURL);
     // const socket = new WebSocket('ws://' + this.messagesURL);
     this.messagesStompClient = Stomp.over(socket);
+    // this.messagesStompClient.debug = null; // disable log
   }
 
   getConversations(username: string, callback) {

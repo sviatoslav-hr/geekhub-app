@@ -270,9 +270,14 @@ export class ChatComponent implements OnInit {
     // group unread messages by conversationId
     this.userService.getUnreadMessages(this.loggedUser.username)
       .subscribe(messages => messages.forEach(message => {
-        this.unreadMessages.get(message.conversationId) ?
-          this.unreadMessages.get(message.conversationId).unshift(message) :
+        if (this.unreadMessages.get(message.conversationId)) {
+          if (this.unreadMessages.get(message.conversationId).findIndex(value => value.id === message.id) < 0) {
+            this.unreadMessages.get(message.conversationId).unshift(message);
+          }
+        } else {
           this.unreadMessages.set(message.conversationId, []);
+          this.unreadMessages.get(message.conversationId).unshift(message);
+        }
       }));
   }
 

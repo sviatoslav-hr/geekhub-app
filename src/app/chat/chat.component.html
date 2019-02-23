@@ -1,5 +1,5 @@
 <div class="conversations-container flex-column">
-  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="switchConversations()"
+  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="enableOrDisableConversations()"
           [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
     {{msgEnabled ? 'Hide chats ' : 'Show chats '}}
     <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
@@ -9,18 +9,22 @@
     <div *ngFor="let conversation of conversations">
       <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0"
            [ngClass]="selectedConversation && conversation.id === selectedConversation.id? 'active':''"
-           (click)="selectedConversation? (selectedConversation.id !== conversation.id? onConversation(conversation): '') : onConversation(conversation)"
+           (click)="selectedConversation? (selectedConversation.id !== conversation.id? openConversation(conversation): '') : openConversation(conversation)"
            style="cursor: pointer;">
         <p class="my-0">
-          <strong>{{conversation.users[0].username !== loggedUsername ?
-            conversation.users[0].firstName : conversation.users[1].firstName + ': '}}
+          <strong>{{conversation.users[0].username !== loggedUser.username ?
+            conversation.users[0].firstName : conversation.users[1].firstName}}
           </strong>
         </p>
-        <p
-          class="my-0">{{(conversation.theLastMessage.sender.username === loggedUsername ? 'You: ' : '')
-        + (conversation.theLastMessage.content.length > 9 ?
-          conversation.theLastMessage.content.slice(0, 9) + '...' :
-          conversation.theLastMessage.content)}}</p>
+        <p class="my-0 conversation-last-message-content">
+          {{(conversation.theLastMessage.sender.username === loggedUser.username ? 'You: ' : '')
+        + conversation.theLastMessage.content}}
+          <span *ngIf="getNumberOfUnreadMessages(conversation) > 0"
+                [innerText]="unreadMessages.get(conversation.id)? getNumberOfUnreadMessages(conversation): ''"
+                class="badge float-right"
+                [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-primary': true}">
+          </span>
+        </p>
       </div>
     </div>
 
@@ -56,28 +60,36 @@
     </div>
 
     <!--container for messages list-->
-    <div id="msg-container" class="mr-0" (wheel)="newMessages.length > 0? checkIfNewMessage(): null">
+    <div id="msg-container" class="mr-0" (wheel)="unreadMessages.get(selectedConversation.id) &&
+    unreadMessages.get(selectedConversation.id).length > 0 ? checkIfNewMessage() : null">
       <!--new messages-->
       <!--(message.id === newMessages[newMessages.length -1].id) ? checkIfNewMessage(message, singleMessage) : null-->
-      <div *ngIf="newMessages.length > 0" id="new-messages-block">
-        <div *ngFor="let message of newMessages" class="text-left"
-             [id]="(message.id === newMessages[newMessages.length -1].id) ? 'new-private-msg' : null">
+      <!--<div *ngIf="unreadMessages.get(selectedConversation.id)&& unreadMessages.get(selectedConversation.id).length > 0">-->
+      <!--<div *ngFor="let message of unreadMessages.get(selectedConversation.id)">-->
+      <!--{{message.id + ' ' + message.conversationId + ' ' + message.content + ' ' + message.constructor.name}}-->
+      <!--</div>-->
+      <!--</div>-->
+      <div *ngIf="unreadMessages.get(selectedConversation.id)&& unreadMessages.get(selectedConversation.id).length > 0"
+           id="new-messages-block">
+        <div *ngFor="let message of unreadMessages.get(selectedConversation.id)" class="text-left"
+             [ngStyle]="message? '':{'background-color': 'red'}"
+             [id]="(message.id === unreadMessages.get(selectedConversation.id)[unreadMessages.get(selectedConversation.id).length -1].id) ? 'new-private-msg' : null">
           <div class="alert mb-1 py-1 px-2 text-left single-msg alert-primary ml-2">
             {{message.content}}
             <span class="float-right align-text-bottom ml-1 single-msg-time">
-              {{message.date | date:"HH:mm:ss"}}
-          </span>
+            {{message.date | date:"HH:mm:ss"}}
+      </span>
           </div>
         </div>
 
       </div>
       <!--all messages-->
       <div style="display: block" *ngFor="let message of messages"
-           [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
+           [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
              'text-right':
              'text-left'">
         <div class="alert mb-1 py-1 px-2 text-left single-msg"
-             [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUsername?
+             [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
               'alert-secondary mr-2':
               'alert-primary ml-2'">
           {{message.content}}
@@ -86,12 +98,13 @@
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
               <ng-template #notTemporaryMsg>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
-              message.sender.username === loggedUsername && message.notSeenByUsers.length < selectedConversation.users.length - 1;
+              message.sender.username === loggedUser.username && message.notSeenByUsers.length < selectedConversation.users.length - 1;
               else notChecked" class="fas fa-check-double"></i>
               </ng-template>
               <ng-template #notChecked>
-                <i *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUsername"
-                   class="fas fa-check"></i>
+                <i
+                  *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === loggedUser.username"
+                  class="fas fa-check"></i>
               </ng-template>
             </span>
         </div>
@@ -105,10 +118,10 @@
     </div>
 
     <!--input for new message-->
-    <div class="container-fluid input-group pb-1 px-2" id="private-msg-input">
+    <div class="container-fluid input-group pb-1 px-2">
       <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
              aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
-             autocomplete="off"
+             autocomplete="off" id="private-msg-input" (keydown.control.enter)="doStuff()"
              [(ngModel)]="privateMsg.content" #privateMsgInput>
       <div class="input-group-append private-msg-input">
         <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>

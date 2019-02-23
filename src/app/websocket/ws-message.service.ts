@@ -7,8 +7,6 @@ import {Observable} from 'rxjs';
 import {Conversation} from '../models/conversation';
 import {OutgoingMessage} from '../models/outgoing-message';
 
-const TOKEN_HEADER_KEY = 'Authorization';
-
 @Injectable({
   providedIn: 'root'
 })

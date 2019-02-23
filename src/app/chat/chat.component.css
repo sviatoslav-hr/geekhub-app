@@ -32,6 +32,12 @@
   overflow-y: auto !important;
 }
 
+.conversation-last-message-content{
+  white-space: nowrap;      /*keep text on one line */
+  overflow: hidden;         /*prevent text from being shown outside the border */
+  text-overflow: ellipsis;  /*cut off text with an ellipsis*/
+}
+
 /* Single Chat */
 
 #msg-container {

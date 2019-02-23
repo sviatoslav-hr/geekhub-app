@@ -42,7 +42,7 @@
 
         <div class="input-group mt-1 mb-0" *ngIf="privateMsgEnabled">
           <input type="text" class="form-control" placeholder="Type something..." aria-label="Type something..."
-                 aria-describedby="private-msg-btn" (submit)="sendPrivateMsg()" id="#private-msg-input" [(ngModel)]="privateMsg.content">
+                 aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg()" id="#private-msg-input" [(ngModel)]="privateMsg.content">
           <div class="input-group-append">
             <span class="btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg()">Send</span>
           </div>

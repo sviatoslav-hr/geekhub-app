@@ -6,7 +6,8 @@ export class Conversation {
     public id?: number,
     public users?: User[],
     public messages?: Message[],
-    public theLastMessage?: Message
+    public theLastMessage?: Message,
+    public unreadMessagesNumber?: number
   ) {
   }
 }

@@ -131,6 +131,9 @@ export class ChatComponent implements OnInit {
   private clearConversations() {
     this.conversations = null;
     this.messageService.conversationsDisconnect();
+    if (!this.isMsgWindowMaximized) {
+      this.messageService.messagesDisconnect();
+    }
   }
 
   switchMsgWindow() {

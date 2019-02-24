@@ -15,7 +15,7 @@ export class User {
     public activated?: boolean,
     public avatarUrl?: string,
     public friends?: User[],
-    public notSeenMessages?: Message[],
+    public unreadMessages?: Message[],
     public outgoingFriendRequests?: FriendRequest[],
     public incomingFriendRequests?: FriendRequest[]
   ) {

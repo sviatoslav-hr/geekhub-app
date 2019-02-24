@@ -7,8 +7,9 @@
   <div *ngIf="msgEnabled"
        class="bg-light conversations-block list-group">
     <div *ngFor="let conversation of conversations">
-      <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0"
-           [ngClass]="selectedConversation && conversation.id === selectedConversation.id? 'active':''"
+      <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0 pl-1"
+           [ngClass]="(selectedConversation && conversation.id === selectedConversation.id? 'active':'') +
+              (getNumberOfUnreadMessages(conversation) > 0 ? ' pr-4': ' pr-2')"
            (click)="selectedConversation? (selectedConversation.id !== conversation.id? openConversation(conversation): '') : openConversation(conversation)"
            style="cursor: pointer;">
         <p class="my-0">
@@ -19,7 +20,7 @@
         <p class="my-0 conversation-last-message-content">
           {{(conversation.theLastMessage.sender.username === loggedUser.username ? 'You: ' : '')
         + conversation.theLastMessage.content}}
-          <span *ngIf="getNumberOfUnreadMessages(conversation) > 0"
+          <span *ngIf="getNumberOfUnreadMessages(conversation) > 0" style="position: absolute; bottom: 7px; right: 5px;"
                 [innerText]="unreadMessages.get(conversation.id)? getNumberOfUnreadMessages(conversation): ''"
                 class="badge float-right"
                 [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-primary': true}">
@@ -98,7 +99,7 @@
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
               <ng-template #notTemporaryMsg>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
-              message.sender.username === loggedUser.username && message.notSeenByUsers.length < selectedConversation.users.length - 1;
+              message.sender.username === loggedUser.username && message.unreadByUsers.length < selectedConversation.users.length - 1;
               else notChecked" class="fas fa-check-double"></i>
               </ng-template>
               <ng-template #notChecked>
@@ -120,9 +121,11 @@
     <!--input for new message-->
     <div class="container-fluid input-group pb-1 px-2">
       <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
-             aria-describedby="private-msg-btn" (keydown.enter)="sendPrivateMsg(privateMsgInput)"
-             autocomplete="off" id="private-msg-input" (keydown.control.enter)="doStuff()" [disabled]="pendingMessages.length > 7"
-             [(ngModel)]="privateMsg.content" #privateMsgInput>
+             aria-describedby="private-msg-btn" autocomplete="off" id="private-msg-input"
+             (keydown.enter)="sendPrivateMsg(privateMsgInput)"
+             (keydown.control.enter)="doStuff()"
+             (keydown.escape)="closeConversation()"
+             [disabled]="pendingMessages.length > 7" [(ngModel)]="privateMsg.content" #privateMsgInput>
       <div class="input-group-append private-msg-input">
         <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>
       </div>

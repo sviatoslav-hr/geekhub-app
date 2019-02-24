@@ -6,6 +6,7 @@ import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
 import {OutgoingMessage} from '../models/outgoing-message';
 import {UserService} from '../services/user.service';
+import {ChatService} from '../services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -28,6 +29,7 @@ export class ChatComponent implements OnInit {
   constructor(
     private messageService: WsMessageService,
     private tokenService: TokenStorageService,
+    private chatService: ChatService,
     private userService: UserService,
     private elementRef: ElementRef
   ) {
@@ -54,31 +56,46 @@ export class ChatComponent implements OnInit {
       this.receiver = conversation.users[0].username !== this.loggedUser.username ?
         conversation.users[0] : conversation.users[1];
 
-      this.messageService.getMessagesForConversation(conversation.id, (messages: Message[]) => {
+      this.messageService.getMessagesForConversation(conversation.id).subscribe((messages) => {
         document.getElementById('private-msg-input').focus();
 
         this.messages = messages.reverse();
 
         this.subscribeForNewMessages(conversation);
 
-        this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUser.username);
+        if (this.unreadMessages.get(conversation.id) && this.unreadMessages.get(conversation.id).length > 0) {
+          this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUser.username);
+        }
         // if (this.unreadMessages.get(this.selectedConversation.id)) {
         //   this.unreadMessages.get(this.selectedConversation.id).forEach(newMessage => this.messages.unshift(newMessage));
         // }
         this.unreadMessages.set(this.selectedConversation.id, []);
 
         this.messageService.subscribeForReadMessagesUpdates(conversation.id, (readMessages: Message[]) => {
+          console.log('%cUpdating read messages', 'color:blue');
+          console.log(readMessages);
+          // console.log(this.unreadMessages.get(conversation.id));
+          // console.log(this.messages.filter(value => value.constructor.name === 'OutgoingMessage'));
+          // console.log(this.messages.filter(value => value.constructor.name !== 'OutgoingMessage'));
           readMessages.forEach(message => {
-            const findIndex = this.messages.findIndex(value => value.id === message.id);
+            const findIndex = this.messages.findIndex(value => value.id === message.id ||
+              value.parentMessageId === message.parentMessageId);
             if (findIndex >= 0) {
+              console.log('%creplacing...', 'color:blue');
+              // console.log(message);
+              // console.log(this.messages[findIndex]);
               this.messages[findIndex] = message;
+            } else {
+              console.log('%cnot found...', 'color:red');
+              console.log(message);
+              console.log(this.messages);
             }
             // if there is element in map with ID conversation.id, remove message from array by filter
             // otherwise create empty array
             this.unreadMessages.set(conversation.id,
               this.unreadMessages.get(conversation.id) ?
-                this.unreadMessages.get(conversation.id).filter(value => value.id !== value) :
-                []
+                this.unreadMessages.get(conversation.id).filter(value => value.id !== message.id) :
+                null
             );
           });
         });
@@ -87,38 +104,26 @@ export class ChatComponent implements OnInit {
   }
 
   private getConversations() {
-    this.messageService.getConversations(this.tokenService.getUsername(), (answer) => {
-      this.conversations = JSON.parse(answer.body);
+    this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
+      this.conversations = conversations;
 
-      this.messageService.subscribeForConversations(this.loggedUser.username, (conversation: Conversation) => {
+      this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
         const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
 
         // foundIndex = -1 if upcoming conversation is new and was not found in array
         if (foundIndex >= 0) {
           this.conversations[foundIndex] = conversation;
           this.conversations = this.conversations
-            .sort((a, b) => {
-              if (!a.theLastMessage) {
-                return -1;
-              }
-              if (!b.theLastMessage) {
-                return -1;
-              }
-              return a.theLastMessage.date.getTime() - b.theLastMessage.date.getTime();
-            });
+            .sort((a, b) => this.chatService.compareConversationsByTheLastMessage(a, b));
         } else {
-          this.conversations.push(conversation);
+          this.conversations.unshift(conversation);
         }
 
         if (!this.selectedConversation || conversation.id !== this.selectedConversation.id) {
-          // console.log('%cTrying to add read message from conversation last message while conversation is opened',
-          //   'color: red; font-size: 16px');
-
           this.unreadMessages.get(conversation.id) ?
             this.unreadMessages.get(conversation.id).unshift(conversation.theLastMessage) :
             this.unreadMessages.set(conversation.id, [conversation.theLastMessage]);
         }
-
       });
     });
   }
@@ -166,7 +171,10 @@ export class ChatComponent implements OnInit {
     }
     this.privateMsg.date = new Date();
     if (this.privateMsg.content && this.privateMsg.content.length > 0) {
-      if (this.messages[0].constructor.name !== 'OutgoingMessage') {
+      if (this.privateMsg.content.trim() === '') {
+        this.privateMsg.content = '';
+        return;
+      } else if (this.messages[0].constructor.name !== 'OutgoingMessage') {
         this.messageService.sendPrivateMsg(this.privateMsg);
       } else {
         this.pendingMessages.push(this.privateMsg);
@@ -190,7 +198,7 @@ export class ChatComponent implements OnInit {
       conversation.users[0].username : conversation.users[1].username;
   }
 
-  // when new message comes from server, callback works
+  // when message comes from server, callback works
   private subscribeForNewMessages(conversation: Conversation) {
     // console.log('%cinside subscribing for new message', 'color: blue; font-size: 20px;');
     // fixme: websocket subscribes from anonymous window to current
@@ -198,7 +206,6 @@ export class ChatComponent implements OnInit {
       if (!newMessage) {
         console.log('%cError: Incoming new message is null', 'color: red; font-size: 16px');
       }
-
       // check for message duplication
       if (this.messages[0].id !== newMessage.id) {
         const unreadMessages = this.unreadMessages.get(conversation.id);
@@ -207,24 +214,24 @@ export class ChatComponent implements OnInit {
           console.log('%cError: trying to add already added new message.', 'color: red; font-size: 16px;');
           return;
         }
-        // if message was sent by loggedUser, then simply replace temporary message
+        // if message was sent by loggedUser, replace temporary message
         if (newMessage.sender.username === this.loggedUser.username) {
           // find index of pending message to replace
           const oldMessageIndex = this.messages.findIndex(message => {
             if (!message.parentMessageId && message.constructor.name !== 'OutgoingMessage') {
               return false;
             }
-            return message.constructor.name === 'OutgoingMessage'
-              && message.parentMessageId === newMessage.parentMessageId;
+            return (message.constructor.name === 'OutgoingMessage'
+              && message.parentMessageId === newMessage.parentMessageId) || (message.id && message.id === newMessage.id);
           });
-
-          this.messages[oldMessageIndex] = newMessage;
-
+          if (oldMessageIndex < 0) {
+            console.log('less than 0');
+          } else if (!this.messages[oldMessageIndex].id || this.messages[oldMessageIndex].id !== newMessage.id) {
+            this.messages[oldMessageIndex] = newMessage;
+          }
           // if there if another pending messages
           if (this.pendingMessages.length > 0) {
-            console.log(this.pendingMessages.length);
             const firstPendingMsg = this.pendingMessages.shift();
-            console.log(this.pendingMessages.length);
             console.log('%cSending next pending message', 'color: blue; font-size: 16px;');
             console.log(newMessage);
             console.log(firstPendingMsg);
@@ -237,7 +244,7 @@ export class ChatComponent implements OnInit {
           // if messages was scrolled to bottom
           // fixme: replace '30' with height of the last msg block
           if (elementById.scrollHeight - elementById.scrollTop < elementById.offsetHeight + 30) {
-            this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUser.username);
+            setTimeout(() => this.messageService.saveMessagesAsRead(this.selectedConversation.id, this.loggedUser.username), 100);
             this.messages.unshift(newMessage);
           } else {
             this.unreadMessages.get(conversation.id) ?
@@ -250,7 +257,6 @@ export class ChatComponent implements OnInit {
         console.log('%cError: trying to add already added message.', 'color: red; font-size: 16px;');
       }
     });
-
   }
 
   checkIfNewMessage() {

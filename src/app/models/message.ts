@@ -9,6 +9,7 @@ export class Message {
     public content?: string,
     public date?: Date,
     public parentMessageId?: number,
-    public notSeenByUsers?: User[],
-  ) {}
+    public unreadByUsers?: User[],
+  ) {
+  }
 }

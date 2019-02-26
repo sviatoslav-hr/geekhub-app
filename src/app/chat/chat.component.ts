@@ -16,7 +16,7 @@ import {ChatService} from '../services/chat.service';
 export class ChatComponent implements OnInit {
   loggedUser = new User();
   unreadMessages = new Map<number, Message[]>();
-  private pendingMessages: Message[] = [];
+  pendingMessages: Message[] = [];
   msgEnabled = false;
   isMsgWindowMaximized = true;
   selectedConversation: Conversation;
@@ -168,7 +168,14 @@ export class ChatComponent implements OnInit {
     this.messageService.messagesDisconnect();
   }
 
-  private sendPrivateMsg(input) {
+  private sendPrivateMsg(textarea: HTMLTextAreaElement, $event: UIEvent) {
+    if ($event.type === 'keydown' && !$event.defaultPrevented) {
+      $event.preventDefault();
+    }
+    if (textarea.value.trim() === '') {
+      this.privateMsg.content = '';
+      return;
+    }
     if (this.messages) {
       this.privateMsg.parentMessageId = this.messages[0].id;
     }
@@ -184,10 +191,13 @@ export class ChatComponent implements OnInit {
       }
       this.messages.unshift(this.privateMsg);
     }
-    input.value = '';
 
     const elementById = document.getElementById('msg-container');
     elementById.scrollTo(0, elementById.scrollHeight);
+
+    textarea.value = '';
+    console.log(textarea.value.length);
+    textarea.rows = 1;
 
     this.setNewPrivateMessage(this.selectedConversation);
   }
@@ -295,7 +305,7 @@ export class ChatComponent implements OnInit {
     return this.unreadMessages.get(conversation.id) ? this.unreadMessages.get(conversation.id).length : -1;
   }
 
-  doStuff() {
-    window.location.href = 'https://www.youtube.com/watch?v=3-CVWM0B9B4';
+  goToNewLine(tarea: HTMLTextAreaElement) {
+    tarea.value += '\n';
   }
 }

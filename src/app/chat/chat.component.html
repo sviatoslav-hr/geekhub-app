@@ -49,15 +49,17 @@
       <a [routerLink]="'/id/' + receiver.id">
         {{receiver.firstName + ' ' + receiver.lastName}}
       </a>
-      <button class="btn border-0 px-2 py-0 text-center text-danger close-chat-window-btn"
-              (click)="closeConversation()">
-        <i class="fas fa-times"></i>
-      </button>
-      <button class="btn border-0 px-2 py-0 text-center text-secondary switch-chat-window-btn"
-              (click)="switchMsgWindow()">
-        <i class="far fa-window-restore" *ngIf="isMsgWindowMaximized"></i>
-        <i class="fas fa-window-maximize" *ngIf="!isMsgWindowMaximized"></i>
-      </button>
+      <div class="rounded msg-window-btn-container">
+        <button class="btn px-2 py-0 text-center text-secondary switch-chat-window-btn rounded"
+                (click)="switchMsgWindow()">
+          <i class="far fa-window-restore" *ngIf="isMsgWindowMaximized"></i>
+          <i class="fas fa-window-maximize" *ngIf="!isMsgWindowMaximized"></i>
+        </button>
+        <button class="btn px-2 py-0 text-center text-danger close-chat-window-btn rounded"
+                (click)="closeConversation()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
     </div>
 
     <!--container for messages list-->
@@ -75,7 +77,7 @@
         <div *ngFor="let message of unreadMessages.get(selectedConversation.id)" class="text-left"
              [ngStyle]="message? '':{'background-color': 'red'}"
              [id]="(message.id === unreadMessages.get(selectedConversation.id)[unreadMessages.get(selectedConversation.id).length -1].id) ? 'new-private-msg' : null">
-          <div class="alert mb-1 py-1 px-2 text-left single-msg alert-primary ml-2">
+          <div class="alert mb-1 py-1 px-2 text-left single-msg alert-primary ml-2" style="white-space: pre-line">
             {{message.content}}
             <span class="float-right align-text-bottom ml-1 single-msg-time">
             {{message.date | date:"HH:mm:ss"}}
@@ -92,7 +94,7 @@
         <div class="alert mb-1 py-1 px-2 text-left single-msg"
              [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
               'alert-secondary mr-2':
-              'alert-primary ml-2'">
+              'alert-primary ml-2'" style="white-space: pre-line">
           {{message.content}}
           <span class="float-right align-text-bottom ml-1 single-msg-time">
               {{message.date | date:"HH:mm:ss"}}
@@ -119,15 +121,19 @@
     </div>
 
     <!--input for new message-->
-    <div class="container-fluid input-group pb-1 px-2">
-      <input type="text" class="col form-control" placeholder="Type something..." aria-label="Type something..."
-             aria-describedby="private-msg-btn" autocomplete="off" id="private-msg-input"
-             (keydown.enter)="sendPrivateMsg(privateMsgInput)"
-             (keydown.control.enter)="doStuff()"
-             (keydown.escape)="closeConversation()"
-             [disabled]="pendingMessages.length > 7" [(ngModel)]="privateMsg.content" #privateMsgInput>
+    <div class="container-fluid input-group pb-1 px-2" id="msg-input-container">
+      <textarea type="text" class="col form-control border-bottom border-primary rounded-0" placeholder="Type something..." aria-label="Type something..."
+                aria-describedby="private-msg-btn" autocomplete="off" id="private-msg-input"
+                (keydown.enter)="sendPrivateMsg(msgInput, $event)"
+                (keydown.control.enter)="goToNewLine(msgInput)"
+                (keydown.escape)="closeConversation()"
+                [disabled]="pendingMessages.length > 7" [(ngModel)]="privateMsg.content"
+                #msgInput
+                [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 12">
+      </textarea>
       <div class="input-group-append private-msg-input">
-        <span class="col btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg(privateMsgInput)">Send</span>
+        <span class="col btn btn-primary align-items-center" id="private-msg-btn"
+              (click)="sendPrivateMsg(msgInput, $event)">Send</span>
       </div>
     </div>
   </div>

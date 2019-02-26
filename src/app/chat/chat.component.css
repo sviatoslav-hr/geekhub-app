@@ -32,10 +32,10 @@
   overflow-y: auto !important;
 }
 
-.conversation-last-message-content{
-  white-space: nowrap;      /*keep text on one line */
-  overflow: hidden;         /*prevent text from being shown outside the border */
-  text-overflow: ellipsis;  /*cut off text with an ellipsis*/
+.conversation-last-message-content {
+  white-space: nowrap; /*keep text on one line */
+  overflow: hidden; /*prevent text from being shown outside the border */
+  text-overflow: ellipsis; /*cut off text with an ellipsis*/
 }
 
 /* Single Chat */
@@ -78,12 +78,20 @@
   background: none;
 }
 
-@media screen and (max-width: 928px){
+@media screen and (max-width: 928px) {
   .chat-container-maximized {
     /* 100% - chats list with */
     width: calc(100% - 160px);
   }
 }
+
+.msg-window-btn-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+}
+
 .chat-container-minimized {
   z-index: 100;
   position: fixed;
@@ -94,13 +102,47 @@
 }
 
 .switch-chat-window-btn {
-  position: absolute;
-  top: 2px;
-  right: 27px
+}
+.switch-chat-window-btn:hover{
+  background-color: #37383a !important;
+  color: #fefefe !important;
+}
+.switch-chat-window-btn:active{
+  background-color: #4d4d50 !important;
+  color: #fefefe !important;
+}
+button:focus, button:active{
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .close-chat-window-btn {
-  position: absolute;
-  top: 2px;
-  right: 2px
+}
+.close-chat-window-btn:hover{
+  background-color: #e81123 !important;
+  color: #fefefe !important;
+}
+.close-chat-window-btn:active{
+  background-color: #a32a2b !important;
+  color: #fefefe !important;
+}
+
+#msg-input-container{
+}
+
+#private-msg-input {
+  resize: none;
+  height: auto;
+  max-height: 100%;
+  overflow: auto;
+  border: none;
+}
+#private-msg-input:focus, #private-msg-input:active {
+  border: none;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#private-msg-btn {
+  height: max-content;
 }

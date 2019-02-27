@@ -78,7 +78,7 @@
         <div *ngFor="let message of unreadMessages.get(selectedConversation.id)" class="text-left"
              [ngStyle]="message? '':{'background-color': 'red'}"
              [id]="(message.id === unreadMessages.get(selectedConversation.id)[unreadMessages.get(selectedConversation.id).length -1].id) ? 'new-private-msg' : null">
-          <div class="alert mb-1 pt-1 px-2 text-left single-msg alert-primary ml-2" style="white-space: pre-line">
+          <div class="single-msg msg-secondary msg-bubble-left" >
             <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
             {{message.date | date:"HH:mm:ss"}}
@@ -92,11 +92,11 @@
            [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
              'text-right':
              'text-left'">
-        <div class="alert mb-1 py-1 px-2 text-left single-msg"
+        <div class="text-left single-msg"
              [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
-              'alert-secondary mr-3':
-              'alert-primary ml-3'" style="white-space: pre-line">
-          <p style="margin-bottom: 0">{{message.content}}</p>
+              'msg-primary msg-bubble-right':
+              'msg-secondary msg-bubble-left'">
+          <p>{{message.content}}</p>
           <span class="float-right align-text-bottom ml-1 single-msg-time">
               {{message.date | date:"HH:mm:ss"}}
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
@@ -137,7 +137,7 @@
                 #msgInput
                 [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 8">
       </textarea>
-      <div class="input-group-append" id="send-msg-btn"
+      <div *ngIf="msgInput.value.length > 0" id="send-msg-btn"
            (click)="sendPrivateMsg(msgInput, $event)">
         <i class="fas fa-2x fa-angle-double-right faa-passing animated-hover"></i>
       </div>

@@ -60,16 +60,62 @@
   display: flex !important;
   overflow: auto;
   flex-direction: column-reverse !important;
+  padding: 0 0.5rem;
 
 }
 
+/* msg blocks */
 .single-msg {
-  padding-bottom: 0 !important;
-  color: #2d2d2d;
+  padding: 0.25rem 0.5rem 0;
   display: inline-block;
   max-width: 65%;
   word-wrap: break-word;
   font-size: 14px;
+  position: relative;
+  margin-bottom: 0.4rem;
+  border-radius: 0.15rem;
+  white-space: pre-line; /* for every \n symbol set new line */
+}
+/* msg text content */
+.single-msg p {
+  margin-bottom: 0;
+  font-size: 11pt;
+}
+/* for message bubble */
+.msg-bubble-right:before {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  border-left: 5px solid #404348;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #404348;
+  border-bottom: 5px solid transparent;
+  right: -10px;
+  top: 6px;
+}
+.msg-bubble-left:before {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  border-right: 5px solid #5e6269;
+  border-left: 5px solid transparent;
+  border-top: 5px solid #5e6269;
+  border-bottom: 5px solid transparent;
+  left: -10px;
+  top: 6px;
+}
+.msg-primary {
+  color: white;
+  background-color: #404348;
+  left: -10px;
+}
+
+.msg-secondary {
+  color: white;
+  background-color: #5e6269;
+  right: -10px;
 }
 
 .single-msg-time {
@@ -198,13 +244,18 @@ button:focus, button:active {
 
 #send-msg-btn {
   position: absolute;
-  bottom: 4px;
+  bottom: 0;
   right: 5px;
   margin-right: 5px;
   height: max-content;
   color: #ffa500 !important;
+  transition: all 0.2s linear;
 }
 
 #send-msg-btn:hover {
   cursor: pointer;
+}
+
+#send-msg-btn:active {
+  right: 1px;
 }

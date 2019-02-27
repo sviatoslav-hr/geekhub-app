@@ -196,8 +196,6 @@ export class ChatComponent implements OnInit {
     elementById.scrollTo(0, elementById.scrollHeight);
 
     const sendBtn = document.getElementById('send-msg-btn');
-    sendBtn.style.transition = 'translateY(-2px)';
-    // sendBtn.style.transition = 'translateY()';
 
     textarea.value = '';
     console.log(textarea.value.length);

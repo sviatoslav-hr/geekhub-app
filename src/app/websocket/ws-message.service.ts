@@ -6,17 +6,25 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Conversation} from '../models/conversation';
 import {OutgoingMessage} from '../models/outgoing-message';
-
-const TOKEN_HEADER_KEY = 'Authorization';
+import {Message} from '../models/message';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WsMessageService implements OnDestroy {
-  conversationsURL = 'localhost:8080/conversation-web-socket';
-  messagesURL = 'localhost:8080/message-web-socket';
+  getMessagesURL = 'http://localhost:8080/chat/messages-for-';
+  getConversationsURL = 'http://localhost:8080/chat/conversations-for-';
+  private conversationsSocket;
+  private messagesSocket;
   private conversationsStompClient: any;
   private messagesStompClient: any;
+  private cLog = 0;
+  /*
+    0 - console.log disabled
+    1 - console.log enabled only for checkAndExecute methods
+    2 - console.log enabled for checkAndExecute, subscribe and send methods
+    3 - console.log enabled for all methods
+   */
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -24,37 +32,44 @@ export class WsMessageService implements OnDestroy {
   ) {
   }
 
-  private initStompForConversations() {
-    const socket = new SockJS('http://' + this.conversationsURL);
+  private initStompForConversations(callback) {
+    if (this.cLog === 3) {
+      console.log('%cInside initialization Conversations WebSocket', 'color:pink');
+    }
+    this.conversationsSocket = new SockJS('http://localhost:8080/conversation-web-socket');
     // const socket = new WebSocket('ws://' + this.conversationsURL);
-    this.conversationsStompClient = Stomp.over(socket);
-  }
-
-  private initStompForMessages() {
-    const socket = new SockJS('http://' + this.messagesURL);
-    // const socket = new WebSocket('ws://' + this.messagesURL);
-    this.messagesStompClient = Stomp.over(socket);
-  }
-
-  getConversations(username: string, callback) {
-    this.initStompForConversations();
-
+    this.conversationsStompClient = Stomp.over(this.conversationsSocket);
+    // console.log('%cshit', 'color:blue; font-size:16px');
+    // this.messagesStompClient.debug = () => {}; // fixme: disable log
     this.conversationsStompClient.connect({}, () => {
-      this.conversationsStompClient.subscribe('/chat/requested-conversations-for-' + username,
-        answer => callback(answer), error => console.log(error));
-      this.conversationsStompClient.send('/conversation/conversations-request-for-' + username, {}, JSON.stringify({}));
-    }, error => console.log(error));
+      this.conversationsStompClient.debug = () => {
+      };
+      callback();
+    });
   }
 
-  getMessagesForConversation(conversationId: number, callback) {
-    this.initStompForMessages();
+  private initStompForMessages(callback) {
+    if (this.cLog === 3) {
+      console.log('%cInside initialization Messages WebSocket', 'color:pink');
+    }
+    this.messagesSocket = new SockJS('http://localhost:8080/message-web-socket');
+    // const socket = new WebSocket('ws://' + this.messagesURL);
+    this.messagesStompClient = Stomp.over(this.messagesSocket);
+    // this.messagesStompClient.debug = null; // disable log
 
     this.messagesStompClient.connect({}, () => {
-
-      this.messagesStompClient.subscribe('/chat/messages-list-for-conversation-id' + conversationId,
-        answer => callback(JSON.parse(answer.body)));
-      this.messagesStompClient.send('/message/messages-for-conversation-id' + conversationId, {}, JSON.stringify({}));
+      this.messagesStompClient.debug = () => {
+      };
+      callback();
     });
+  }
+
+  getConversations(username: string): Observable<Conversation[]> {
+    return this.http.get<Conversation[]>(this.getConversationsURL + username);
+  }
+
+  getMessagesForConversation(conversationId: number): Observable<Message[]> {
+    return this.http.get<Message[]>(this.getMessagesURL + conversationId);
   }
 
   createConversationIfNotExists(receiverId: number): Observable<Conversation> {
@@ -64,15 +79,14 @@ export class WsMessageService implements OnDestroy {
 
   sendPrivateMsg(msg: OutgoingMessage) {
     if (!msg.content) {
-      console.error('can not send empty message');
+      console.error('Can not send empty message.');
       return;
     }
-    const socket = new SockJS('http://localhost:8080/message-web-socket');
-    const stompMsg = Stomp.over(socket);
-    const content = msg.content;
-    stompMsg.connect({}, () => {
-      msg.content = content;
-      stompMsg.send('/message/private-message', {}, JSON.stringify(
+    if (this.cLog >= 2) {
+      console.log('%cSending private message', 'color:purple');
+    }
+    this.checkMessagesWsAndExecute(() => {
+      this.messagesStompClient.send('/message/private-message', {}, JSON.stringify(
         {
           content: msg.content,
           senderUsername: msg.senderUsername,
@@ -83,34 +97,116 @@ export class WsMessageService implements OnDestroy {
   }
 
   subscribeForNewMessages(conversationId: number, callback) {
-    this.messagesStompClient.subscribe('/chat/private-messages-for-conversation-id' + conversationId,
-      answer => callback(JSON.parse(answer.body)));
+    if (this.cLog >= 2) {
+      console.log('%cSubscribing to new messages', 'color:purple');
+    }
+    this.checkMessagesWsAndExecute(() => {
+      // console.log('%cSubscribing to new messages', 'color: blue');
+      this.messagesStompClient.subscribe('/chat/private-messages-for-conversation-id' + conversationId,
+        answer => callback(JSON.parse(answer.body) as Message));
+    });
   }
 
-  subscribeForConversations(username: string, callback) {
-    this.conversationsStompClient.subscribe('/chat/update-conversation-for-' + username,
-      answer => callback(JSON.parse(answer.body)));
+  subscribeForConversationsUpdates(username: string, callback) {
+    if (this.cLog >= 2) {
+      console.log('%cSubscribing for conversations updates', 'color:purple');
+    }
+    this.checkConversationsWsAndExecute(() => {
+      // console.log('%cSubscribing to conversation updates', 'color: blue');
+      this.conversationsStompClient.subscribe('/chat/update-conversation-for-' + username,
+        answer => callback(JSON.parse(answer.body) as Conversation));
+    });
   }
 
-  subscribeForReadMessagesUpdates(conversationId: number, callback) {
-    this.messagesStompClient.subscribe('/chat/get-read-messages-in-conversation-' + conversationId,
-      answer => callback(JSON.parse(answer.body)));
+  subscribeForReadMessagesUpdates(conversationId: number, callback: Function): void {
+    if (this.cLog >= 2) {
+      console.log('%cSubscribing for read messages updates', 'color:purple');
+    }
+    this.checkMessagesWsAndExecute(() => {
+      this.messagesStompClient.subscribe('/chat/get-read-messages-in-conversation-' + conversationId,
+        answer => callback(JSON.parse(answer.body) as Message));
+    });
   }
 
   saveMessagesAsRead(conversationId: number, username: string) {
-    this.messagesStompClient.send('/message/set-messages-as-read-in-conversation-' + conversationId + '-for-' + username,
-      {}, JSON.stringify({}));
+    if (this.cLog >= 2) {
+      console.log('%cSaving message as read', 'color:purple');
+    }
+    this.checkMessagesWsAndExecute(() => {
+      this.messagesStompClient.send('/message/set-messages-as-read-in-conversation-' + conversationId + '-for-' + username,
+        {}, JSON.stringify({}));
+    });
+  }
+
+  checkMessagesWsAndExecute(callback) {
+    if (!this.messagesStompClient) {
+      if (this.cLog >= 1) {
+        console.log('%cInitialising Messages StompClient', 'color:green');
+      }
+      this.initStompForMessages(() => this.checkMessagesWsAndExecute(callback));
+    } else if (this.messagesSocket.readyState === SockJS.CONNECTING || this.messagesSocket.readyState === SockJS.CLOSING) {
+      if (this.cLog >= 1) {
+        console.log('%cWait, Messages WebSocket is ' +
+          (this.messagesSocket.readyState === 0 ? 'connecting' : 'closing') + '!', 'color:green');
+      }
+      setTimeout(() => this.checkMessagesWsAndExecute(callback), 100);
+    } else if (this.messagesSocket.readyState === SockJS.CLOSED) {
+      if (this.cLog >= 1) {
+        console.log('%cMessages WebSocket is closed!', 'color:green');
+      }
+      this.initStompForMessages(() => this.checkMessagesWsAndExecute(callback));
+    } else if (this.messagesSocket.readyState === SockJS.OPEN) {
+      if (this.cLog >= 1) {
+        console.log('%cMessages WebSocket is open!', 'color:green');
+      }
+      callback();
+    }
+  }
+
+  checkConversationsWsAndExecute(callback) {
+    if (!this.conversationsStompClient) {
+      if (this.cLog >= 1) {
+        console.log('%cInitialising Conversations StompClient', 'color:blue');
+      }
+      this.initStompForConversations(() => this.checkConversationsWsAndExecute(callback));
+    } else if (this.conversationsSocket.readyState === SockJS.CONNECTING || this.conversationsSocket.readyState === SockJS.CLOSING) {
+      if (this.cLog >= 1) {
+        console.log('%cWait, Conversations WebSocket is ' +
+          (this.conversationsSocket.readyState === 0 ? 'connecting' : 'closing') + '!', 'color:blue');
+      }
+      // console.log(this.conversationsSocket);
+      setTimeout(() => this.checkConversationsWsAndExecute(callback), 100);
+    } else if (this.conversationsSocket.readyState === SockJS.CLOSED) {
+      if (this.cLog >= 1) {
+        console.log('%cConversations WebSocket is closed!', 'color:blue');
+      }
+      this.initStompForConversations(() => this.checkConversationsWsAndExecute(callback));
+    } else if (this.conversationsSocket.readyState === SockJS.OPEN) {
+      if (this.cLog >= 1) {
+        console.log('%cConversations WebSocket is open!', 'color:blue');
+      }
+      callback();
+    }
   }
 
   conversationsDisconnect() {
+    if (this.cLog >= 1) {
+      console.log('%cConversations WebSocket was disconnected!', 'color:red');
+    }
     this.conversationsStompClient.disconnect();
   }
 
   messagesDisconnect() {
+    if (this.cLog >= 1) {
+      console.log('%cMessages WebSocket was disconnected!', 'color:red');
+    }
     this.messagesStompClient.disconnect();
   }
 
   ngOnDestroy() {
+    if (this.cLog >= 1) {
+      console.log('%cConversations and Messages WebSockets were disconnected!', 'color:red');
+    }
     this.conversationsStompClient.disconnect();
     this.messagesStompClient.disconnect();
   }

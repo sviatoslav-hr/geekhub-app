@@ -55,7 +55,7 @@
     <div *ngIf="isLoggedIn">
       <ul class="nav navbar-nav">
         <li class="mr-2 mr-md-4">
-          <div class="crop">
+          <div *ngIf="loggedUser" class="crop">
             <img [matMenuTriggerFor]="menu" [src]="'http://localhost:8080' + loggedUser.profileImage"
                  class="rounded-circle float-right"
                  height="40px" width="40px" alt="avatar image" style="border-radius: 50% !important;">

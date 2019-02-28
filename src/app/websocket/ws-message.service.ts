@@ -18,7 +18,7 @@ export class WsMessageService implements OnDestroy {
   private messagesSocket;
   private conversationsStompClient: any;
   private messagesStompClient: any;
-  private cLog = 0;
+  private cLog = 2;
   /*
     0 - console.log disabled
     1 - console.log enabled only for checkAndExecute methods

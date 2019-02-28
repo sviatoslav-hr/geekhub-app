@@ -51,6 +51,9 @@ export class ChatComponent implements OnInit {
   // fixme: change unreadMessages number due to ws
   openConversation(conversation: Conversation) {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
+      if (this.selectedConversation) {
+        this.messages = null;
+      }
       this.selectedConversation = conversation;
       this.setNewPrivateMessage(conversation);
       this.receiver = conversation.users[0].username !== this.loggedUser.username ?

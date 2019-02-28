@@ -20,11 +20,27 @@
 }
 
 .conversations-btn-enabled {
-  border-bottom: azure 1px solid !important;
+  text-align: right;
+  border: none;
+  color: #e7e7e7;
+  background-color: #484B51 !important;
 }
 
 .conversations-btn-disabled {
   color: dimgrey;
+}
+
+.messages-settings-btn {
+  border: none;
+  color: #e7e7e7;
+  background-color: #484B51 !important;
+
+}
+.active-conversation {
+  z-index: 2;
+  color: #fff;
+  background-color: #404348;
+  border-color: #404348;
 }
 
 .conversations-block {
@@ -55,7 +71,7 @@
 }
 
 #msg-container {
-  height: calc(100% - 92px);
+  height: calc(100% - 77px);
   background-color: #36393E;
   display: flex !important;
   overflow: auto;
@@ -132,6 +148,7 @@
 }
 
 #chat-header {
+  padding: 8px 5px;
   background-color: #484B51;
   border: none;
 }

@@ -1,14 +1,19 @@
 <div class="conversations-container flex-column">
-  <button type="button" class="btn rounded-0 w-100 switch-conversations-btn" (click)="enableOrDisableConversations()"
-          [ngClass]="msgEnabled? {'btn-primary conversations-btn-enabled': true}: {'conversations-btn-disabled' : true}">
-    {{msgEnabled ? 'Hide chats ' : 'Show chats '}}
-    <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
-  </button>
+  <div class="w-100">
+    <button type="button" *ngIf="msgEnabled" class="btn rounded-0 w-25 messages-settings-btn">
+      <i class="fas fa-bars"></i>
+    </button>
+    <button type="button" class="btn rounded-0 switch-conversations-btn" (click)="enableOrDisableConversations()"
+            [ngClass]="msgEnabled? {'conversations-btn-enabled w-75': true}: {'conversations-btn-disabled w-100' : true}">
+      {{msgEnabled ? '' : 'Show chats '}}
+      <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
+    </button>
+  </div>
   <div *ngIf="msgEnabled"
        class="bg-light conversations-block list-group">
     <div *ngFor="let conversation of conversations">
       <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0 pl-1"
-           [ngClass]="(selectedConversation && conversation.id === selectedConversation.id? 'active':'') +
+           [ngClass]="(selectedConversation && conversation.id === selectedConversation.id? 'active-conversation':'') +
               (getNumberOfUnreadMessages(conversation) > 0 ? ' pr-4': ' pr-2')"
            (click)="selectedConversation? (selectedConversation.id !== conversation.id? openConversation(conversation): '') : openConversation(conversation)"
            style="cursor: pointer;">
@@ -81,7 +86,7 @@
           <div class="single-msg msg-secondary msg-bubble-left" >
             <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
-            {{message.date | date:"HH:mm:ss"}}
+            {{message.date | date:"HH:mm"}}
       </span>
           </div>
         </div>
@@ -98,7 +103,7 @@
               'msg-secondary msg-bubble-left'">
           <p>{{message.content}}</p>
           <span class="float-right align-text-bottom ml-1 single-msg-time">
-              {{message.date | date:"HH:mm:ss"}}
+              {{message.date | date:"HH:mm"}}
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
               <ng-template #notTemporaryMsg>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
@@ -115,18 +120,14 @@
       </div>
 
       <!--conversations loading spinner if array messages is not assigned-->
-      <div *ngIf="conversations && !messages" class="spinner-border text-primary mx-auto mb-5"
-           role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-      <div *ngIf="!conversations && msgEnabled" class="spinner-border text-primary mx-auto mt-5"
+      <div *ngIf="conversations && !messages" class="spinner-border mx-auto mb-5" style="color: #ffa500"
            role="status">
         <span class="sr-only">Loading...</span>
       </div>
     </div>
 
     <!--input for new message-->
-    <div class="container-fluid input-group pb-1 px-2" id="chat-input-container">
+    <div class="container-fluid input-group py-1 px-2" id="chat-input-container">
       <textarea type="text" class="col border-primary rounded-0"
                 placeholder="Type something..." aria-label="Type something..."
                 aria-describedby="chat-input" autocomplete="off" id="chat-input"

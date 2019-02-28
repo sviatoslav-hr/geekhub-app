@@ -57,7 +57,7 @@ export class ChatComponent implements OnInit {
         conversation.users[0] : conversation.users[1];
 
       this.messageService.getMessagesForConversation(conversation.id).subscribe((messages) => {
-        document.getElementById('private-msg-input').focus();
+        document.getElementById('chat-input').focus();
 
         this.messages = messages.reverse();
 
@@ -195,6 +195,8 @@ export class ChatComponent implements OnInit {
     const elementById = document.getElementById('msg-container');
     elementById.scrollTo(0, elementById.scrollHeight);
 
+    const sendBtn = document.getElementById('send-msg-btn');
+
     textarea.value = '';
     console.log(textarea.value.length);
     textarea.rows = 1;
@@ -238,7 +240,7 @@ export class ChatComponent implements OnInit {
               && message.parentMessageId === newMessage.parentMessageId) || (message.id && message.id === newMessage.id);
           });
           if (oldMessageIndex < 0) {
-            console.log('less than 0');
+            console.log('Found index less than 0 - message not found');
           } else if (!this.messages[oldMessageIndex].id || this.messages[oldMessageIndex].id !== newMessage.id) {
             this.messages[oldMessageIndex] = newMessage;
           }

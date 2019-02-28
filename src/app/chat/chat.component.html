@@ -43,19 +43,20 @@
      [ngClass]="{'chat-container-maximized border-left' : isMsgWindowMaximized,
      'chat-container-minimized': !isMsgWindowMaximized}"
      cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized" id="chat-outer-container">
-  <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between bg-light">
+  <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between">
     <!--chat window header-->
-    <div class="alert alert-light text-center rounded-0 my-0" cdkDragHandle (dblclick)="switchMsgWindow()">
-      <a [routerLink]="'/id/' + receiver.id">
+    <div class="alert alert-light text-center rounded-0 my-0" id="chat-header" cdkDragHandle
+         (dblclick)="switchMsgWindow()">
+      <a [routerLink]="'/id/' + receiver.id" class="chat-header-userlink">
         {{receiver.firstName + ' ' + receiver.lastName}}
       </a>
       <div class="rounded msg-window-btn-container">
-        <button class="btn px-2 py-0 text-center text-secondary switch-chat-window-btn rounded"
+        <button class="text-center switch-chat-window-btn"
                 (click)="switchMsgWindow()">
           <i class="far fa-window-restore" *ngIf="isMsgWindowMaximized"></i>
           <i class="fas fa-window-maximize" *ngIf="!isMsgWindowMaximized"></i>
         </button>
-        <button class="btn px-2 py-0 text-center text-danger close-chat-window-btn rounded"
+        <button class="text-center close-chat-window-btn"
                 (click)="closeConversation()">
           <i class="fas fa-times"></i>
         </button>
@@ -77,8 +78,8 @@
         <div *ngFor="let message of unreadMessages.get(selectedConversation.id)" class="text-left"
              [ngStyle]="message? '':{'background-color': 'red'}"
              [id]="(message.id === unreadMessages.get(selectedConversation.id)[unreadMessages.get(selectedConversation.id).length -1].id) ? 'new-private-msg' : null">
-          <div class="alert mb-1 py-1 px-2 text-left single-msg alert-primary ml-2" style="white-space: pre-line">
-            {{message.content}}
+          <div class="single-msg msg-secondary msg-bubble-left" >
+            <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
             {{message.date | date:"HH:mm:ss"}}
       </span>
@@ -91,11 +92,11 @@
            [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
              'text-right':
              'text-left'">
-        <div class="alert mb-1 py-1 px-2 text-left single-msg"
+        <div class="text-left single-msg"
              [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === loggedUser.username?
-              'alert-secondary mr-2':
-              'alert-primary ml-2'" style="white-space: pre-line">
-          {{message.content}}
+              'msg-primary msg-bubble-right':
+              'msg-secondary msg-bubble-left'">
+          <p>{{message.content}}</p>
           <span class="float-right align-text-bottom ml-1 single-msg-time">
               {{message.date | date:"HH:mm:ss"}}
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
@@ -118,22 +119,27 @@
            role="status">
         <span class="sr-only">Loading...</span>
       </div>
+      <div *ngIf="!conversations && msgEnabled" class="spinner-border text-primary mx-auto mt-5"
+           role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
     </div>
 
     <!--input for new message-->
-    <div class="container-fluid input-group pb-1 px-2" id="msg-input-container">
-      <textarea type="text" class="col form-control border-bottom border-primary rounded-0" placeholder="Type something..." aria-label="Type something..."
-                aria-describedby="private-msg-btn" autocomplete="off" id="private-msg-input"
+    <div class="container-fluid input-group pb-1 px-2" id="chat-input-container">
+      <textarea type="text" class="col border-primary rounded-0"
+                placeholder="Type something..." aria-label="Type something..."
+                aria-describedby="chat-input" autocomplete="off" id="chat-input"
                 (keydown.enter)="sendPrivateMsg(msgInput, $event)"
                 (keydown.control.enter)="goToNewLine(msgInput)"
                 (keydown.escape)="closeConversation()"
                 [disabled]="pendingMessages.length > 7" [(ngModel)]="privateMsg.content"
                 #msgInput
-                [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 12">
+                [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 8">
       </textarea>
-      <div class="input-group-append private-msg-input">
-        <span class="col btn btn-primary align-items-center" id="private-msg-btn"
-              (click)="sendPrivateMsg(msgInput, $event)">Send</span>
+      <div *ngIf="msgInput.value.length > 0" id="send-msg-btn"
+           (click)="sendPrivateMsg(msgInput, $event)">
+        <i class="fas fa-2x fa-angle-double-right faa-passing animated-hover"></i>
       </div>
     </div>
   </div>

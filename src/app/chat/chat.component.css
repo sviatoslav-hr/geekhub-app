@@ -12,7 +12,6 @@
   top: 48px;
   height: calc(100% - 48px);
   position: fixed;
-  border-right: 1px solid #333333;
 }
 
 .conversations-header {
@@ -206,6 +205,7 @@
   /* 100% - chats list with - ads width */
   width: calc(100% - 160px - 160px);
   background: none;
+  border-left: 1px solid #333333;
 }
 
 @media screen and (max-width: 928px) {

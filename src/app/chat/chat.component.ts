@@ -37,10 +37,10 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     if (this.tokenService.getToken()) {
-      this.getConversations();
       this.loggedUser.username = this.tokenService.getUsername();
       this.msgEnabled = this.tokenService.areConversationsEnabled();
       if (this.msgEnabled) {
+        this.getConversations();
         this.getUnreadMessagesAndSubscribeForUpdates();
       }
     } else {
@@ -111,7 +111,9 @@ export class ChatComponent implements OnInit {
     this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
       this.conversations = conversations;
 
+      console.log(this.tokenService.getSelectedConversationId());
       if (this.tokenService.getSelectedConversationId()) {
+        console.log('opening...');
         this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
       }
 

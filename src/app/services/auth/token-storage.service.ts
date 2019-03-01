@@ -75,7 +75,7 @@ export class TokenStorageService {
   }
 
   public getSelectedConversationId(): number {
-    return +(localStorage.getItem(ARE_CONVERSATIONS_ENABLED_KEY));
+    return +(localStorage.getItem(SELECTED_CONVERSATION_KEY));
   }
 
   public setSelectedConversationId(value: number) {

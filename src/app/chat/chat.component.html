@@ -1,6 +1,15 @@
 <div class="conversations-container flex-column">
-  <div class="w-100">
-    <button type="button" *ngIf="msgEnabled" class="btn rounded-0 w-25 messages-settings-btn">
+  <mat-menu #messagesMenu="matMenu" [overlapTrigger]="false">
+    <button mat-menu-item>
+      <i class="fas fa-users"></i> New group chat
+    </button>
+    <button mat-menu-item>
+      <i class="fas fa-cog"></i> Settings
+    </button>
+  </mat-menu>
+  <div class="conversations-header">
+    <button type="button" *ngIf="msgEnabled" class="btn rounded-0 w-25 messages-settings-btn"
+            [matMenuTriggerFor]="messagesMenu">
       <i class="fas fa-bars"></i>
     </button>
     <button type="button" class="btn rounded-0 switch-conversations-btn" (click)="enableOrDisableConversations()"
@@ -9,10 +18,13 @@
       <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
     </button>
   </div>
+  <div id="conversations-search" *ngIf="msgEnabled">
+    <input type="search" placeholder="Search...">
+  </div>
   <div *ngIf="msgEnabled"
-       class="bg-light conversations-block list-group">
+       class="conversations-block list-group">
     <div *ngFor="let conversation of conversations">
-      <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0 pl-1"
+      <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0 pl-1 single-conversation"
            [ngClass]="(selectedConversation && conversation.id === selectedConversation.id? 'active-conversation':'') +
               (getNumberOfUnreadMessages(conversation) > 0 ? ' pr-4': ' pr-2')"
            (click)="selectedConversation? (selectedConversation.id !== conversation.id? openConversation(conversation): '') : openConversation(conversation)"
@@ -28,7 +40,7 @@
           <span *ngIf="getNumberOfUnreadMessages(conversation) > 0" style="position: absolute; bottom: 7px; right: 5px;"
                 [innerText]="unreadMessages.get(conversation.id)? getNumberOfUnreadMessages(conversation): ''"
                 class="badge float-right"
-                [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-primary': true}">
+                [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-secondary': true}">
           </span>
         </p>
       </div>
@@ -45,12 +57,12 @@
 </div>
 
 <div *ngIf="selectedConversation"
-     [ngClass]="{'chat-container-maximized border-left' : isMsgWindowMaximized,
+     [ngClass]="{'chat-container-maximized' : isMsgWindowMaximized,
      'chat-container-minimized': !isMsgWindowMaximized}"
      cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="isMsgWindowMaximized" id="chat-outer-container">
   <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between">
     <!--chat window header-->
-    <div class="alert alert-light text-center rounded-0 my-0" id="chat-header" cdkDragHandle
+    <div class="alert-light text-center rounded-0 my-0" id="chat-header" cdkDragHandle
          (dblclick)="switchMsgWindow()">
       <a [routerLink]="'/id/' + receiver.id" class="chat-header-userlink">
         {{receiver.firstName + ' ' + receiver.lastName}}

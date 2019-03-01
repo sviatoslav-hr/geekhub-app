@@ -54,6 +54,7 @@ export class ChatComponent implements OnInit {
       if (this.selectedConversation) {
         this.messages = null;
       }
+      this.tokenService.setSelectedConversationId(conversation.id);
       this.selectedConversation = conversation;
       this.setNewPrivateMessage(conversation);
       this.receiver = conversation.users[0].username !== this.loggedUser.username ?
@@ -109,6 +110,10 @@ export class ChatComponent implements OnInit {
   private getConversations() {
     this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
       this.conversations = conversations;
+
+      if (this.tokenService.getSelectedConversationId()) {
+        this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
+      }
 
       this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
         const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
@@ -167,6 +172,7 @@ export class ChatComponent implements OnInit {
 
   closeConversation() {
     this.selectedConversation = null;
+    this.tokenService.removeSelectedConversationId();
     this.messages = null;
     this.messageService.messagesDisconnect();
   }
@@ -199,6 +205,7 @@ export class ChatComponent implements OnInit {
     elementById.scrollTo(0, elementById.scrollHeight);
 
     const sendBtn = document.getElementById('send-msg-btn');
+    sendBtn.focus();
 
     textarea.value = '';
     console.log(textarea.value.length);

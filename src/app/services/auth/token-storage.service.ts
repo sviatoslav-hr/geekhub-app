@@ -6,6 +6,7 @@ const USERNAME_KEY = 'AuthUsername';
 const AUTHORITIES_KEY = 'AuthAuthorities';
 const USER_KEY = 'AuthUser';
 const ARE_CONVERSATIONS_ENABLED_KEY = 'AreConversationEnabled';
+const SELECTED_CONVERSATION_KEY = 'SelectedConversationId';
 
 @Injectable({
   providedIn: 'root'
@@ -72,4 +73,19 @@ export class TokenStorageService {
     window.localStorage.removeItem(ARE_CONVERSATIONS_ENABLED_KEY);
     window.localStorage.setItem(ARE_CONVERSATIONS_ENABLED_KEY, value + '');
   }
+
+  public getSelectedConversationId(): number {
+    return +(localStorage.getItem(ARE_CONVERSATIONS_ENABLED_KEY));
+  }
+
+  public setSelectedConversationId(value: number) {
+    window.localStorage.removeItem(SELECTED_CONVERSATION_KEY);
+    window.localStorage.setItem(SELECTED_CONVERSATION_KEY, value + '');
+  }
+
+  public removeSelectedConversationId() {
+    window.localStorage.removeItem(SELECTED_CONVERSATION_KEY);
+  }
+
+
 }

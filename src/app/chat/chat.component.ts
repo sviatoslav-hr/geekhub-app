@@ -41,7 +41,7 @@ export class ChatComponent implements OnInit {
       this.msgEnabled = this.tokenService.areConversationsEnabled();
       if (this.msgEnabled) {
         this.getConversations();
-        this.getUnreadMessagesAndSubscribeForUpdates();
+        this.getUnreadMessages();
       }
     } else {
       console.error('Please Log in to start messaging!');
@@ -53,6 +53,7 @@ export class ChatComponent implements OnInit {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
       if (this.selectedConversation) {
         this.messages = null;
+        this.messageService.messagesDisconnect();
       }
       this.tokenService.setSelectedConversationId(conversation.id);
       this.selectedConversation = conversation;
@@ -155,7 +156,7 @@ export class ChatComponent implements OnInit {
 
     if (this.msgEnabled) {
       this.getConversations();
-      this.getUnreadMessagesAndSubscribeForUpdates();
+      this.getUnreadMessages();
     } else {
       if (this.isMsgWindowMaximized) {
         this.messages = null;
@@ -297,7 +298,7 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  getUnreadMessagesAndSubscribeForUpdates() {
+  getUnreadMessages() {
     // group unread messages by conversationId
     this.userService.getUnreadMessages(this.loggedUser.username)
       .subscribe(messages => messages.forEach(message => {

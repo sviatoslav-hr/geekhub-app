@@ -4,6 +4,9 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
+// import 'simplebar'; // or "import SimpleBar from 'simplebar';" if you want to use it manually.
+// import 'simplebar/dist/simplebar.css';
+
 if (environment.production) {
   enableProdMode();
 }

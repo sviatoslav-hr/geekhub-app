@@ -31,7 +31,6 @@ import { UserSearchComponent } from './user-search/user-search.component';
 import {ConversationsComponent} from './conversations/conversations.component';
 import {ChatComponent} from './chat/chat.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {NgScrollbarModule} from 'ngx-scrollbar';
 
 @NgModule({
   declarations: [
@@ -67,10 +66,9 @@ import {NgScrollbarModule} from 'ngx-scrollbar';
     MatButtonModule,
     MatDividerModule,
     DragDropModule,
-    NgScrollbarModule
   ],
   providers: [
-    httpInterceptorProviders
+    httpInterceptorProviders,
   ],
   bootstrap: [AppComponent]
 })

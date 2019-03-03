@@ -55,9 +55,11 @@
     <div *ngIf="isLoggedIn">
       <ul class="nav navbar-nav">
         <li class="mr-2 mr-md-4">
-            <img [matMenuTriggerFor]="menu" src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg"
+          <div *ngIf="loggedUser" class="crop">
+            <img [matMenuTriggerFor]="menu" [src]="'http://localhost:8080' + loggedUser.profileImage"
                  class="rounded-circle float-right"
-                 height="40px" alt="avatar image" style="border-radius: 50% !important;">
+                 height="40px" width="40px" alt="avatar image" style="border-radius: 50% !important;">
+          </div>
             <mat-menu class="mt-1" style="position: fixed; overflow: hidden;" #menu="matMenu">
               <button class="py-0" mat-menu-item>{{username}}</button>
               <mat-divider></mat-divider>
@@ -71,4 +73,3 @@
     </div>
   </div>
 </nav>
-

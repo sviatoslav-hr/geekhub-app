@@ -1,4 +1,5 @@
 import {FriendRequest} from './friend-request';
+import {Message} from './message';
 
 export class User {
   constructor(
@@ -7,6 +8,7 @@ export class User {
     // public password?: string,
     public firstName?: string,
     public lastName?: string,
+    public profileImage?: string,
     public gender?: Gender,
     public cityId?: number,
     public birthDate?: string,
@@ -14,6 +16,7 @@ export class User {
     public activated?: boolean,
     public avatarUrl?: string,
     public friends?: User[],
+    public unreadMessages?: Message[],
     public outgoingFriendRequests?: FriendRequest[],
     public incomingFriendRequests?: FriendRequest[]
   ) {

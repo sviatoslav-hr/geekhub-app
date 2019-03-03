@@ -3,6 +3,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {User} from '../models/user';
 import {UserSearchModel} from '../user-search/UserSearchModel';
+import {Message} from '../models/message';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class UserService {
   private getUserByUsernameUrl = 'http://localhost:8080/api/get-user-by-username';
   private getAllUsersUrl = 'http://localhost:8080/api/users';
   private findUserUrl = 'http://localhost:8080/api/find-user';
+  private getUnreadMessagesUrl = 'http://localhost:8080/api/unread-messages';
 
   constructor(
     private http: HttpClient
@@ -55,6 +57,11 @@ export class UserService {
   findUser(fullName: string): Observable<UserSearchModel[]> {
     const params = new HttpParams().set('fullName', fullName);
     return this.http.get<UserSearchModel[]>(this.findUserUrl, {params: params});
+  }
+
+  getUnreadMessages(username: string): Observable<Message[]> {
+    const params = new HttpParams().set('username', username);
+    return this.http.get<Message[]>(this.getUnreadMessagesUrl, {params: params});
   }
 
 }

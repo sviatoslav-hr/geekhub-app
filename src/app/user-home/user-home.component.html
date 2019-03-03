@@ -1,67 +1,213 @@
 <div class="row mx-0" *ngIf="loggedUser && userHome">
-  <div class="col-5 px-0 rounded-0">
-    <img
-      src="{{userHome.avatarUrl ? userHome.avatarUrl : 'https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1606/tuktukdesign160600124/59070205-user-icon-man-profile-businessman-avatar-person-icon-in-vector-illustration.jpg?ver=6'}}"
-      alt="user_avatar" class="col border rounded px-0">
-    <div class="mx-auto my-1">
-      <div *ngIf="loggedUser && userHome && (loggedUser.id === userHome.id)">
-        <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
-      </div>
+  <!--<div class="col-5 px-0 rounded-0">-->
 
-      <div *ngIf="loggedUser && userHome && (loggedUser.id !== userHome.id)">
-        <ng-container *ngIf="checkFriend(); else notFriends">
-          <button class="btn btn-danger" (click)="removeFromFriends()">Remove from friends list</button>
-        </ng-container>
+    <!--<div class="crop">-->
+      <!--<img-->
+        <!--[src]="'http://localhost:8080' + loggedUser.profileImage"-->
+        <!--alt="user_avatar" class="col border rounded px-0">-->
+    <!--</div>-->
+    <!--<div class="mx-auto my-1">-->
+      <!--<div *ngIf="loggedUser && userHome && (loggedUser.id === userHome.id)">-->
+        <!--<a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>-->
+      <!--</div>-->
 
-        <ng-template #notFriends>
-          <ng-container *ngIf="checkIncomingRequests(); else ifOutgoingRequests">
-            <button class="btn btn-success" style="text-decoration: none;" (click)="acceptFriendRequest()">
-              Accept request
-            </button>
-          </ng-container>
+      <!--<div *ngIf="loggedUser && userHome && (loggedUser.id !== userHome.id)">-->
+        <!--<ng-container *ngIf="checkFriend(); else notFriends">-->
+          <!--<button class="btn btn-danger" (click)="removeFromFriends()">Remove from friends list</button>-->
+        <!--</ng-container>-->
 
-          <ng-template #ifOutgoingRequests>
-            <ng-container *ngIf="checkOutgoingRequests(); else noFriendRequests">
-              <button class="btn btn-danger" style="text-decoration: none;" (click)="cancelFriendRequest()">
-                Cancel request
-              </button>
-            </ng-container>
-          </ng-template>
+        <!--<ng-template #notFriends>-->
+          <!--<ng-container *ngIf="checkIncomingRequests(); else ifOutgoingRequests">-->
+            <!--<button class="btn btn-success" style="text-decoration: none;" (click)="acceptFriendRequest()">-->
+              <!--Accept request-->
+            <!--</button>-->
+          <!--</ng-container>-->
 
-          <ng-template #noFriendRequests>
-            <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">
-              Send friend request
-            </button>
-          </ng-template>
-        </ng-template>
+          <!--<ng-template #ifOutgoingRequests>-->
+            <!--<ng-container *ngIf="checkOutgoingRequests(); else noFriendRequests">-->
+              <!--<button class="btn btn-danger" style="text-decoration: none;" (click)="cancelFriendRequest()">-->
+                <!--Cancel request-->
+              <!--</button>-->
+            <!--</ng-container>-->
+          <!--</ng-template>-->
 
-        <button class="btn my-1" [ngClass]="!privateMsgEnabled? ' btn-primary': 'btn-danger'"
-                style="text-decoration: none;" (click)="togglePrivateMsg()">
-          {{privateMsgEnabled ? 'Close' : 'Write Message' }}
-        </button>
+          <!--<ng-template #noFriendRequests>-->
+            <!--<button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">-->
+              <!--Send friend request-->
+            <!--</button>-->
+          <!--</ng-template>-->
+        <!--</ng-template>-->
 
-        <div class="input-group mt-1 mb-0" *ngIf="privateMsgEnabled">
-          <input type="text" class="form-control" placeholder="Type something..." aria-label="Type something..."
-                 aria-describedby="private-msg-btn" (submit)="sendPrivateMsg()" id="#private-msg-input" [(ngModel)]="privateMsg.content">
-          <div class="input-group-append">
-            <span class="btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg()">Send</span>
+        <!--<button class="btn my-1" [ngClass]="!privateMsgEnabled? ' btn-primary': 'btn-danger'"-->
+                <!--style="text-decoration: none;" (click)="togglePrivateMsg()">-->
+          <!--{{privateMsgEnabled ? 'Close' : 'Write Message' }}-->
+        <!--</button>-->
+
+        <!--<div class="input-group mt-1 mb-0" *ngIf="privateMsgEnabled">-->
+          <!--<input type="text" class="form-control" placeholder="Type something..." aria-label="Type something..."-->
+                 <!--aria-describedby="private-msg-btn" (submit)="sendPrivateMsg()" id="#private-msg-input"-->
+                 <!--[(ngModel)]="privateMsg.content">-->
+          <!--<div class="input-group-append">-->
+            <!--<span class="btn btn-primary" id="private-msg-btn" (click)="sendPrivateMsg()">Send</span>-->
+          <!--</div>-->
+        <!--</div>-->
+
+        <!--<form>-->
+          <!--<input id="myForm" type="file" name="file" (change)="uploadImage($event.target.files)">-->
+          <!--<button>upload</button>-->
+        <!--</form>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+
+
+  <!--<div class="col-7 card px-0" *ngIf="userHome">-->
+    <!--<h5 class="card-title text-center">{{userHome.firstName + ' ' + userHome.lastName}}</h5>-->
+    <!--<p class="card-body">-->
+      <!--<strong>ID: </strong>{{userHome.id}}<br>-->
+      <!--<strong>Gender: </strong>{{userHome.gender | titlecase}}<br>-->
+      <!--<strong>Birth date: </strong>{{userHome.birthDate}}-->
+    <!--</p>-->
+  <!--</div>-->
+
+
+
+
+
+
+  <div *ngIf="userHome" class="emp-profile">
+    <form method="post pt-3">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="profile-img">
+            <img class="rounded" [src]="'http://localhost:8080' + userHome.profileImage"/>
+            <div *ngIf="loggedUser.id == userHome.id" class="file btn btn-lg btn-primary">
+              Change Photo
+              <input type="file" name="file"/>
+            </div>
           </div>
         </div>
-
-        <form>
-          <input id="myForm" type="file" name="file" (change)="uploadImage($event.target.files)">
-          <button>upload</button>
-        </form>
+        <div class="col-md-6">
+          <div class="profile-head">
+            <h5>
+              {{userHome.firstName + ' ' + userHome.lastName}}
+            </h5>
+            <h6>
+              Web Developer and Designer
+            </h6>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div class="col-7 card px-0" *ngIf="userHome">
-    <h5 class="card-title text-center">{{userHome.firstName + ' ' + userHome.lastName}}</h5>
-    <p class="card-body">
-      <strong>ID: </strong>{{userHome.id}}<br>
-      <strong>Gender: </strong>{{userHome.gender | titlecase}}<br>
-      <strong>Birth date: </strong>{{userHome.birthDate}}
-    </p>
+      <div class="row">
+        <!--<div class="col-md-4">-->
+          <!--<div class="profile-work">-->
+            <!--<p>WORK LINK</p>-->
+            <!--<a href="">Website Link</a><br/>-->
+            <!--<a href="">Bootsnipp Profile</a><br/>-->
+            <!--<a href="">Bootply Profile</a>-->
+            <!--<p>SKILLS</p>-->
+            <!--<a href="">Web Designer</a><br/>-->
+            <!--<a href="">Web Developer</a><br/>-->
+            <!--<a href="">WordPress</a><br/>-->
+            <!--<a href="">WooCommerce</a><br/>-->
+            <!--<a href="">PHP, .Net</a><br/>-->
+          <!--</div>-->
+        <!--</div>-->
+        <div class="col-md-8 offset-md-4">
+          <div *ngIf="userHome" class="tab-content profile-tab" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>User Id</label>
+                </div>
+                <div class="col-md-6">
+                  <p>{{userHome.id}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Name</label>
+                </div>
+                <div class="col-md-6">
+                  <p>{{userHome.firstName + ' ' + userHome.lastName}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Email</label>
+                </div>
+                <div class="col-md-6">
+                  <p>{{userHome.username}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Phone</label>
+                </div>
+                <div class="col-md-6">
+                  <p>123 456 7890</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Profession</label>
+                </div>
+                <div class="col-md-6">
+                  <p>Web Developer and Designer</p>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Experience</label>
+                </div>
+                <div class="col-md-6">
+                  <p>Expert</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Hourly Rate</label>
+                </div>
+                <div class="col-md-6">
+                  <p>10$/hr</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Total Projects</label>
+                </div>
+                <div class="col-md-6">
+                  <p>230</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>English Level</label>
+                </div>
+                <div class="col-md-6">
+                  <p>Expert</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Availability</label>
+                </div>
+                <div class="col-md-6">
+                  <p>6 months</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Your Bio</label><br/>
+                  <p>Your detail description</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 </div>

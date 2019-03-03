@@ -5,7 +5,6 @@ import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
-import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
 import {HttpClient} from '@angular/common/http';
 
@@ -136,6 +135,7 @@ export class UserHomeComponent implements OnInit {
   }
 
   sendFriendRequest() {
+    console.log(console.log('logged user image+++++++++++' + this.loggedUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(value => {
@@ -187,11 +187,7 @@ export class UserHomeComponent implements OnInit {
     this.msgService.createConversationIfNotExists(this.userHome.id)
       .subscribe(conversation => {
         if (conversation) {
-          this.privateMsg = new OutgoingMessage();
-          this.privateMsg.conversationId = conversation.id;
-          this.privateMsg.recipientUsername = this.userHome.username;
-          this.privateMsg.senderUsername = this.tokenStorage.getUsername();
-          this.privateMsgEnabled = !this.privateMsgEnabled;
+          this.setNewPrivateMessage(conversation.id);
         } else {
           console.log('Conversation equals null');
         }
@@ -201,9 +197,16 @@ export class UserHomeComponent implements OnInit {
       });
   }
 
+  setNewPrivateMessage(conversationId: number) {
+    this.privateMsg = new OutgoingMessage();
+    this.privateMsg.conversationId = conversationId;
+    this.privateMsg.recipientUsername = this.userHome.username;
+    this.privateMsg.senderUsername = this.tokenStorage.getUsername();
+    this.privateMsgEnabled = !this.privateMsgEnabled;
+  }
+
   private sendPrivateMsg() {
-    console.log(this.privateMsg.content);
     this.msgService.sendPrivateMsg(this.privateMsg);
-    this.privateMsg.content = null;
+    this.setNewPrivateMessage(this.privateMsg.conversationId);
   }
 }

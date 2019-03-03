@@ -111,9 +111,7 @@ export class ChatComponent implements OnInit {
     this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
       this.conversations = conversations;
 
-      console.log(this.tokenService.getSelectedConversationId());
       if (this.tokenService.getSelectedConversationId()) {
-        console.log('opening...');
         this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
       }
 
@@ -210,7 +208,6 @@ export class ChatComponent implements OnInit {
     sendBtn.focus();
 
     textarea.value = '';
-    console.log(textarea.value.length);
     textarea.rows = 1;
 
     this.setNewPrivateMessage(this.selectedConversation);
@@ -281,7 +278,8 @@ export class ChatComponent implements OnInit {
         }
         this.privateMsg.parentMessageId = newMessage.id;
       } else {
-        console.log('%cError: trying to add already added message.', 'color: red; font-size: 16px;');
+        console.log('%cError: trying to add already added message:', 'color: red; font-size: 16px;');
+        console.log(newMessage);
       }
     });
   }

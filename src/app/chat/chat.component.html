@@ -98,7 +98,8 @@
           <div class="single-msg msg-secondary msg-bubble-left" >
             <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
-            {{message.date | date:"HH:mm"}}
+            <!--{{message.date | date:"MMMM d, y, h:mm:ss"}}-->
+            {{message.date | date:"h:mm:ss"}}
       </span>
           </div>
         </div>
@@ -115,7 +116,7 @@
               'msg-secondary msg-bubble-left'">
           <p>{{message.content}}</p>
           <span class="float-right align-text-bottom ml-1 single-msg-time">
-              {{message.date | date:"HH:mm"}}
+              {{message.date | date:"h:mm:ss"}}
             <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
               <ng-template #notTemporaryMsg>
                 <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&

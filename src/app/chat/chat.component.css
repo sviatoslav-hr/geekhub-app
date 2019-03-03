@@ -110,6 +110,8 @@
 #msg-container {
   height: calc(100% - 72px);
   background-color: #333333;
+  background-image: linear-gradient(to right, rgba(80, 80, 80, 0.7), rgba(66, 78, 86, 0.7));
+  /*background-image: linear-gradient(to right, #464545, #3c4850);*/
   display: flex !important;
   overflow: auto;
   flex-direction: column-reverse !important;
@@ -126,7 +128,10 @@
   font-size: 14px;
   position: relative;
   margin-bottom: 0.4rem;
-  border-radius: 0.15rem;
+  border-radius: 0.3rem;
+  -webkit-box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
+  -moz-box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
+  box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
   white-space: pre-line; /* for every \n symbol set new line */
 }
 /* msg text content */

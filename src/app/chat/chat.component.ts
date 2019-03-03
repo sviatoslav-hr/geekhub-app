@@ -37,10 +37,10 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     if (this.tokenService.getToken()) {
-      this.getConversations();
       this.loggedUser.username = this.tokenService.getUsername();
       this.msgEnabled = this.tokenService.areConversationsEnabled();
       if (this.msgEnabled) {
+        this.getConversations();
         this.getUnreadMessagesAndSubscribeForUpdates();
       }
     } else {
@@ -51,6 +51,10 @@ export class ChatComponent implements OnInit {
   // fixme: change unreadMessages number due to ws
   openConversation(conversation: Conversation) {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
+      if (this.selectedConversation) {
+        this.messages = null;
+      }
+      this.tokenService.setSelectedConversationId(conversation.id);
       this.selectedConversation = conversation;
       this.setNewPrivateMessage(conversation);
       this.receiver = conversation.users[0].username !== this.loggedUser.username ?
@@ -106,6 +110,12 @@ export class ChatComponent implements OnInit {
   private getConversations() {
     this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
       this.conversations = conversations;
+
+      console.log(this.tokenService.getSelectedConversationId());
+      if (this.tokenService.getSelectedConversationId()) {
+        console.log('opening...');
+        this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
+      }
 
       this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
         const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
@@ -164,6 +174,7 @@ export class ChatComponent implements OnInit {
 
   closeConversation() {
     this.selectedConversation = null;
+    this.tokenService.removeSelectedConversationId();
     this.messages = null;
     this.messageService.messagesDisconnect();
   }
@@ -196,6 +207,7 @@ export class ChatComponent implements OnInit {
     elementById.scrollTo(0, elementById.scrollHeight);
 
     const sendBtn = document.getElementById('send-msg-btn');
+    sendBtn.focus();
 
     textarea.value = '';
     console.log(textarea.value.length);

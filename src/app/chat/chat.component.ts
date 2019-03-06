@@ -321,4 +321,10 @@ export class ChatComponent implements OnInit {
   goToNewLine(tarea: HTMLTextAreaElement) {
     tarea.value += '\n';
   }
+
+  scrollChatToBottom() {
+    const elementById = document.getElementById('msg-container');
+    elementById.scrollTo(0, elementById.scrollHeight);
+  }
+
 }

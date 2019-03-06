@@ -82,7 +82,7 @@
 
     <!--container for messages list-->
     <div id="msg-container" class="mr-0" (wheel)="unreadMessages.get(selectedConversation.id) &&
-    unreadMessages.get(selectedConversation.id).length > 0 ? checkIfNewMessage() : null">
+    unreadMessages.get(selectedConversation.id).length > 0 ? checkIfNewMessage() : null" #msgContainer>
       <!--new messages-->
       <!--(message.id === newMessages[newMessages.length -1].id) ? checkIfNewMessage(message, singleMessage) : null-->
       <!--<div *ngIf="unreadMessages.get(selectedConversation.id)&& unreadMessages.get(selectedConversation.id).length > 0">-->
@@ -141,6 +141,12 @@
 
     <!--input for new message-->
     <div class="container-fluid input-group py-1 px-2" id="chat-input-container">
+      <div *ngIf="messages && msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight > 400"
+           id="chat-scroll-down-btn" class="bg-secondary"
+           (click)="scrollChatToBottom()">
+        <i class="fas fa-chevron-down"></i>
+      </div>
+
       <textarea type="text" class="col border-primary rounded-0"
                 placeholder="Type something..." aria-label="Type something..."
                 aria-describedby="chat-input" autocomplete="off" id="chat-input"

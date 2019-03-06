@@ -103,6 +103,7 @@
   overflow: auto;
   flex-direction: column-reverse !important;
   padding: 0 0.5rem;
+  position: relative;
 }
 
 /* msg blocks */
@@ -276,7 +277,7 @@ button:focus, button:active {
 }
 
 #chat-input {
-  color: #E7E7E7;
+  color: #e7e7e7;
   resize: none;
   height: auto;
   max-height: 100%;
@@ -306,4 +307,19 @@ button:focus, button:active {
 
 #send-msg-btn:active, #send-msg-btn:focus {
   right: 1px;
+}
+
+#chat-scroll-down-btn {
+  position: absolute;
+  top: -40px;
+  right: 30px;
+  height: 35px;
+  width: 35px;
+  line-height: 35px;
+  border-radius: 50%;
+  text-align: center;
+  color: #e7e7e7;
+  vertical-align: middle;
+  font-size: 20px;
+  transition: all 0.2s ease;
 }

@@ -5,7 +5,6 @@ import {User} from '../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
-import {IncomingMessage} from '../models/incoming-message';
 import {OutgoingMessage} from '../models/outgoing-message';
 
 @Component({
@@ -167,17 +166,21 @@ export class UserHomeComponent implements OnInit {
   }
 
   togglePrivateMsg() {
-    this.msgService.createConversationIfNotExists(this.userHome.id)
-      .subscribe(conversation => {
-        if (conversation) {
-          this.setNewPrivateMessage(conversation.id);
-        } else {
-          console.log('Conversation equals null');
-        }
-      }, error => {
-        console.error('Something gone wrong during creating conversation :(');
-        console.log(error);
-      });
+    if (!this.privateMsgEnabled) {
+      this.msgService.createConversationIfNotExists(this.userHome.id)
+        .subscribe(conversation => {
+          if (conversation) {
+            this.setNewPrivateMessage(conversation.id);
+          } else {
+            console.log('Conversation equals null');
+          }
+        }, error => {
+          console.error('Something gone wrong during creating conversation :(');
+          console.log(error);
+        });
+    } else {
+      this.privateMsgEnabled = false;
+    }
   }
 
   setNewPrivateMessage(conversationId: number) {

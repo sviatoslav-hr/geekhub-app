@@ -19,6 +19,7 @@
   height: 36px;
   padding: 0;
 }
+
 .conversations-header button {
   height: 100%;
   padding: 5px 0 5px;
@@ -29,6 +30,7 @@
   background-color: #2d2d2d;
   padding: 0 3px 2px;
 }
+
 #conversations-search input {
   width: 100%;
   background-color: #2d2d2d;
@@ -61,6 +63,7 @@
   background-color: #2d2d2d !important;
 
 }
+
 .single-conversation {
   position: relative;
   display: block;
@@ -72,6 +75,7 @@
   border-top: 1px solid #333333;
   border-bottom: 1px solid #333333;
 }
+
 .active-conversation {
   z-index: 2;
   color: #fff;
@@ -106,6 +110,26 @@
   position: relative;
 }
 
+#msg-container::-webkit-scrollbar-track {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
+  background-color: rgba(245, 245, 245, 0.05);
+}
+
+#msg-container::-webkit-scrollbar {
+  width: 9px;
+  background-color: rgba(245, 245, 245, 0.001);
+}
+
+#msg-container::-webkit-scrollbar-thumb {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
+  background-color: #2d2d2d;
+}
+
+#msg-container::-webkit-scrollbar-thumb {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
+  background-color: #2d2d2d;
+}
+
 /* msg blocks */
 .single-msg {
   padding: 0.25rem 0.5rem 0;
@@ -116,16 +140,18 @@
   position: relative;
   margin-bottom: 0.4rem;
   border-radius: 0.3rem;
-  -webkit-box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
-  -moz-box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
-  box-shadow: 4px 4px 4px -3px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 4px 4px 4px -3px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 4px 4px 4px -3px rgba(0, 0, 0, 0.75);
+  box-shadow: 4px 4px 4px -3px rgba(0, 0, 0, 0.75);
   white-space: pre-line; /* for every \n symbol set new line */
 }
+
 /* msg text content */
 .single-msg p {
   margin-bottom: 0;
   font-size: 11pt;
 }
+
 /* for message bubble */
 .msg-bubble-right:before {
   content: "";
@@ -139,6 +165,7 @@
   right: -10px;
   top: 6px;
 }
+
 .msg-bubble-left:before {
   content: "";
   width: 0;
@@ -151,6 +178,7 @@
   left: -10px;
   top: 6px;
 }
+
 .msg-primary {
   color: white;
   background-color: #424e56;
@@ -264,7 +292,7 @@ button:focus, button:active {
 }
 
 #chat-input-container {
-  padding-right: 38px!important;
+  padding-right: 38px !important;
   /*border-top: 1px solid #dfdfdf;*/
 }
 
@@ -322,4 +350,8 @@ button:focus, button:active {
   vertical-align: middle;
   font-size: 20px;
   transition: all 0.2s ease;
+}
+
+#chat-scroll-down-btn:hover {
+  cursor: pointer;
 }

@@ -48,6 +48,37 @@ export class ChatComponent implements OnInit {
     }
   }
 
+  private getConversations() {
+    this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
+      this.conversations = conversations;
+
+      if (this.tokenService.getSelectedConversationId()) {
+        this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
+      }
+
+      this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
+        console.log(conversation);
+        const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
+
+        // foundIndex = -1 if upcoming conversation is new and was not found in array
+        if (foundIndex >= 0) {
+          this.conversations[foundIndex] = conversation;
+          this.conversations = this.conversations
+            .sort((a, b) => this.chatService.compareConversationsByTheLastMessage(a, b));
+        } else {
+          this.conversations.unshift(conversation);
+        }
+
+        if ((!this.selectedConversation || conversation.id !== this.selectedConversation.id)
+          && conversation.theLastMessage.sender.username !== this.loggedUser.username) {
+          this.unreadMessages.get(conversation.id) ?
+            this.unreadMessages.get(conversation.id).unshift(conversation.theLastMessage) :
+            this.unreadMessages.set(conversation.id, [conversation.theLastMessage]);
+        }
+      });
+    });
+  }
+
   // fixme: change unreadMessages number due to ws
   openConversation(conversation: Conversation) {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
@@ -106,35 +137,6 @@ export class ChatComponent implements OnInit {
         });
       });
     }
-  }
-
-  private getConversations() {
-    this.messageService.getConversations(this.tokenService.getUsername()).subscribe((conversations) => {
-      this.conversations = conversations;
-
-      if (this.tokenService.getSelectedConversationId()) {
-        this.openConversation(this.conversations.find(value => value.id === this.tokenService.getSelectedConversationId()));
-      }
-
-      this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
-        const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
-
-        // foundIndex = -1 if upcoming conversation is new and was not found in array
-        if (foundIndex >= 0) {
-          this.conversations[foundIndex] = conversation;
-          this.conversations = this.conversations
-            .sort((a, b) => this.chatService.compareConversationsByTheLastMessage(a, b));
-        } else {
-          this.conversations.unshift(conversation);
-        }
-
-        if (!this.selectedConversation || conversation.id !== this.selectedConversation.id) {
-          this.unreadMessages.get(conversation.id) ?
-            this.unreadMessages.get(conversation.id).unshift(conversation.theLastMessage) :
-            this.unreadMessages.set(conversation.id, [conversation.theLastMessage]);
-        }
-      });
-    });
   }
 
   private clearConversations() {

@@ -36,13 +36,9 @@
         </ng-template>
 
         <button class="btn my-1 btn-primary"
-                style="text-decoration: none;" (click)="openPrivateMsgWindow()">
+                style="text-decoration: none;" (click)="openPrivateMsgWindow()" [disabled]="privateMsgEnabled">
           Write Message
         </button>
-        <ng-container *ngIf="privateMsgEnabled">
-          <app-chat [isMsgWindowMaximized]="false"
-          [selectedConversation]="selectedConversation"></app-chat>
-        </ng-container>
       </div>
 
     </div>

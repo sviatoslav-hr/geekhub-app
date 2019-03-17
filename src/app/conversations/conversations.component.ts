@@ -4,10 +4,8 @@ import {Message} from '../models/message';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {User} from '../models/user';
-import {OutgoingMessage} from '../models/outgoing-message';
 import {UserService} from '../services/user.service';
 import {ChatService} from '../services/chat.service';
-import {ChatComponent} from '../chat/chat.component';
 
 @Component({
   selector: 'app-conversations',
@@ -15,7 +13,6 @@ import {ChatComponent} from '../chat/chat.component';
   styleUrls: ['./conversations.component.css']
 })
 export class ConversationsComponent implements OnInit {
-  @ViewChild(ChatComponent) chatComponent: ChatComponent;
   loggedUser = new User();
   private conversations: Conversation[];
   private selectedConversation: Conversation;
@@ -80,26 +77,28 @@ export class ConversationsComponent implements OnInit {
     if (!this.selectedConversation || this.selectedConversation.id !== conversation.id) {
       if (this.selectedConversation) {
         this.messageService.messagesDisconnect();
-        this.chatComponent.messages = null;
+        this.chatService.messages = null;
         this.selectedConversation = null;
       }
       this.storageService.setSelectedConversationId(conversation.id);
       this.selectedConversation = conversation;
-      const callback = () =>
-        setTimeout(this.chatComponent ? () => {
-          console.log(this.chatComponent);
-          this.chatService.setReceiver(this.chatComponent, conversation);
-          console.log(this.chatComponent);
-          this.chatService.getMessages(this.chatComponent, conversation.id);
-        } : () => callback(), 10);
-      callback();
+      this.chatService.init(conversation, true);
+      if (this.draftMessages.get(conversation.id)) {
+        this.chatService.draftMessage = this.draftMessages.get(conversation.id);
+      } else {
+        this.chatService.initDraftMessage();
+      }
+      this.chatService.conversationClosed.subscribe(next =>
+        this.onCloseConversation(next));
+      this.chatService.unreadMessagesEmitter.subscribe(next =>
+        this.unreadMessages.set(conversation.id, next));
     }
   }
 
   private clearConversations() {
     this.conversations = null;
     this.messageService.conversationsDisconnect();
-    if (!this.chatComponent || !this.chatComponent.isMsgWindowMaximized) {
+    if (!this.chatService.isMsgWindowMaximized) {
       this.selectedConversation = null;
       this.messageService.messagesDisconnect();
     }
@@ -113,17 +112,13 @@ export class ConversationsComponent implements OnInit {
       this.getConversations();
       this.getUnreadMessages();
     } else {
-      if (!this.chatComponent || (this.chatComponent && this.chatComponent.isMsgWindowMaximized)) {
-        this.chatComponent.messages = null;
+      if (this.chatService.isMsgWindowMaximized) {
+        this.chatService.messages = null;
         this.selectedConversation = null;
       }
       this.conversations = null;
       this.clearConversations();
     }
-  }
-
-  getHeightByTop(element): number {
-    return window.innerHeight - (element.offsetTop ? element.offsetTop : this.elementRef.nativeElement.offsetTop);
   }
 
   getUnreadMessages() {
@@ -145,10 +140,10 @@ export class ConversationsComponent implements OnInit {
     return this.unreadMessages.get(conversation.id) ? this.unreadMessages.get(conversation.id).length : -1;
   }
 
-  onCloseConversation(isClosed: boolean, draftMessage: OutgoingMessage) {
+  onCloseConversation(isClosed: boolean) {
     if (isClosed) {
-      if (draftMessage && draftMessage.content && draftMessage.content.trim() !== '') {
-        this.draftMessages.set(this.selectedConversation.id, draftMessage);
+      if (this.chatService.draftMessage && this.chatService.draftMessage.content && this.chatService.draftMessage.content.trim() !== '') {
+        this.draftMessages.set(this.selectedConversation.id, this.chatService.draftMessage);
       } else if (this.draftMessages.get(this.selectedConversation.id)) {
         this.draftMessages.set(this.selectedConversation.id, null);
       }
@@ -156,7 +151,4 @@ export class ConversationsComponent implements OnInit {
     }
   }
 
-  onUnreadMessagesChange(value: Message[]) {
-    this.unreadMessages.set(this.selectedConversation.id, value);
-  }
 }

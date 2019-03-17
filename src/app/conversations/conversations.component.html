@@ -63,10 +63,3 @@
   </div>
 </div>
 
-<ng-container *ngIf="selectedConversation">
-  <app-chat [selectedConversation]="selectedConversation"
-            [unreadMessages]="unreadMessages.get(selectedConversation.id)"
-            (selectedConversationClosed)="onCloseConversation($event[0], $event[1])"
-            (unreadMessagesEmitter)="onUnreadMessagesChange($event)"></app-chat>
-</ng-container>
-

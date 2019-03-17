@@ -6,7 +6,6 @@ import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {OutgoingMessage} from '../models/outgoing-message';
-import {ChatComponent} from '../chat/chat.component';
 import {ChatService} from '../services/chat.service';
 import {Conversation} from '../models/conversation';
 
@@ -16,9 +15,6 @@ import {Conversation} from '../models/conversation';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
-  @ViewChild(ChatComponent) chatComponent: ChatComponent;
-  private selectedConversation?: Conversation;
-  private privateMsg: OutgoingMessage;
   loggedUser: User = null;
   userHome: User = null;
   privateMsgEnabled = false;
@@ -74,7 +70,7 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  getFriendsList() {
+  private getFriendsList() {
     if (this.loggedUser.friends === undefined) {
       this.friendsService.getFriendsList()
         .subscribe(friends => {
@@ -86,7 +82,7 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  checkOutgoingRequests(): boolean {
+  private checkOutgoingRequests(): boolean {
     const requests = this.loggedUser.outgoingFriendRequests;
     if (requests) {
       for (const request of requests) {
@@ -103,7 +99,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  checkIncomingRequests(): boolean {
+  private checkIncomingRequests(): boolean {
     const requests = this.loggedUser.incomingFriendRequests;
     if (requests) {
       for (const request of requests) {
@@ -120,7 +116,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  checkFriend(): boolean {
+  private checkFriend(): boolean {
     if (this.loggedUser.friends) {
       for (const friend of this.loggedUser.friends) {
         if (friend.id === this.userHome.id) {
@@ -136,7 +132,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  sendFriendRequest() {
+  private sendFriendRequest() {
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(value => {
@@ -148,7 +144,7 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  acceptFriendRequest() {
+  private acceptFriendRequest() {
     this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(v => {
       this.loggedUser.incomingFriendRequests = undefined;
       this.loggedUser.friends = undefined;
@@ -157,34 +153,31 @@ export class UserHomeComponent implements OnInit {
     });
   }
 
-  cancelFriendRequest() {
+  private cancelFriendRequest() {
     this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(v => {
       this.loggedUser.outgoingFriendRequests = undefined;
       this.getFriendRequests();
     });
   }
 
-  removeFromFriends() {
+  private removeFromFriends() {
     this.friendsService.deleteFriend(this.userHome.id).subscribe(v => {
       this.loggedUser.friends = undefined;
       this.getFriendsList();
     });
   }
 
-  openPrivateMsgWindow() {
+  private openPrivateMsgWindow() {
     if (!this.privateMsgEnabled) {
       this.msgService.createConversationIfNotExists(this.userHome.id)
         .subscribe(conversation => {
           if (conversation) {
             this.privateMsgEnabled = true;
-            this.selectedConversation = conversation;
-            const callback = () =>
-              setTimeout(this.chatComponent ? () => {
-                this.chatComponent.messages = [];
-                this.chatService.setReceiver(this.chatComponent, conversation);
-                this.chatService.subscribeForReadMessagesUpdates(this.chatComponent, conversation.id);
-              } : () => callback(), 10);
-            callback();
+            this.chatService.init(conversation, false);
+            this.chatService.initDraftMessage();
+            this.chatService.conversationClosed.subscribe(next =>
+              this.privateMsgEnabled = false
+            );
           } else {
             console.log('Conversation equals null');
           }
@@ -195,18 +188,5 @@ export class UserHomeComponent implements OnInit {
     } else {
       this.privateMsgEnabled = false;
     }
-  }
-
-  setNewPrivateMessage(conversationId: number) {
-    this.privateMsg = new OutgoingMessage();
-    this.privateMsg.conversationId = conversationId;
-    this.privateMsg.recipientUsername = this.userHome.username;
-    this.privateMsg.senderUsername = this.tokenStorage.getUsername();
-    this.privateMsgEnabled = !this.privateMsgEnabled;
-  }
-
-  private sendPrivateMsg() {
-    this.msgService.sendPrivateMsg(this.privateMsg);
-    this.setNewPrivateMessage(this.privateMsg.conversationId);
   }
 }

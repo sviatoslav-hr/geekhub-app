@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {UserService} from '../services/user.service';
 import {User} from '../models/user';
@@ -6,6 +6,9 @@ import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {OutgoingMessage} from '../models/outgoing-message';
+import {ChatComponent} from '../chat/chat.component';
+import {ChatService} from '../services/chat.service';
+import {Conversation} from '../models/conversation';
 
 @Component({
   selector: 'app-user-home',
@@ -13,6 +16,8 @@ import {OutgoingMessage} from '../models/outgoing-message';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
+  @ViewChild(ChatComponent) chatComponent: ChatComponent;
+  private selectedConversation?: Conversation;
   private privateMsg: OutgoingMessage;
   loggedUser: User = null;
   userHome: User = null;
@@ -23,7 +28,8 @@ export class UserHomeComponent implements OnInit {
     private userService: UserService,
     private friendsService: FriendsService,
     private route: ActivatedRoute,
-    private msgService: WsMessageService
+    private msgService: WsMessageService,
+    private chatService: ChatService
   ) {
   }
 
@@ -143,7 +149,7 @@ export class UserHomeComponent implements OnInit {
   }
 
   acceptFriendRequest() {
-    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(value => {
+    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(v => {
       this.loggedUser.incomingFriendRequests = undefined;
       this.loggedUser.friends = undefined;
       this.getFriendRequests();
@@ -152,25 +158,33 @@ export class UserHomeComponent implements OnInit {
   }
 
   cancelFriendRequest() {
-    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(value => {
+    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(v => {
       this.loggedUser.outgoingFriendRequests = undefined;
       this.getFriendRequests();
     });
   }
 
   removeFromFriends() {
-    this.friendsService.deleteFriend(this.userHome.id).subscribe(value => {
+    this.friendsService.deleteFriend(this.userHome.id).subscribe(v => {
       this.loggedUser.friends = undefined;
       this.getFriendsList();
     });
   }
 
-  togglePrivateMsg() {
+  openPrivateMsgWindow() {
     if (!this.privateMsgEnabled) {
       this.msgService.createConversationIfNotExists(this.userHome.id)
         .subscribe(conversation => {
           if (conversation) {
-            this.setNewPrivateMessage(conversation.id);
+            this.privateMsgEnabled = true;
+            this.selectedConversation = conversation;
+            const callback = () =>
+              setTimeout(this.chatComponent ? () => {
+                this.chatComponent.messages = [];
+                this.chatService.setReceiver(this.chatComponent, conversation);
+                this.chatService.subscribeForReadMessagesUpdates(this.chatComponent, conversation.id);
+              } : () => callback(), 10);
+            callback();
           } else {
             console.log('Conversation equals null');
           }

@@ -29,8 +29,8 @@ import {FriendsComponent} from './friends/friends.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { UserSearchComponent } from './user-search/user-search.component';
 import {ConversationsComponent} from './conversations/conversations.component';
-import {ChatComponent} from './chat/chat.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +50,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     UserSearchComponent,
     FriendsComponent,
     ConversationsComponent,
-    ChatComponent
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,6 +4,7 @@ import {AuthService} from '../services/auth/auth.service';
 import {AuthLoginInfo} from '../services/auth/login-info';
 import {UserService} from '../services/user.service';
 import {UserSearchModel} from '../user-search/UserSearchModel';
+import {User} from '../models/user';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +18,8 @@ export class HeaderComponent implements OnInit {
   form: any = {};
   searchInput = '';
   users: UserSearchModel[];
-
+  username = this.tokenStorage.getUsername();
+  loggedUser: User = null;
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -38,8 +40,16 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
+      this.getLoggedUser();
       this.roles = this.tokenStorage.getAuthorities();
     }
+  }
+  getLoggedUser() {
+    const username = this.tokenStorage.getUsername();
+    this.userService.getUserByUsername(username)
+      .subscribe(value => {
+        this.loggedUser = value;
+      }, error => console.log(error));
   }
 
   onSubmit() {

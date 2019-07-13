@@ -13,8 +13,9 @@ export class SignUpInfo {
     this.lastname = lastname;
     this.username = username;
     this.password = password;
-    this.gender = gender;
+    this.gender = gender ? gender : Gender.MALE;
     this.date = date;
+    console.log(this);
   }
 
 

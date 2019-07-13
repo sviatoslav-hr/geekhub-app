@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TokenStorageService} from '../services/auth/token-storage.service';
 import {UserService} from '../services/user.service';
 import {User} from '../models/user';
@@ -6,8 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../services/friends.service';
 import {WsMessageService} from '../websocket/ws-message.service';
 import {OutgoingMessage} from '../models/outgoing-message';
-import {ChatService} from '../services/chat.service';
-import {Conversation} from '../models/conversation';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-user-home',
@@ -15,9 +14,12 @@ import {Conversation} from '../models/conversation';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
+  private privateMsg: OutgoingMessage;
   loggedUser: User = null;
   userHome: User = null;
   privateMsgEnabled = false;
+  fileToUpload: File;
+  formData = new FormData();
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -25,7 +27,7 @@ export class UserHomeComponent implements OnInit {
     private friendsService: FriendsService,
     private route: ActivatedRoute,
     private msgService: WsMessageService,
-    private chatService: ChatService
+    private http: HttpClient
   ) {
   }
 
@@ -70,7 +72,7 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  private getFriendsList() {
+  getFriendsList() {
     if (this.loggedUser.friends === undefined) {
       this.friendsService.getFriendsList()
         .subscribe(friends => {
@@ -82,7 +84,7 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  private checkOutgoingRequests(): boolean {
+  checkOutgoingRequests(): boolean {
     const requests = this.loggedUser.outgoingFriendRequests;
     if (requests) {
       for (const request of requests) {
@@ -99,7 +101,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  private checkIncomingRequests(): boolean {
+  checkIncomingRequests(): boolean {
     const requests = this.loggedUser.incomingFriendRequests;
     if (requests) {
       for (const request of requests) {
@@ -116,7 +118,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  private checkFriend(): boolean {
+  checkFriend(): boolean {
     if (this.loggedUser.friends) {
       for (const friend of this.loggedUser.friends) {
         if (friend.id === this.userHome.id) {
@@ -132,7 +134,8 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  private sendFriendRequest() {
+  sendFriendRequest() {
+    console.log(console.log('logged user image+++++++++++' + this.loggedUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(value => {
@@ -144,8 +147,8 @@ export class UserHomeComponent implements OnInit {
     }
   }
 
-  private acceptFriendRequest() {
-    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(v => {
+  acceptFriendRequest() {
+    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(value => {
       this.loggedUser.incomingFriendRequests = undefined;
       this.loggedUser.friends = undefined;
       this.getFriendRequests();
@@ -153,40 +156,57 @@ export class UserHomeComponent implements OnInit {
     });
   }
 
-  private cancelFriendRequest() {
-    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(v => {
+  cancelFriendRequest() {
+    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(value => {
       this.loggedUser.outgoingFriendRequests = undefined;
       this.getFriendRequests();
     });
   }
 
-  private removeFromFriends() {
-    this.friendsService.deleteFriend(this.userHome.id).subscribe(v => {
+  removeFromFriends() {
+    this.friendsService.deleteFriend(this.userHome.id).subscribe(value => {
       this.loggedUser.friends = undefined;
       this.getFriendsList();
     });
   }
 
-  private openPrivateMsgWindow() {
-    if (!this.privateMsgEnabled) {
-      this.msgService.createConversationIfNotExists(this.userHome.id)
-        .subscribe(conversation => {
-          if (conversation) {
-            this.privateMsgEnabled = true;
-            this.chatService.init(conversation, false);
-            this.chatService.initDraftMessage();
-            this.chatService.conversationClosed.subscribe(next =>
-              this.privateMsgEnabled = false
-            );
-          } else {
-            console.log('Conversation equals null');
-          }
-        }, error => {
-          console.error('Something gone wrong during creating conversation :(');
-          console.log(error);
-        });
-    } else {
-      this.privateMsgEnabled = false;
-    }
+    uploadImage(files: FileList) {
+    this.fileToUpload = files.item(0);
+      console.log(files.item(0));
+      // let formData = new FormData();
+      console.log(this.formData);
+      this.formData.append('file', files.item(0), this.fileToUpload.name);
+    this.http.post('http://localhost:8080/api/save-photo', this.formData).subscribe((val) => {
+
+      console.log(val);
+    });
+    return false;
+  }
+
+  togglePrivateMsg() {
+    this.msgService.createConversationIfNotExists(this.userHome.id)
+      .subscribe(conversation => {
+        if (conversation) {
+          this.setNewPrivateMessage(conversation.id);
+        } else {
+          console.log('Conversation equals null');
+        }
+      }, error => {
+        console.error('Something gone wrong during creating conversation :(');
+        console.log(error);
+      });
+  }
+
+  setNewPrivateMessage(conversationId: number) {
+    this.privateMsg = new OutgoingMessage();
+    this.privateMsg.conversationId = conversationId;
+    this.privateMsg.recipientUsername = this.userHome.username;
+    this.privateMsg.senderUsername = this.tokenStorage.getUsername();
+    this.privateMsgEnabled = !this.privateMsgEnabled;
+  }
+
+  private sendPrivateMsg() {
+    this.msgService.sendPrivateMsg(this.privateMsg);
+    this.setNewPrivateMessage(this.privateMsg.conversationId);
   }
 }

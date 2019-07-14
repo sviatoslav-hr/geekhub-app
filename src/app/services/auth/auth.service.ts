@@ -36,7 +36,7 @@ export class AuthService {
   // SignUpInfo(name, username, email, role, password)
   signUp(info: SignUpInfo): Observable<any> {
     console.log(info);
-    return this.http.post<any>(this.signUpUrl, info, {observe: 'response'});
+    return this.http.post<any>(this.signUpUrl, info);
   }
 
     sendCode(username: string, code: number): Observable<any> {

@@ -1,10 +1,9 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {Conversation} from '../models/conversation';
 import {Message} from '../models/message';
-import {WsMessageService} from '../websocket/ws-message.service';
+import {WsMessageService} from './websocket/ws-message.service';
 import {TokenStorageService} from './auth/token-storage.service';
 import {OutgoingMessage} from '../models/outgoing-message';
-import {ChatComponent} from '../chat/chat.component';
 import {User} from '../models/user';
 
 @Injectable({

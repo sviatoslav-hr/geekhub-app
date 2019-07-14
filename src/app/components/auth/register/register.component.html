@@ -1,0 +1,69 @@
+<div class="container-fluid stylish-form">
+  <form name="form" (ngSubmit)="signupForm.valid && onSubmit()" [formGroup]="signupForm" novalidate
+        class="inner-section inside-form rounded form-row">
+    <h2 class="col-12 text-center text-white">SIGN UP</h2>
+
+    <div class="col-12 input-group">
+      <input type="text" class="form-control w-100" placeholder="First Name" required
+             [ngClass]="{'has-error': isValid(signupForm.controls['firstname'])}"
+             formControlName="firstname">
+    </div>
+
+    <div class="col-12 input-group">
+      <input type="text" class="form-control" placeholder="Last Name" required formControlName="lastname"
+             [ngClass]="{'has-error': isValid(signupForm.controls['lastname'])}">
+    </div>
+
+    <div class="col-12 input-group">
+      <input type="email" class="form-control" placeholder="email" required formControlName="email"
+             [ngClass]="{'has-error': isValid(signupForm.controls['email'])}">
+    </div>
+
+    <div class="col-12 input-group">
+      <input type="password" class="form-control" placeholder="Password" required formControlName="password"
+             [ngClass]="{'has-error': isValid(signupForm.controls['password'])}">
+    </div>
+
+    <div class="col-6 input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text form-control">Gender</span>
+      </div>
+      <select class="custom-select custom-select" required formControlName="gender"
+              [ngClass]="{'has-error': isValid(signupForm.controls['gender'])}">
+        <option [value]="-1" disabled>Select</option>
+        <option [value]="0">Male</option>
+        <option [value]="1">Female</option>
+      </select>
+    </div>
+
+    <div class="col-12 input-group date-select-group rounded-circle">
+      <div class="input-group-prepend">
+        <span class="input-group-text form-control">Birth date</span>
+      </div>
+      <select formControlName="birthDay" class="custom-select"
+              [ngClass]="{'has-error': isValid(signupForm.controls['birthDay'])}">
+        <option [value]="-1" selected disabled>day</option>
+        <option *ngFor="let day of days" [value]="day">{{day}}</option>
+      </select>
+      <select formControlName="birthMonth" (ngModelChange)="changeDaysOfMonth()"
+              class="custom-select" [ngClass]="{'has-error': isValid(signupForm.controls['birthMonth'])}">
+        <option [value]="-1" selected disabled>month</option>
+        <option *ngFor="let month of months" [value]="month.id">{{month.name}}</option>
+      </select>
+      <select formControlName="birthYear" (ngModelChange)="changeDaysOfMonth()"
+              class="custom-select" [ngClass]="{'has-error': isValid(signupForm.controls['birthYear'])}">
+        <option [value]="-1" selected disabled>year</option>
+        <option *ngFor="let year of years" [value]="year">{{year}}</option>
+      </select>
+    </div>
+    <div class="col-12 btn-container text-center">
+      <a [routerLink]="(signupForm.valid && isSignedUp) ? '/verify' : null"
+         class="btn btn-neutral btn-round btn-lg" (click)="onSubmit()">
+        Get Started
+      </a>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger mx-auto" role="alert">
+      <strong>{{errorMessage}}</strong>
+    </div>
+  </form>
+</div>

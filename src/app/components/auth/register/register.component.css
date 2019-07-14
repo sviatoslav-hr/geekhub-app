@@ -1,0 +1,112 @@
+.stylish-form {
+  /*background-image:url('https://lut.im/cOs9CbKe42/DT8DT06CeJkRsyWC.jpg');*/
+  padding: 10px;
+}
+
+.stylish-form h2 {
+  color: #f96332;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+}
+
+.inner-section {
+  background-color: #343a40;
+  width: 450px;
+  display: block;
+  margin: 0 auto;
+}
+
+.inside-form {
+  display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox; /* TWEENER - IE 10 */
+  display: -webkit-flex; /* NEW - Chrome */
+  display: flex !important; /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+
+.inside-form h2 {
+  font-weight: 700 !important;
+  font-size: 30px !important;
+}
+
+.inside-form .input-group {
+  margin: 0 0 10px;
+  padding: 0 10px;
+}
+
+.inside-form input:hover,
+.inside-form input:focus,
+.inside-form input:active,
+.inside-form select:hover,
+.inside-form select:focus,
+.inside-form select:active,
+.inside-form .input-group .input-group-prepend > .input-group-text:hover,
+.inside-form .input-group .input-group-prepend > .input-group-text:focus,
+.inside-form .input-group .input-group-prepend > .input-group-text:active {
+  font-size: 17px !important;
+}
+
+.inside-form input::placeholder {
+  color: #6c757d !important;
+  font-family: Helvetica, Arial, sans-serif !important;
+}
+
+.inside-form * {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 17px;
+}
+
+.has-error {
+  border: 1px solid red !important;
+}
+
+.error-label {
+  color: red;
+  font-size: 12px !important;
+}
+
+.icon-holder {
+  background: #fff;
+  border-radius: 50%;
+  vertical-align: middle;
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  margin-right: 20px;
+}
+
+.input-group .form-control,
+.input-group .custom-select,
+.input-group .input-group-prepend .input-group-text {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border: none;
+}
+
+.input-group .custom-select > option {
+  background-color: #343a40 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-container {
+  margin: 10px 0 20px;
+}
+
+.btn-lg {
+  font-size: 1.25em;
+  border-radius: 0.25rem;
+  padding: 15px 48px;
+}
+
+.btn-round {
+  border-width: 1px;
+  border-radius: 30px !important;
+  padding: 8px 23px;
+}
+
+.btn-neutral, .btn-neutral:focus, .btn-neutral:hover {
+  background-color: orange;
+  color: #212529;
+}

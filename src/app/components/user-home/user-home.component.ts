@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {TokenStorageService} from '../../services/auth/token-storage.service';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {LocalStorageService} from '../../services/local-storage.service';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
@@ -7,6 +7,7 @@ import {FriendsService} from '../../services/friends.service';
 import {WsMessageService} from '../../services/websocket/ws-message.service';
 import {OutgoingMessage} from '../../models/outgoing-message';
 import {HttpClient} from '@angular/common/http';
+import {AuthService} from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-user-home',
@@ -15,25 +16,23 @@ import {HttpClient} from '@angular/common/http';
 })
 export class UserHomeComponent implements OnInit {
   private privateMsg: OutgoingMessage;
-  loggedUser: User = null;
   userHome: User = null;
   privateMsgEnabled = false;
   fileToUpload: File;
   formData = new FormData();
-
   constructor(
-    private tokenStorage: TokenStorageService,
+    private storageService: LocalStorageService,
     private userService: UserService,
     private friendsService: FriendsService,
     private route: ActivatedRoute,
     private msgService: WsMessageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) {
   }
 
   ngOnInit() {
-    if (this.tokenStorage.getToken()) {
-      this.getLoggedUser();
+    if (this.storageService.token) {
       this.getUserFromURL();
     }
   }
@@ -45,47 +44,39 @@ export class UserHomeComponent implements OnInit {
     }, error => error.log);
   }
 
-  getLoggedUser() {
-    const username = this.tokenStorage.getUsername();
-    this.userService.getUserByUsername(username)
-      .subscribe(value => {
-        this.loggedUser = value;
-      }, error => console.log(error));
-  }
-
   getFriendRequests() {
-    if (!this.loggedUser.incomingFriendRequests && this.loggedUser.incomingFriendRequests !== null) {
+    if (!this.authService.currentUser.incomingFriendRequests && this.authService.currentUser.incomingFriendRequests !== null) {
       this.friendsService.getIncomingFriendRequests()
-        .subscribe(requests => this.loggedUser.incomingFriendRequests = requests, error => console.log(error));
-      if (!this.loggedUser.incomingFriendRequests) {
-        this.loggedUser.incomingFriendRequests = null;
+        .subscribe(requests => this.authService.currentUser.incomingFriendRequests = requests, error => console.log(error));
+      if (!this.authService.currentUser.incomingFriendRequests) {
+        this.authService.currentUser.incomingFriendRequests = null;
       }
     }
-    if (!this.loggedUser.outgoingFriendRequests && this.loggedUser.outgoingFriendRequests !== null) {
+    if (!this.authService.currentUser.outgoingFriendRequests && this.authService.currentUser.outgoingFriendRequests !== null) {
       this.friendsService.getOutgoingFriendRequests()
         .subscribe(requests => {
-          this.loggedUser.outgoingFriendRequests = requests;
+          this.authService.currentUser.outgoingFriendRequests = requests;
         }, error => console.log(error));
-      if (!this.loggedUser.outgoingFriendRequests) {
-        this.loggedUser.outgoingFriendRequests = null;
+      if (!this.authService.currentUser.outgoingFriendRequests) {
+        this.authService.currentUser.outgoingFriendRequests = null;
       }
     }
   }
 
   getFriendsList() {
-    if (this.loggedUser.friends === undefined) {
+    if (this.authService.currentUser.friends === undefined) {
       this.friendsService.getFriendsList()
         .subscribe(friends => {
-          this.loggedUser.friends = friends;
+          this.authService.currentUser.friends = friends;
         }, error => console.log(error));
-      if (!this.loggedUser.friends) {
-        this.loggedUser.friends = null;
+      if (!this.authService.currentUser.friends) {
+        this.authService.currentUser.friends = null;
       }
     }
   }
 
   checkOutgoingRequests(): boolean {
-    const requests = this.loggedUser.outgoingFriendRequests;
+    const requests = this.authService.currentUser.outgoingFriendRequests;
     if (requests) {
       for (const request of requests) {
         if (request.receiver.id === this.userHome.id) {
@@ -94,7 +85,7 @@ export class UserHomeComponent implements OnInit {
       }
     } else {
       this.getFriendRequests();
-      if (this.loggedUser.outgoingFriendRequests) {
+      if (this.authService.currentUser.outgoingFriendRequests) {
         this.checkOutgoingRequests();
       }
     }
@@ -102,16 +93,16 @@ export class UserHomeComponent implements OnInit {
   }
 
   checkIncomingRequests(): boolean {
-    const requests = this.loggedUser.incomingFriendRequests;
+    const requests = this.authService.currentUser.incomingFriendRequests;
     if (requests) {
       for (const request of requests) {
-        if (request.receiver.id === this.loggedUser.id) {
+        if (request.receiver.id === this.authService.currentUser.id) {
           return true;
         }
       }
     } else {
       this.getFriendRequests();
-      if (this.loggedUser.incomingFriendRequests) {
+      if (this.authService.currentUser.incomingFriendRequests) {
         this.checkIncomingRequests();
       }
     }
@@ -119,15 +110,15 @@ export class UserHomeComponent implements OnInit {
   }
 
   checkFriend(): boolean {
-    if (this.loggedUser.friends) {
-      for (const friend of this.loggedUser.friends) {
+    if (this.authService.currentUser.friends) {
+      for (const friend of this.authService.currentUser.friends) {
         if (friend.id === this.userHome.id) {
           return true;
         }
       }
     } else {
       this.getFriendsList();
-      if (this.loggedUser.friends) {
+      if (this.authService.currentUser.friends) {
         this.checkFriend();
       }
     }
@@ -135,11 +126,11 @@ export class UserHomeComponent implements OnInit {
   }
 
   sendFriendRequest() {
-    console.log(console.log('logged user image+++++++++++' + this.loggedUser.profileImage));
+    console.log(console.log('logged user image+++++++++++' + this.authService.currentUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(value => {
-          this.loggedUser.outgoingFriendRequests = undefined;
+          this.authService.currentUser.outgoingFriendRequests = undefined;
           this.getFriendRequests();
         }, error => console.log(error));
     } else {
@@ -149,8 +140,8 @@ export class UserHomeComponent implements OnInit {
 
   acceptFriendRequest() {
     this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(value => {
-      this.loggedUser.incomingFriendRequests = undefined;
-      this.loggedUser.friends = undefined;
+      this.authService.currentUser.incomingFriendRequests = undefined;
+      this.authService.currentUser.friends = undefined;
       this.getFriendRequests();
       this.getFriendsList();
     });
@@ -158,27 +149,27 @@ export class UserHomeComponent implements OnInit {
 
   cancelFriendRequest() {
     this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(value => {
-      this.loggedUser.outgoingFriendRequests = undefined;
+      this.authService.currentUser.outgoingFriendRequests = undefined;
       this.getFriendRequests();
     });
   }
 
   removeFromFriends() {
     this.friendsService.deleteFriend(this.userHome.id).subscribe(value => {
-      this.loggedUser.friends = undefined;
+      this.authService.currentUser.friends = undefined;
       this.getFriendsList();
     });
   }
 
-    uploadImage(files: FileList) {
+  uploadImage(files: FileList) {
     this.fileToUpload = files.item(0);
-      console.log(files.item(0));
-      // let formData = new FormData();
-      console.log(this.formData);
-      this.formData.append('file', files.item(0), this.fileToUpload.name);
+    console.log(files.item(0));
+    console.log(this.formData);
+    this.formData.append('file', files.item(0), this.fileToUpload.name);
     this.http.post('http://localhost:8080/api/save-photo', this.formData).subscribe((val) => {
-
-      console.log(val);
+      this.authService.requestCurrentUser();
+      this.getUserFromURL();
+      this.formData.delete('file');
     });
     return false;
   }
@@ -201,7 +192,7 @@ export class UserHomeComponent implements OnInit {
     this.privateMsg = new OutgoingMessage();
     this.privateMsg.conversationId = conversationId;
     this.privateMsg.recipientUsername = this.userHome.username;
-    this.privateMsg.senderUsername = this.tokenStorage.getUsername();
+    this.privateMsg.senderUsername = this.storageService.username;
     this.privateMsgEnabled = !this.privateMsgEnabled;
   }
 

@@ -1,5 +1,5 @@
 <div class="container-fluid stylish-form">
-  <form name="form" (ngSubmit)="signupForm.valid && onSubmit()" [formGroup]="signupForm" novalidate
+  <form name="form" [formGroup]="signupForm" novalidate
         class="inner-section inside-form rounded form-row">
     <h2 class="col-12 text-center text-white">SIGN UP</h2>
 
@@ -57,10 +57,12 @@
       </select>
     </div>
     <div class="col-12 btn-container text-center">
-      <a [routerLink]="(signupForm.valid && isSignedUp) ? '/verify' : null"
-         class="btn btn-neutral btn-round btn-lg" (click)="onSubmit()">
+      <div *ngIf="loading" class="spinner-border text-warning mr-2" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <button class="btn btn-warning btn-neutral btn-round btn-lg" (click)="onSubmit()">
         Get Started
-      </a>
+      </button>
     </div>
     <div *ngIf="errorMessage" class="alert alert-danger mx-auto" role="alert">
       <strong>{{errorMessage}}</strong>

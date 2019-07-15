@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Stomp} from 'stompjs/lib/stomp.js';
 import * as SockJS from 'sockjs-client';
-import {TokenStorageService} from '../auth/token-storage.service';
+import {LocalStorageService} from '../local-storage.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Conversation} from '../../models/conversation';
@@ -27,7 +27,7 @@ export class WsMessageService implements OnDestroy {
    */
 
   constructor(
-    private tokenStorage: TokenStorageService,
+    private tokenStorage: LocalStorageService,
     private http: HttpClient
   ) {
   }

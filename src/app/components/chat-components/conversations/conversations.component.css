@@ -12,6 +12,7 @@
   top: 48px;
   height: calc(100% - 48px);
   position: fixed;
+  transition: all 5s ease;
 }
 
 .conversations-header {
@@ -113,4 +114,7 @@
   white-space: nowrap; /*keep text on one line */
   overflow: hidden; /*prevent text from being shown outside the border */
   text-overflow: ellipsis; /*cut off text with an ellipsis*/
+}
+
+.avatar-image {
 }

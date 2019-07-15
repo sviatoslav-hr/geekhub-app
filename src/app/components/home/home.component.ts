@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from '../../models/user';
-import {TokenStorageService} from '../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../services/local-storage.service';
 import {UserService} from '../../services/user.service';
 
 @Component({
@@ -14,21 +14,21 @@ export class HomeComponent implements OnInit {
   usersList: User[];
 
   constructor(
-    private tokenStorage: TokenStorageService,
+    private storageService: LocalStorageService,
     private userService: UserService
   ) {
   }
 
   ngOnInit() {
     this.info = {
-      token: this.tokenStorage.getToken(),
-      username: this.tokenStorage.getUsername(),
-      authorities: this.tokenStorage.getAuthorities()
+      token: this.storageService.token,
+      username: this.storageService.username,
+      authorities: this.storageService.authorities
     };
   }
 
   logout() {
-    this.tokenStorage.signOut();
+    this.storageService.clear();
     window.location.reload();
   }
 

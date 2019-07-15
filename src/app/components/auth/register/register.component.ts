@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../../services/auth/auth.service';
 import {SignUpInfo} from '../../../services/auth/signup-info';
-import {TokenStorageService} from '../../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
 import {Month, months} from '../../../const/months';
 import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
 
 const MIN_BIRTH_YEAR = 1900;
 
@@ -15,7 +16,8 @@ const MIN_BIRTH_YEAR = 1900;
 export class RegisterComponent implements OnInit {
   constructor(
     private authService: AuthService,
-    private tokenStorage: TokenStorageService,
+    private storageService: LocalStorageService,
+    private router: Router,
     private fb: FormBuilder
   ) {
   }
@@ -33,8 +35,7 @@ export class RegisterComponent implements OnInit {
     birthMonth: ['-1', [Validators.required, Validators.pattern('^[0-9]+$')]],
     birthYear: ['-1', [Validators.required, Validators.pattern('^[0-9]+$')]],
   });
-  isSignedUp = false;
-  isSignUpFailed = false;
+  loading = false;
   errorMessage = '';
 
   static generateArray(from: number, to: number) {
@@ -93,22 +94,17 @@ export class RegisterComponent implements OnInit {
       info.password = this.signupForm.controls['password'].value;
       info.gender = this.signupForm.controls['gender'].value;
       info.date = birthDate;
+      this.loading = true;
       this.authService.signUp(info).subscribe(
         data => {
+          this.loading = false;
           console.log(data);
-          console.log(data.statusText);
-          if (data.body.httpStatus === 'OK') {
-            this.isSignUpFailed = false;
-            this.isSignedUp = true;
-            this.tokenStorage.saveUsername(info.username);
-            window.location.href = '/verify';
-          }
-          if (data.body.httpStatus === 'IM_USED') {
-            this.isSignUpFailed = true;
-            this.errorMessage = data.body.message;
-          }
+          this.storageService.username = info.username;
+          this.authService.storePassword(info.password);
+          this.router.navigate(['/verify']);
         },
         error => {
+          this.loading = false;
           console.log(error);
           this.errorMessage = error.error.message;
         }

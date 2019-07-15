@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {User} from '../../models/user';
 import {FriendRequest} from '../../models/friend-request';
 import {FriendsService} from '../../services/friends.service';
-import {TokenStorageService} from '../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-friends',
@@ -16,7 +16,7 @@ export class FriendsComponent implements OnInit {
 
   constructor(
     private friendsService: FriendsService,
-    private tokenService: TokenStorageService,
+    private tokenService: LocalStorageService,
   ) {
   }
 
@@ -27,7 +27,7 @@ export class FriendsComponent implements OnInit {
   }
 
   getFriends() {
-    this.friendsService.getFriendsListByUsername(this.tokenService.getUsername())
+    this.friendsService.getFriendsListByUsername(this.tokenService.username)
       .subscribe(friendsList => {
         this.friends = friendsList;
       });

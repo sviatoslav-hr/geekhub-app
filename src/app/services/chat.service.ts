@@ -2,7 +2,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {Conversation} from '../models/conversation';
 import {Message} from '../models/message';
 import {WsMessageService} from './websocket/ws-message.service';
-import {TokenStorageService} from './auth/token-storage.service';
+import {LocalStorageService} from './local-storage.service';
 import {OutgoingMessage} from '../models/outgoing-message';
 import {User} from '../models/user';
 
@@ -23,7 +23,7 @@ export class ChatService {
 
   constructor(
     private wsMessageService: WsMessageService,
-    private storageService: TokenStorageService
+    private storageService: LocalStorageService
   ) {
   }
 
@@ -115,7 +115,7 @@ export class ChatService {
   }
 
   init(conversation: Conversation, isMsgWindowMaximized: boolean) {
-    this.loggedUsername = this.storageService.getUsername();
+    this.loggedUsername = this.storageService.username;
     this.conversation = conversation;
     this.setReceiver(conversation);
     this.getMessages(conversation.id);
@@ -130,7 +130,7 @@ export class ChatService {
         console.log('%cError: Incoming new message is null', 'color: red; font-size: 16px');
       }
       console.log(newMessage);
-      const loggedUsername = this.storageService.getUsername();
+      const loggedUsername = this.storageService.username;
       // check for message duplication
       if (this.messages[0].id !== newMessage.id) {
         // check for new message duplication
@@ -236,7 +236,7 @@ export class ChatService {
   }
 
   private setReceiver(conversation: Conversation) {
-    this.receiver = conversation.users[0].username !== this.storageService.getUsername() ?
+    this.receiver = conversation.users[0].username !== this.storageService.username ?
       conversation.users[0] : conversation.users[1];
     console.log(this.receiver);
   }

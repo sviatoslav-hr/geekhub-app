@@ -1,10 +1,10 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {AuthLoginInfo} from '../../services/auth/login-info';
 import {UserSearchModel} from '../user-search/UserSearchModel';
-import {User} from '../../models/user';
-import {TokenStorageService} from '../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../services/local-storage.service';
 import {AuthService} from '../../services/auth/auth.service';
 import {UserService} from '../../services/user.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -14,42 +14,22 @@ import {UserService} from '../../services/user.service';
 export class HeaderComponent implements OnInit {
   roles: string[] = [];
   private loginInfo: AuthLoginInfo;
-  isLoggedIn = false;
   form: any = {};
   searchInput = '';
   users: UserSearchModel[];
-  username = this.tokenStorage.getUsername();
-  loggedUser: User = null;
 
   constructor(
-    private tokenStorage: TokenStorageService,
+    private storageService: LocalStorageService,
     private authService: AuthService,
     private userService: UserService,
-    private el: ElementRef
+    private router: Router
   ) {
   }
 
-  // ngOnInit() {
-  //   this.isLoggedIn = !!!!!!!!!!!!!!!!this.tokenStorage.getToken();
-  //   if (this.tokenStorage.getToken()) {
-  //     this.isLoggedIn = true;
-  //     this.roles = this.tokenStorage.getAuthorities();
-  //   }
-  // }
-
   ngOnInit() {
-    if (this.tokenStorage.getToken()) {
-      this.isLoggedIn = true;
-      this.getLoggedUser();
-      this.roles = this.tokenStorage.getAuthorities();
+    if (this.storageService.token) {
+      this.roles = this.storageService.authorities;
     }
-  }
-  getLoggedUser() {
-    const username = this.tokenStorage.getUsername();
-    this.userService.getUserByUsername(username)
-      .subscribe(value => {
-        this.loggedUser = value;
-      }, error => console.log(error));
   }
 
   onSubmit() {
@@ -57,39 +37,27 @@ export class HeaderComponent implements OnInit {
       this.form.username,
       this.form.password);
 
-
     this.authService.attemptAuth(this.loginInfo).subscribe(
       data => {
-        console.log(data);
-        this.tokenStorage.saveToken(data.accessToken);
-        this.tokenStorage.saveUsername(data.username);
-        this.tokenStorage.saveAuthorities(data.authorities);
         this.goToUserPage(data.username);
-        this.roles = this.tokenStorage.getAuthorities();
+        this.roles = this.storageService.authorities;
       }
     );
   }
 
   goToUserPage(username: string) {
     this.userService.getUserByUsername(username)
-      .subscribe(value => window.location.href = 'id/' + value.id, error => console.log(error));
+      .subscribe(value => this.router.navigate(['id/' + value.id]),
+        error => console.log(error));
   }
 
   public logOut() {
-    this.tokenStorage.signOut();
-    window.location.href = '/signin';
+    this.authService.logOut();
   }
 
   searchUser() {
-    console.log(this.searchInput);
-
     this.userService.findUser(this.searchInput).subscribe(data => {
       this.users = data;
-      console.log(this.users);
     });
-  }
-
-  getHeight() {
-    return this.el.nativeElement.children[0].offsetHeight;
   }
 }

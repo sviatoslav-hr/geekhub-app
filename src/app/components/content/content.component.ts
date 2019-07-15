@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from '../../models/user';
-import {AuthenticationService} from '../../services/authentication.service';
-import {TokenStorageService} from '../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../services/local-storage.service';
 import {UserService} from '../../services/user.service';
 
 @Component({
@@ -15,21 +14,20 @@ export class ContentComponent implements OnInit {
   isLoggedIn = false;
 
   constructor(
-    private authService: AuthenticationService,
-    private tokenStorage: TokenStorageService,
+    private storageService: LocalStorageService,
     private userService: UserService
   ) {
   }
 
   ngOnInit() {
-    if (this.tokenStorage.getToken()) {
+    if (this.storageService.token) {
       this.isLoggedIn = true;
       this.getUser();
     }
   }
 
   private getUser() {
-    this.userService.getUserByUsername(this.tokenStorage.getUsername())
+    this.userService.getUserByUsername(this.storageService.username)
       .subscribe(value => this.loggedUser = value);
   }
 

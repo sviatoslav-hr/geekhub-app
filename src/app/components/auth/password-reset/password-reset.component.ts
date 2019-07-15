@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../../services/auth/auth.service';
-import {TokenStorageService} from '../../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -16,7 +17,8 @@ export class PasswordResetComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private tokenStorage: TokenStorageService
+    private storageService: LocalStorageService,
+    private router: Router
   ) {
   }
 
@@ -30,7 +32,7 @@ export class PasswordResetComponent implements OnInit {
     console.log(this.username);
 
     this.authService.sendUsernameForPasswordReset(this.username).subscribe(data => {
-        this.tokenStorage.saveUsername(this.username);
+        this.storageService.username = this.username;
         // console.log(data.ok);
         console.log(data.statusText);
         console.log(data);
@@ -49,12 +51,9 @@ export class PasswordResetComponent implements OnInit {
   }
 
   onSubmitNewPassword() {
-    console.log('inside new password submit');
-    console.log(this.code);
-    console.log(this.newPassword);
-    this.authService.sendNewPassword(this.code, this.newPassword, this.tokenStorage.getUsername()).subscribe(data => {
+    this.authService.sendNewPassword(this.code, this.newPassword, this.storageService.username).subscribe(data => {
         if (data.message === 'Password was changed') {
-          window.location.href = '/signin';
+          this.router.navigate(['/signin']);
         }
       },
       error => {

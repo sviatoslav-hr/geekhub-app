@@ -1,21 +1,15 @@
-<p>
-  verify works!!!
-</p>
-<div class="row col-sm-6" style="max-width:350px;">
-  <form name="form" (ngSubmit)="onSubmit()" #f="ngForm">
-    <div class="form-group">
-      <label for="code">Verification code</label>
-      <input type="number" class="form-control" name="code" [(ngModel)]="code" id="code"
-             #codeId="ngModel" required/>
-      <!--<div *ngIf="f.submitted && firstname.invalid">-->
-      <!--<div *ngIf="firstname.errors.required">Name is required!</div>-->
-      <!--</div>-->
+<div class="container row mt-10per">
+  <form name="form" (ngSubmit)="!f.errors && onSubmit()" #f="ngForm" class=" col-sm-6 inner-section rounded">
+    <h2 class="w-100 text-center text-white my-3">Email Verification</h2>
+    <div class="input-group">
+      <input type="number" class="form-control w-auto" name="code" [(ngModel)]="code"
+             required/>
+      <div class="input-group-append">
+        <button class="btn btn-primary">Send Code</button>
+      </div>
     </div>
     <div *ngIf="f.submitted && verificationIsFailed" class="alert alert-danger" style="color: red">
       {{errorMessage}}
-    </div>
-    <div class="form-group">
-      <button class="btn btn-primary">Send Code</button>
     </div>
   </form>
 </div>

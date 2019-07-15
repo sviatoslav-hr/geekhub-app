@@ -3,9 +3,10 @@ import {User} from '../../../models/user';
 import {Conversation} from '../../../models/conversation';
 import {Message} from '../../../models/message';
 import {WsMessageService} from '../../../services/websocket/ws-message.service';
-import {TokenStorageService} from '../../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
 import {ChatService} from '../../../services/chat.service';
 import {UserService} from '../../../services/user.service';
+import {AuthService} from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-conversations',
@@ -13,7 +14,6 @@ import {UserService} from '../../../services/user.service';
   styleUrls: ['./conversations.component.css']
 })
 export class ConversationsComponent implements OnInit {
-  loggedUser = new User();
   private conversations: Conversation[];
   private selectedConversation: Conversation;
   private unreadMessages = new Map<number, Message[]>();
@@ -22,17 +22,17 @@ export class ConversationsComponent implements OnInit {
 
   constructor(
     private messageService: WsMessageService,
-    private storageService: TokenStorageService,
+    private storageService: LocalStorageService,
     private chatService: ChatService,
     private userService: UserService,
+    private authService: AuthService,
     private elementRef: ElementRef
   ) {
   }
 
   ngOnInit() {
-    if (this.storageService.getToken()) {
-      this.loggedUser.username = this.storageService.getUsername();
-      this.msgEnabled = this.storageService.areConversationsEnabled();
+    if (this.storageService.token) {
+      this.msgEnabled = this.storageService.areConversationsEnabled;
       if (this.msgEnabled) {
         this.getConversations();
         this.getUnreadMessages();
@@ -43,14 +43,15 @@ export class ConversationsComponent implements OnInit {
   }
 
   private getConversations() {
-    this.messageService.getConversations(this.storageService.getUsername()).subscribe((conversations) => {
+    this.messageService.getConversations(this.storageService.username).subscribe((conversations) => {
       this.conversations = conversations;
+      console.log({conversations});
 
-      if (this.storageService.getSelectedConversationId()) {
-        this.openConversation(this.conversations.find(value => value.id === this.storageService.getSelectedConversationId()));
+      if (this.storageService.selectedConversationId) {
+        this.openConversation(this.conversations.find(value => value.id === this.storageService.selectedConversationId));
       }
 
-      this.messageService.subscribeForConversationsUpdates(this.loggedUser.username, (conversation: Conversation) => {
+      this.messageService.subscribeForConversationsUpdates(this.authService.currentUser.username, (conversation: Conversation) => {
         const foundIndex = this.conversations.findIndex(value => value.id === conversation.id);
 
         // foundIndex = -1 if upcoming conversation is new and was not found in array
@@ -63,7 +64,7 @@ export class ConversationsComponent implements OnInit {
         }
 
         if ((!this.selectedConversation || conversation.id !== this.selectedConversation.id)
-          && conversation.theLastMessage.sender.username !== this.loggedUser.username) {
+          && conversation.theLastMessage.sender.username !== this.authService.currentUser.username) {
           this.unreadMessages.get(conversation.id) ?
             this.unreadMessages.get(conversation.id).unshift(conversation.theLastMessage) :
             this.unreadMessages.set(conversation.id, [conversation.theLastMessage]);
@@ -80,7 +81,7 @@ export class ConversationsComponent implements OnInit {
         this.chatService.messages = null;
         this.selectedConversation = null;
       }
-      this.storageService.setSelectedConversationId(conversation.id);
+      this.storageService.selectedConversationId = conversation.id;
       this.selectedConversation = conversation;
       this.chatService.init(conversation, true);
       if (this.draftMessages.get(conversation.id)) {
@@ -106,7 +107,7 @@ export class ConversationsComponent implements OnInit {
 
   enableOrDisableConversations() {
     this.msgEnabled = !this.msgEnabled;
-    this.storageService.setConversationsEnabled(this.msgEnabled);
+    this.storageService.areConversationsEnabled = this.msgEnabled;
 
     if (this.msgEnabled) {
       this.getConversations();
@@ -123,7 +124,7 @@ export class ConversationsComponent implements OnInit {
 
   getUnreadMessages() {
     // group unread messages by conversationId
-    this.userService.getUnreadMessages(this.loggedUser.username)
+    this.userService.getUnreadMessages(this.authService.currentUser.username)
       .subscribe(messages => messages.forEach(message => {
         if (this.unreadMessages.get(message.conversationId)) {
           if (this.unreadMessages.get(message.conversationId).findIndex(value => value.id === message.id) < 0) {

@@ -30,13 +30,13 @@
            (click)="selectedConversation? (selectedConversation.id !== conversation.id? openConversation(conversation): '') : openConversation(conversation)"
            style="cursor: pointer;">
         <p class="my-0">
-          <strong>{{conversation.users[0].username !== loggedUser.username ?
+          <strong>{{conversation.users[0].username !== authService.currentUser.username ?
             conversation.users[0].firstName : conversation.users[1].firstName}}
           </strong>
         </p>
         <p class="my-0 conversation-last-message-content">
           <span *ngIf="!draftMessages.get(conversation.id); else draftMsgContent">
-          {{(conversation.theLastMessage.sender.username === loggedUser.username ? 'You: ' : '')
+          {{(conversation.theLastMessage.sender.username === authService.currentUser.username ? 'You: ' : '')
           + conversation.theLastMessage.content}}
             <span *ngIf="getNumberOfUnreadMessages(conversation) > 0"
                   style="position: absolute; bottom: 7px; right: 5px;"

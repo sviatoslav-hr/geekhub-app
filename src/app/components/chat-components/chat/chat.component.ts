@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {WsMessageService} from '../../../services/websocket/ws-message.service';
-import {TokenStorageService} from '../../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
 import {ChatService} from '../../../services/chat.service';
 
 @Component({
@@ -11,7 +11,7 @@ import {ChatService} from '../../../services/chat.service';
 export class ChatComponent implements OnInit {
   constructor(
     private messageService: WsMessageService,
-    private storageService: TokenStorageService,
+    private storageService: LocalStorageService,
     private chatService: ChatService
   ) {
   }
@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit {
     const msgContainer = document.getElementById('msg-container');
     // if was scrolled to block of new messages
     if (msgContainer.scrollHeight - msgContainer.scrollTop < msgContainer.offsetHeight + newMessagesBlock.offsetHeight) {
-      this.messageService.saveMessagesAsRead(this.chatService.conversation.id, this.storageService.getUsername());
+      this.messageService.saveMessagesAsRead(this.chatService.conversation.id, this.storageService.username);
       this.chatService.unreadMessages.forEach(newMessage => this.chatService.messages.unshift(newMessage));
       this.chatService.unreadMessagesEmitter.emit([]);
     } else {

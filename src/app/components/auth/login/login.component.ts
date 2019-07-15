@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthLoginInfo} from '../../../services/auth/login-info';
-import {TokenStorageService} from '../../../services/auth/token-storage.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
 import {UserService} from '../../../services/user.service';
 import {AuthService} from '../../../services/auth/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -19,15 +20,16 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private tokenStorage: TokenStorageService,
-      private userService: UserService
+    private storageService: LocalStorageService,
+    private userService: UserService,
+    private router: Router
   ) {
   }
 
   ngOnInit() {
-    if (this.tokenStorage.getToken()) {
+    if (this.storageService.token) {
       this.isLoggedIn = true;
-      this.roles = this.tokenStorage.getAuthorities();
+      this.roles = this.storageService.authorities;
     }
   }
 
@@ -40,16 +42,14 @@ export class LoginComponent implements OnInit {
     this.authService.attemptAuth(this.loginInfo).subscribe(
       data => {
         console.log(data);
-        this.tokenStorage.saveToken(data.accessToken);
-        this.tokenStorage.saveUsername(data.username);
-        this.tokenStorage.saveAuthorities(data.authorities);
+        this.storageService.token = data.accessToken;
+        this.storageService.username = data.username;
+        this.storageService.authorities = data.authorities;
         this.goToUserPage(data.username);
-        this.roles = this.tokenStorage.getAuthorities();
+        this.roles = this.storageService.authorities;
 
 
       }, error => {
-        console.log(error);
-        console.log(error.error.httpStatus);
         if (error.error.httpStatus === 'NOT_FOUND') {
           console.log('user not found');
           this.errorMessage = 'user not found';
@@ -60,8 +60,8 @@ export class LoginComponent implements OnInit {
           this.errorMessage = 'user is not activated';
           this.isLoginFailed = true;
           console.log(this.form.username);
-          this.tokenStorage.saveUsername(this.form.username);
-          window.location.href = '/verify';
+          this.storageService.username = this.form.username;
+          this.router.navigate(['/verify']);
         }
         if (error.error.httpStatus === 'UNAUTHORIZED') {
           console.log('Password is incorrect');
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
 
   goToUserPage(username: string) {
     this.userService.getUserByUsername(username)
-      .subscribe(value => window.location.href = 'id/' + value.id, error => console.log(error));
+      .subscribe(value => this.router.navigate(['/id/' + value.id]), error => console.log(error));
   }
 
 }

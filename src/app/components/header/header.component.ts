@@ -1,10 +1,11 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthLoginInfo} from '../../services/auth/login-info';
 import {UserSearchModel} from '../user-search/UserSearchModel';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {AuthService} from '../../services/auth/auth.service';
 import {UserService} from '../../services/user.service';
 import {Router} from '@angular/router';
+import * as HttpStatus from 'http-status-codes';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ export class HeaderComponent implements OnInit {
   form: any = {};
   searchInput = '';
   users: UserSearchModel[];
+  isPopupShown = false;
 
   constructor(
     private storageService: LocalStorageService,
@@ -41,6 +43,12 @@ export class HeaderComponent implements OnInit {
       data => {
         this.goToUserPage(data.username);
         this.roles = this.storageService.authorities;
+      }, err => {
+        const statusText = HttpStatus.getStatusText(err.status);
+        console.log(err, statusText);
+        if (statusText === 'Locked') {
+          this.isPopupShown = true;
+        }
       }
     );
   }
@@ -49,6 +57,13 @@ export class HeaderComponent implements OnInit {
     this.userService.getUserByUsername(username)
       .subscribe(value => this.router.navigate(['id/' + value.id]),
         error => console.log(error));
+  }
+
+  navigateToVerificationPage() {
+    this.isPopupShown = false;
+    this.storageService.username = this.loginInfo.username;
+    this.router.navigate(['/verify']);
+    this.authService.storePassword(this.form.password);
   }
 
   public logOut() {

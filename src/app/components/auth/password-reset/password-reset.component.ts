@@ -31,7 +31,7 @@ export class PasswordResetComponent implements OnInit {
     console.log('inside email submit');
     console.log(this.username);
 
-    this.authService.sendUsernameForPasswordReset(this.username).subscribe(data => {
+    this.authService.sendCodeToEmail(this.username).subscribe(data => {
         this.storageService.username = this.username;
         // console.log(data.ok);
         console.log(data.statusText);

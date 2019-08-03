@@ -1,12 +1,22 @@
 <div class="container row mt-10per">
-  <form name="form" (ngSubmit)="!f.errors && onSubmit()" #f="ngForm" class=" col-sm-6 inner-section rounded">
+  <form name="form" #f="ngForm" class=" col-sm-6 inner-section rounded">
     <h2 class="w-100 text-center text-white my-3">Email Verification</h2>
-    <div class="input-group">
-      <input type="number" class="form-control w-auto" name="code" [(ngModel)]="code"
+    <label for="code-input" class="text-white">
+      Please, check your email {{censoredEmail}} and enter the code below
+    </label>
+    <div class="input-group mb-1">
+      <input type="text" id="code-input" class="form-control w-auto" name="code" [(ngModel)]="code"
              required/>
       <div class="input-group-append">
-        <button class="btn btn-primary">Send Code</button>
+        <button class="btn btn-primary" (click)="!f.errors && onSubmit()">Verify</button>
       </div>
+    </div>
+    <div class="container">
+      <p *ngIf="codeSendAgainResponse" class="text-white mb-0 mt-2">{{codeSendAgainResponse}}</p>
+      <button (click)="!isSendCodeAgainBlocked && sendCodeAgain()" class="btn btn-link alert-link trans-01-ease"
+         [ngClass]="isSendCodeAgainBlocked ? 'text-secondary cursor-default': 'text-white'">
+        <u>Send code again</u>
+      </button>
     </div>
     <div *ngIf="f.submitted && verificationIsFailed" class="alert alert-danger" style="color: red">
       {{errorMessage}}

@@ -2,20 +2,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { UserComponent } from './user/user.component';
+import { UserComponent } from './components/user/user.component';
 import {HttpClientModule} from '@angular/common/http';
-import { HeaderComponent } from './header/header.component';
-import { ContentComponent } from './content/content.component';
-import { LoginComponent } from './login/login.component';
-import {FormsModule} from '@angular/forms';
-import { RegisterComponent } from './register/register.component';
-import { HomeComponent } from './home/home.component';
-import { PmComponent } from './pm/pm.component';
-import { AdminComponent } from './admin/admin.component';
-import {AppRoutingModule} from './app-routing/app-routing.module';
+import { HeaderComponent } from './components/header/header.component';
+import { ContentComponent } from './components/content/content.component';
+import { LoginComponent } from './components/auth/login/login.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { RegisterComponent } from './components/auth/register/register.component';
+import { HomeComponent } from './components/home/home.component';
+import { PmComponent } from './components/pm/pm.component';
+import { AdminComponent } from './components/admin/admin.component';
+import {AppRoutingModule} from './modules/app-routing.module';
 import {httpInterceptorProviders} from './services/auth/auth-interceptor';
-import { UserHomeComponent } from './user-home/user-home.component';
-import {SignUpVerificationComponent} from './sign-up-verification/sign-up-verification.component';
+import { UserHomeComponent } from './components/user-home/user-home.component';
+import {SignUpVerificationComponent} from './components/auth/sign-up-verification/sign-up-verification.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
@@ -25,13 +25,12 @@ import {
   MatMenuModule,
   MatNativeDateModule
 } from '@angular/material';
-import {FriendsComponent} from './friends/friends.component';
-import { PasswordResetComponent } from './password-reset/password-reset.component';
-import { UserSearchComponent } from './user-search/user-search.component';
-import {ConversationsComponent} from './conversations/conversations.component';
-import {ChatComponent} from './chat/chat.component';
+import {FriendsComponent} from './components/friends/friends.component';
+import { PasswordResetComponent } from './components/auth/password-reset/password-reset.component';
+import { UserSearchComponent } from './components/user-search/user-search.component';
+import {ConversationsComponent} from './components/chat-components/conversations/conversations.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {NgScrollbarModule} from 'ngx-scrollbar';
+import { ChatComponent } from './components/chat-components/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +50,7 @@ import {NgScrollbarModule} from 'ngx-scrollbar';
     UserSearchComponent,
     FriendsComponent,
     ConversationsComponent,
-    ChatComponent
+    ChatComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,10 +66,10 @@ import {NgScrollbarModule} from 'ngx-scrollbar';
     MatButtonModule,
     MatDividerModule,
     DragDropModule,
-    NgScrollbarModule
+    ReactiveFormsModule,
   ],
   providers: [
-    httpInterceptorProviders
+    httpInterceptorProviders,
   ],
   bootstrap: [AppComponent]
 })

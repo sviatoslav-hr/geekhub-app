@@ -1,0 +1,120 @@
+.app-chat {
+  position: absolute;
+  height: 100%;
+  padding-top: 48px;
+}
+
+/* Conversations List */
+.conversations-container {
+  z-index: 5;
+  width: 160px;
+  margin-right: 0;
+  top: 48px;
+  height: calc(100% - 48px);
+  position: fixed;
+  transition: all 5s ease;
+}
+
+.conversations-header {
+  width: 100%;
+  height: 36px;
+  padding: 0;
+}
+
+.conversations-header button {
+  height: 100%;
+  padding: 5px 0 5px;
+}
+
+#conversations-search {
+  width: 100%;
+  background-color: #2d2d2d;
+  padding: 0 3px 2px;
+}
+
+#conversations-search input {
+  width: 100%;
+  background-color: #2d2d2d;
+  border: none;
+  border-bottom: 1px solid #848484;
+  outline: none;
+  color: #e7e7e7;
+}
+
+.switch-conversations-btn:focus, .switch-conversations-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.conversations-btn-enabled {
+  padding-right: 10px !important;
+  text-align: right;
+  border: none;
+  color: #e7e7e7;
+  background-color: #2d2d2d !important;
+}
+
+.conversations-btn-disabled {
+  color: dimgrey;
+}
+
+.messages-settings-btn {
+  border: none;
+  color: #e7e7e7;
+  background-color: #2d2d2d !important;
+
+}
+
+.single-conversation {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  background-color: #2d2d2d;
+  color: #e7e7e7;
+  border-right: none;
+  border-left: none;
+  border-top: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+}
+
+.active-conversation {
+  z-index: 2;
+  color: #fff;
+  background-color: #333333;
+  border: none;
+}
+
+.conversations-block {
+  height: calc(100% - 38px);
+  overflow-y: auto !important;
+  background-color: #2d2d2d;
+}
+
+.conversations-block::-webkit-scrollbar-track {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
+  background-color: rgba(245, 245, 245, 0.05);
+}
+
+.conversations-block::-webkit-scrollbar {
+  width: 9px;
+  background-color: rgba(245, 245, 245, 0.001);
+}
+
+.conversations-block::-webkit-scrollbar-thumb {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
+  background-color: #2d2d2d;
+}
+
+.conversations-block::-webkit-scrollbar-thumb {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
+  background-color: #2d2d2d;
+}
+
+.conversation-last-message-content {
+  white-space: nowrap; /*keep text on one line */
+  overflow: hidden; /*prevent text from being shown outside the border */
+  text-overflow: ellipsis; /*cut off text with an ellipsis*/
+}
+
+.avatar-image {
+}

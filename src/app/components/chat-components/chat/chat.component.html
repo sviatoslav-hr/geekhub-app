@@ -1,0 +1,106 @@
+<div *ngIf="chatService.conversation && chatService.receiver"
+     [ngClass]="{'chat-container-maximized' : chatService.isMsgWindowMaximized,
+     'chat-container-minimized': !chatService.isMsgWindowMaximized}"
+     cdkDragBoundary="body" cdkDrag [cdkDragDisabled]="chatService.isMsgWindowMaximized"
+     id="chat-outer-container">
+  <div id="chat-container" class="pr-0 d-flex flex-column justify-content-between">
+    <!--conversations window header-->
+    <div class="alert-light text-center rounded-0 my-0" id="chat-header" cdkDragHandle
+         (dblclick)="switchMsgWindow()">
+      <a [routerLink]="'/id/' + chatService.receiver.id" class="chat-header-userlink">
+        {{chatService.receiver.firstName + ' ' + chatService.receiver.lastName}}
+      </a>
+      <div class="rounded msg-window-btn-container">
+        <button class="text-center switch-chat-window-btn"
+                (click)="switchMsgWindow()">
+          <i class="far fa-window-restore" *ngIf="chatService.isMsgWindowMaximized"></i>
+          <i class="fas fa-window-maximize" *ngIf="!chatService.isMsgWindowMaximized"></i>
+        </button>
+        <button class="text-center close-chat-window-btn"
+                (click)="closeConversation()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!--container for messages list-->
+    <div id="msg-container" class="mr-0" (wheel)="chatService.unreadMessages &&
+    chatService.unreadMessages.length > 0 ? checkIfNewMessage() : null" #msgContainer>
+      <div *ngIf="chatService.unreadMessages && chatService.unreadMessages.length > 0"
+           id="new-messages-block">
+        <div *ngFor="let message of chatService.unreadMessages" class="text-left"
+             [ngStyle]="message? '':{'background-color': 'red'}"
+             [id]="(message.id === chatService.unreadMessages[chatService.unreadMessages.length -1].id) ? 'new-private-msg' : null">
+          <div class="single-msg msg-secondary msg-bubble-left">
+            <p>{{message.content}}</p>
+            <span class="float-right align-text-bottom ml-1 single-msg-time">
+            <!--{{message.date | date:"MMMM d, y, h:mm:ss"}}-->
+              {{message.date | date:"H:mm:ss"}}
+      </span>
+          </div>
+        </div>
+
+      </div>
+      <!--all messages-->
+      <div style="display: block" *ngFor="let message of chatService.messages"
+           [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === chatService.loggedUsername?
+             'text-right':
+             'text-left'">
+        <div class="text-left single-msg"
+             [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === chatService.loggedUsername?
+              'msg-primary msg-bubble-right':
+              'msg-secondary msg-bubble-left'">
+          <p>{{message.content}}</p>
+          <span class="float-right align-text-bottom ml-1 single-msg-time">
+              {{message.date | date:"H:mm:ss"}}
+            <i *ngIf="message.constructor.name === 'OutgoingMessage'; else notTemporaryMsg" class="fas fa-clock"></i>
+              <ng-template #notTemporaryMsg>
+                <i *ngIf="message.constructor.name !== 'OutgoingMessage' &&
+              message.sender.username === chatService.loggedUsername && message.unreadByUsers.length < chatService.conversation.users.length - 1;
+              else notChecked" class="fas fa-check-double"></i>
+              </ng-template>
+              <ng-template #notChecked>
+                <i
+                  *ngIf="message.constructor.name !== 'OutgoingMessage' && message.sender.username === chatService.loggedUsername"
+                  class="fas fa-check"></i>
+              </ng-template>
+            </span>
+        </div>
+      </div>
+
+      <!--conversations loading spinner if array messages is not assigned-->
+      <div *ngIf="!chatService.messages" class="spinner-border mx-auto mb-5" style="color: #ffa500"
+           role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
+    <!--input for new message-->
+    <div class="container-fluid input-group py-1 px-2" id="chat-input-container">
+      <div *ngIf="chatService.messages && msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight > 400"
+           id="chat-scroll-down-btn" class="bg-secondary"
+           (click)="scrollChatToBottom()">
+        <i class="fas fa-chevron-down"></i>
+        <span *ngIf="getNumberOfUnreadMessages() > 0;" class="badge badge-danger position-absolute"
+              style="top: -15px; right: 50%; transform: translate(-50%, 0)">
+          {{getNumberOfUnreadMessages() <= 99 ? getNumberOfUnreadMessages() : '99+'}}
+        </span>
+      </div>
+
+      <textarea type="text" class="col border-primary rounded-0"
+                placeholder="Type something..." aria-label="Type something..."
+                aria-describedby="chat-input" autocomplete="off" id="chat-input"
+                (keydown.enter)="sendPrivateMsg(msgInput, $event)"
+                (keydown.control.enter)="goToNewLine(msgInput)"
+                (keydown.escape)="closeConversation()"
+                [disabled]="!chatService.draftMessage || chatService.pendingMessages.length > 7" [(ngModel)]="chatService.draftMessage.content"
+                #msgInput
+                [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 8">
+      </textarea>
+      <div *ngIf="msgInput.value.length > 0" id="send-msg-btn"
+           (click)="sendPrivateMsg(msgInput, $event)">
+        <i class="fas fa-2x fa-angle-double-right faa-passing animated-hover"></i>
+      </div>
+    </div>
+  </div>
+</div>

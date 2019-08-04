@@ -1,0 +1,64 @@
+.logo-orange {
+  background: orange;
+  border-radius: 5px;
+  /*padding: 4px 5px;*/
+}
+
+.logo {
+  font-size: 19px;
+}
+
+/*.navbar-brand{*/
+/*float: left;*/
+/*}*/
+.login-container {
+  float: right;
+}
+
+.bg-lightyellow {
+  background: lightyellow;
+}
+
+.color-black {
+  color: black;
+}
+
+.search-input {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-color: darkgray;
+  box-shadow: none;
+}
+
+.search-input:focus {
+  color: white;
+  border-radius: 0;
+  background: none;
+  border-bottom-color: darkgray;
+}
+
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}
+
+.navbar {
+  /*padding: 3px 1rem !important;*/
+}
+
+/*@media only screen and (min-width: 400px) {*/
+/*.sign-in-form{*/
+/*margin-top: 3px;*/
+/*}*/
+/*}*/
+
+.avatar-image {
+  height: 40px;
+  width: 40px;
+  border-radius: 50% !important;
+  object-fit: cover;
+}

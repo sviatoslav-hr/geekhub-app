@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {TokenStorageService} from './services/auth/token-storage.service';
+import {LocalStorageService} from './services/local-storage.service';
 import {UserService} from './services/user.service';
 import {User} from './models/user';
+import {AuthService} from './services/auth/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +11,6 @@ import {User} from './models/user';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  loggedUser: User;
   private domen = 'http://localhost:4200';
   private allowedURLs: string[] = [
     this.domen + '/',
@@ -18,39 +19,18 @@ export class AppComponent implements OnInit {
 
 
   constructor(
-    private tokenStorage: TokenStorageService,
-    private userService: UserService
+    private storageService: LocalStorageService,
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router
   ) {
   }
 
   ngOnInit() {
-    if (this.tokenStorage.getToken()) {
-      this.getUser();
+    if (this.storageService.token) {
+      this.authService.requestCurrentUser();
     } else if (!this.allowedURLs.includes(window.location.href)) {
-      window.location.href = '/';
+      this.router.navigate(['/']);
     }
-  }
-
-  private getUser() {
-    this.userService.getUserByUsername(this.tokenStorage.getUsername())
-      .subscribe(value => this.loggedUser = value);
-  }
-
-  public logOut() {
-    this.tokenStorage.signOut();
-    window.location.href = '/signin';
-  }
-
-  getHeightByTop(element): number {
-    const height = window.innerHeight - element.offsetHeight;
-    return height;
-  }
-
-  getTopPosition(element) {
-    return element.getHeight();
-  }
-
-  getContentWidth() {
-    return window.innerWidth - 280;
   }
 }

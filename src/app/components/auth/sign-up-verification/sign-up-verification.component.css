@@ -1,0 +1,10 @@
+.inner-section {
+  background-color: #343a40;
+  display: block;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.mt-10per {
+  margin-top: 10%;
+}

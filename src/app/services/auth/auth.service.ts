@@ -102,10 +102,8 @@ export class AuthService {
   }
 
   verifyEmail(username: string, code: number): Observable<any> {
-    const params = new HttpParams()
-      .set('username', username)
-      .set('code', '' + code);
-    return this.http.post<any>(this.verificationCodeUrl, null, {params});
+    const sendCodeRequest = {username, code};
+    return this.http.post<any>(this.verificationCodeUrl, sendCodeRequest);
   }
 
   sendCodeToEmail(username: string): Observable<any> {

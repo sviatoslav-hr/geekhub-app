@@ -23,9 +23,8 @@ export class AuthService {
 
   private loginUrl = 'http://localhost:8080/api/auth/signin';
   private signUpUrl = 'http://localhost:8080/api/auth/signup';
-  private verifyCodeUrl = 'http://localhost:8080/api/auth/send-verification-code';
-  private getVerificationCodeUrl = 'http://localhost:8080/api/auth/get-verification-code';
-  private getPasswordResetCodeUrl = 'http://localhost:8080/api/auth/get-password-reset-code';
+  private verificationCodeUrl = 'http://localhost:8080/api/auth/get-verification-code';
+  private sendCodeToEmailUrl = 'http://localhost:8080/api/auth/send-code-to-email';
   private setNewPasswordUrl = 'http://localhost:8080/api/auth/set-new-password';
 
   constructor(
@@ -57,7 +56,7 @@ export class AuthService {
             this.user = user;
             console.log(user);
           },
-          errorResponse => {
+          () => {
             setTimeout(() => this.requestCurrentUser(), 5000);
           });
     }
@@ -75,25 +74,19 @@ export class AuthService {
   }
 
   // Jwt response(accessToken, type, username, authorities)
-  attemptAuth(credentials: AuthLoginInfo): Observable<JwtResponse> {
-    console.log(JSON.stringify(credentials));
+  attemptAuth(credentials: AuthLoginInfo): Observable<JwtResponse | any> {
     return this.http.post<JwtResponse>(this.loginUrl, credentials, httpOptions)
-      .pipe(map(jwt => {
-        // login successful if there's a jwt token in the response
-        if (jwt && jwt.accessToken) {
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          this.storageService.token = jwt.accessToken;
-          this.storageService.username = jwt.username;
-          this.storageService.authorities = jwt.authorities;
+      .pipe(map(response => {
+        // login successful if there's a response token in the response
+        console.log(response);
+        if (response && response.accessToken) {
+          // store user details and response token in local storage to keep user logged in between page refreshes
+          this.storageService.token = response.accessToken;
+          this.storageService.username = response.username;
+          this.storageService.authorities = response.authorities;
           this.requestCurrentUser();
-          console.log(`%cSuccess log in! ${jwt.username}`, 'color: green; font-size: 12px');
-        } else if (jwt) {
-          console.log('%cGot JwtResponse without token!', 'color: red; font-size: 12px');
-          console.log(jwt);
-        } else {
-          console.log('%cGot empty JwtResponse!', 'color: red; font-size: 12px');
         }
-        return jwt;
+        return response;
       }));
   }
 
@@ -105,16 +98,18 @@ export class AuthService {
 
   // SignUpInfo(name, username, email, role, password)
   signUp(info: SignUpInfo): Observable<any> {
-    console.log(info);
     return this.http.post<any>(this.signUpUrl, info);
   }
 
-  sendCode(username: string, code: number): Observable<any> {
-    return this.http.post<any>(this.getVerificationCodeUrl, {username, code});
+  verifyEmail(username: string, code: number): Observable<any> {
+    const params = new HttpParams()
+      .set('username', username)
+      .set('code', '' + code);
+    return this.http.post<any>(this.verificationCodeUrl, null, {params});
   }
 
-  sendUsernameForPasswordReset(username: string): Observable<any> {
-    return this.http.post<string>(this.getPasswordResetCodeUrl, {username});
+  sendCodeToEmail(username: string): Observable<any> {
+    return this.http.post<any>(this.sendCodeToEmailUrl, username);
   }
 
   sendNewPassword(code: number, newPassword: string, username: string): Observable<any> {

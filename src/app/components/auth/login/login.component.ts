@@ -55,14 +55,6 @@ export class LoginComponent implements OnInit {
           this.errorMessage = 'user not found';
           this.isLoginFailed = true;
         }
-        if (error.error.httpStatus === 'LOCKED') {
-          console.log('User is not activated');
-          this.errorMessage = 'user is not activated';
-          this.isLoginFailed = true;
-          console.log(this.form.username);
-          this.storageService.username = this.form.username;
-          this.router.navigate(['/verify']);
-        }
         if (error.error.httpStatus === 'UNAUTHORIZED') {
           console.log('Password is incorrect');
           this.errorMessage = 'Password is incorrect';
@@ -72,10 +64,6 @@ export class LoginComponent implements OnInit {
         this.isLoginFailed = true;
       }
     );
-  }
-
-  reloadPage() {
-    window.location.reload();
   }
 
   goToUserPage(username: string) {

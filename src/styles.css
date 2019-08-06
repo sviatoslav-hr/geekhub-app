@@ -1,14 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~bootstrap/dist/css/bootstrap.css";
+
 body {
   background: gainsboro;
   display: flex;
   flex-flow: column;
 }
 
-body, html{
-  height: 100%!important;
+body, html {
+  height: 100% !important;
   /*overflow-y: hidden;*/
   /*overflow-x: hidden;*/
 }
 
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.cursor-default {
+  cursor: default !important;
+}
+
+.trans-05-ease {
+  transition: all 0.5s ease;
+}
+
+.trans-03-ease {
+  transition: all 0.3s ease;
+}
+
+.trans-01-ease {
+  transition: all 0.1s ease;
+}

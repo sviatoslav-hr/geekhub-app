@@ -62,3 +62,8 @@
   border-radius: 50% !important;
   object-fit: cover;
 }
+
+.fade.show {
+  display: block !important;
+  background-color: rgba(0, 0, 0, 0.75);
+}

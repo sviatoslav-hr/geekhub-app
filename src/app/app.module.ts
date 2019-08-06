@@ -23,7 +23,7 @@ import {
   MatFormFieldModule,
   MatInputModule,
   MatMenuModule,
-  MatNativeDateModule
+  MatNativeDateModule, MatProgressSpinnerModule
 } from '@angular/material';
 import {FriendsComponent} from './components/friends/friends.component';
 import { PasswordResetComponent } from './components/auth/password-reset/password-reset.component';
@@ -67,6 +67,7 @@ import { ChatComponent } from './components/chat-components/chat/chat.component'
     MatDividerModule,
     DragDropModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     httpInterceptorProviders,

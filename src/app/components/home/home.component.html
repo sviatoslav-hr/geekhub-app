@@ -1,27 +1,26 @@
-<div *ngIf="info.token; else loggedOut">
-  <h5 class="text-primary">Your Info</h5>
-  <p>
-    <strong>Username:</strong> {{info.username}}<br>
-    <strong>Roles:</strong> {{info.authorities}}<br>
-    <strong>Token:</strong> {{info.token}}
-  </p>
-  <button class="btn btn-secondary" (click)="logout()">Logout</button>
+<div *ngIf="isLoggedIn(); else loggedOut">
+  <div class="container">
+    <p class="logo-header">GeekHub</p>
+    <h3 class="font-weight-bold">Main page</h3>
+  </div>
+  <div class="container py-3">
+    <button class="btn btn-secondary" (click)="logout()">Logout</button>
 
-  <!--<h3 class="alert">Users</h3>-->
-  <button class="btn mx-5" [ngClass]="usersEnabled? 'btn-danger': 'btn-primary'"
-          (click)="usersEnabled? emptyUsers(): getUsers()" [textContent]="usersEnabled? 'Hide users': 'Show users'">
-  </button>
+    <button class="btn ml-5" [ngClass]="usersEnabled? 'btn-danger': 'btn-primary'"
+            (click)="usersEnabled? emptyUsers(): getUsers()" [textContent]="usersEnabled? 'Hide users': 'Show users'">
+    </button>
+  </div>
   <div class="list-group my-2" *ngIf="usersEnabled && usersList; else loadingUsers">
     <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
-      <a [routerLink] ="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
+      <a [routerLink]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
     </div>
   </div>
   <ng-template #loadingUsers>
-    <ng-container *ngIf="usersEnabled">
+    <div *ngIf="usersEnabled" class="container text-center pt-4">
       <div class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
       </div>
-    </ng-container>
+    </div>
   </ng-template>
 </div>
 

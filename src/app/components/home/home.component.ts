@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {User} from '../../models/user';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {UserService} from '../../services/user.service';
+import {AuthService} from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -10,21 +11,16 @@ import {UserService} from '../../services/user.service';
 })
 export class HomeComponent implements OnInit {
   usersEnabled = false;
-  info: any;
   usersList: User[];
 
   constructor(
     private storageService: LocalStorageService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {
   }
 
   ngOnInit() {
-    this.info = {
-      token: this.storageService.token,
-      username: this.storageService.username,
-      authorities: this.storageService.authorities
-    };
   }
 
   logout() {
@@ -41,5 +37,9 @@ export class HomeComponent implements OnInit {
   emptyUsers() {
     this.usersEnabled = false;
     this.usersList = null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.authService.currentUser;
   }
 }

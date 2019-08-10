@@ -129,7 +129,6 @@ export class UserHomeComponent implements OnInit {
   }
 
   sendFriendRequest() {
-    console.log(console.log('logged user image+++++++++++' + this.authService.currentUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
         .subscribe(() => {

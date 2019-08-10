@@ -89,7 +89,7 @@ export class ConversationsService {
           this._conversations.unshift(conversation);
         }
 
-        if ((!this._selectedConversation || conversation.id !== this._selectedConversation.id)
+        if (conversation.theLastMessage
           && conversation.theLastMessage.sender.username !== this.authService.currentUser.username) {
           this._unreadMessages.get(conversation.id) ?
             this._unreadMessages.get(conversation.id).unshift(conversation.theLastMessage) :

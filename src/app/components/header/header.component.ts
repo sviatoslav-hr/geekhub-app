@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
 
   onSubmit() {
     this.loginInfo = new AuthLoginInfo(
-      LocalStorageService.username,
+      this.form.username,
       this.form.password);
 
     this.authService.attemptAuth(this.loginInfo).subscribe(

@@ -35,7 +35,7 @@ export class AuthService {
   ) {
   }
 
-  get currentUser(): User {
+  public get currentUser(): User {
     return this.user;
   }
 
@@ -52,13 +52,8 @@ export class AuthService {
     const username = LocalStorageService.username;
     if (username) {
       this.userService.getUserByUsername(username)
-        .subscribe(user => {
-            this.user = user;
-            console.log(user);
-          },
-          () => {
-            setTimeout(() => this.requestCurrentUser(), 5000);
-          });
+        .subscribe(user => this.user = user,
+          () => setTimeout(() => this.requestCurrentUser(), 5000));
     }
   }
 

@@ -1,4 +1,9 @@
-<div class="conversations-container flex-column">
+<button type="button" class="btn switch-conversations-btn conversations-btn-disabled conversations-width"
+        (click)="enableConversations()" [ngClass]="{'d-none text-white': isEnabled}">
+  <span>Show chats <i class="fas fa-chevron-down"></i></span>
+</button>
+
+<div class="conversations-container flex-column conversations-width"  [ngClass]="{'d-none': !isEnabled}">
   <mat-menu #messagesMenu="matMenu" [overlapTrigger]="false">
     <button mat-menu-item>
       <i class="fas fa-users"></i> New group chat
@@ -8,14 +13,13 @@
     </button>
   </mat-menu>
   <div class="conversations-header">
-    <button type="button" *ngIf="isEnabled" class="btn rounded-0 w-25 messages-settings-btn"
+    <button type="button" class="btn rounded-0 w-25 messages-settings-btn"
             [matMenuTriggerFor]="messagesMenu">
       <i class="fas fa-bars"></i>
     </button>
-    <button type="button" class="btn rounded-0 switch-conversations-btn" (click)="enableOrDisableConversations()"
-            [ngClass]="isEnabled? {'conversations-btn-enabled w-75': true}: {'conversations-btn-disabled w-100' : true}">
-      {{isEnabled ? '' : 'Show chats '}}
-      <i class="fas" [ngClass]="isEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
+    <button type="button" class="btn rounded-0 switch-conversations-btn conversations-btn-enabled w-75"
+            (click)="disableConversations()">
+      <i class="fas fa-chevron-up"></i>
     </button>
   </div>
   <div id="conversations-search" *ngIf="isEnabled">

@@ -24,7 +24,7 @@
     </div>
 
     <!--container for messages list-->
-    <div id="msg-container" class="mr-0" (wheel)="chatService.unreadMessages &&
+    <div id="msg-container" class="mr-0" (wheel)="!!chatService.unreadMessages &&
     chatService.unreadMessages.length > 0 ? checkIfNewMessage() : null" #msgContainer>
       <div *ngIf="chatService.unreadMessages && chatService.unreadMessages.length > 0"
            id="new-messages-block">
@@ -35,13 +35,13 @@
             <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
               {{message.date | date:"H:mm:ss"}}
-      </span>
+            </span>
           </div>
         </div>
 
       </div>
       <!--all messages-->
-      <div style="display: block" *ngFor="let message of chatService.messages"
+      <div *ngFor="let message of chatService.messages" class="d-block"
            [ngClass]="message.constructor.name === 'OutgoingMessage' || message.sender.username === chatService.loggedUsername?
              'text-right':
              'text-left'">
@@ -76,10 +76,10 @@
 
     <!--input for new message-->
     <div class="container-fluid input-group py-1 px-2" id="chat-input-container">
-      <div
-        *ngIf="chatService.messages && msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight > 400"
-        id="chat-scroll-down-btn" class="bg-secondary"
-        (click)="scrollChatToBottom()">
+      <div *ngIf="chatService.messages"
+           [ngClass]="{'d-none': msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight < 300}"
+           id="chat-scroll-down-btn" class="bg-secondary"
+           (click)="scrollChatToBottom()">
         <i class="fas fa-chevron-down"></i>
         <span *ngIf="getNumberOfUnreadMessages() > 0;" class="badge badge-danger position-absolute"
               style="top: -15px; right: 50%; transform: translate(-50%, 0)">

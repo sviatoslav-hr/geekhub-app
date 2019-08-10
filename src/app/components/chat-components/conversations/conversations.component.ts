@@ -47,16 +47,16 @@ export class ConversationsComponent implements OnInit {
     return this.conversationsService.selectedConversation;
   }
 
-  enableOrDisableConversations() {
-    this.isEnabled = !this.isEnabled;
+  enableConversations() {
+    this.isEnabled = true;
     LocalStorageService.areConversationsEnabled = this.isEnabled;
+    this.conversationsService.loadConversations();
+  }
 
-    if (this.isEnabled) {
-      console.log('enableOrDisableConversations');
-      this.conversationsService.loadConversations();
-    } else {
-      this.conversationsService.clearConversations();
-    }
+  disableConversations() {
+    this.isEnabled = false;
+    LocalStorageService.areConversationsEnabled = this.isEnabled;
+    this.conversationsService.clearConversations();
   }
 
   getNumberOfUnreadMessages(conversation: Conversation): number {

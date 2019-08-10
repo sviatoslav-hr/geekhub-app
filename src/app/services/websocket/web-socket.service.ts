@@ -6,7 +6,7 @@ export abstract class WebSocketService implements OnDestroy {
   private readonly connectionUrl: string;
   private _webSocket;
   private _stompClient: any;
-  protected cLog = 2;
+  protected cLog = 0;
 
   /*
     0 - console.log disabled
@@ -34,7 +34,9 @@ export abstract class WebSocketService implements OnDestroy {
     }
     this._webSocket = new SockJS(this.connectionUrl);
     this._stompClient = Stomp.over(this.webSocket);
-    // this.stompClient.debug = null; // disable log
+    if (this.cLog === 0) {
+      this.stompClient.debug = null; // disable log
+    }
 
     this.stompClient.connect({}, () => {
       this.stompClient.debug = () => {
@@ -51,6 +53,8 @@ export abstract class WebSocketService implements OnDestroy {
     if (this.cLog >= 1) {
       console.log('%cWebSocket disconnecting...\n' + this.connectionUrl, 'color:red');
     }
-    this.stompClient.disconnect();
+    if (this.stompClient) {
+      this.stompClient.disconnect();
+    }
   }
 }

@@ -40,6 +40,9 @@ export class ChatService {
   }
 
   get unreadMessages(): Message[] {
+    if (!this._unreadMessages) {
+      this._unreadMessages = [];
+    }
     return this._unreadMessages;
   }
 
@@ -137,16 +140,18 @@ export class ChatService {
 
   private addIncomingMessage(newMessage: Message) {
     if (ChatService.isScrolledToBottom()) {
-      console.log('isScrolled');
       setTimeout(() => this.messageService
         .saveMessagesAsRead(this.conversation.id, LocalStorageService.username), 100);
       this.messages.unshift(newMessage);
       this.unreadMessagesEmitter.emit([]);
     } else {
-      console.log('isUnscrolled');
-      this.unreadMessages ?
-        this.unreadMessages.unshift(newMessage) :
+      if (this._unreadMessages) {
+        this._unreadMessages.unshift(newMessage);
+      } else {
+        this._unreadMessages = [];
+        this._unreadMessages.unshift(newMessage);
         this.unreadMessagesEmitter.emit([newMessage]);
+      }
     }
   }
 
@@ -175,9 +180,9 @@ export class ChatService {
 
   private getMessages(conversationId: number) {
     this.messageService.getMessagesForConversation(conversationId).subscribe((messages) => {
-      this.subscribeForNewMessages();
-      document.getElementById('chat-input').focus();
       this._messages = messages.reverse();
+      document.getElementById('chat-input').focus();
+      this.subscribeForNewMessages();
       this.messageService.saveMessagesAsRead(this.conversation.id, this.loggedUsername);
       this.unreadMessagesEmitter.emit([]);
 

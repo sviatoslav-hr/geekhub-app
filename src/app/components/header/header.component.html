@@ -56,7 +56,7 @@
           <div *ngIf="authService.isLogged" class="crop">
             <img [matMenuTriggerFor]="menu"
                  [src]="'http://localhost:8080/images/' + authService.currentUser.profileImage"
-                 class="rounded-circle float-right avatar-image"
+                 class="rounded-circle float-right avatar-image cursor-pointer"
                  alt="avatar image">
           </div>
           <mat-menu class="mt-1" style="position: fixed; overflow: hidden;" #menu="matMenu">

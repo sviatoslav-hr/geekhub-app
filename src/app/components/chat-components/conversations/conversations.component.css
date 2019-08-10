@@ -4,15 +4,18 @@
   padding-top: 48px;
 }
 
+.conversations-width {
+  width: 160px;
+}
+
 /* Conversations List */
 .conversations-container {
   z-index: 5;
-  width: 160px;
   margin-right: 0;
   top: 48px;
-  height: calc(100% - 48px);
   position: fixed;
   transition: all 5s ease;
+  height: calc(100% - 48px);
 }
 
 .conversations-header {
@@ -54,8 +57,29 @@
   background-color: #2d2d2d !important;
 }
 
+.conversations-btn-enabled > * {
+  transition: all 0.3s ease;
+}
+
+.conversations-btn-enabled:active > * {
+  transform: translate(0, -10%);
+}
+
 .conversations-btn-disabled {
   color: dimgrey;
+  z-index: 5;
+  margin-right: 0;
+  top: 48px;
+  position: fixed !important;
+}
+
+.conversations-btn-disabled > * {
+  transition: all 0.3s ease-in-out !important;
+  display: block !important;
+}
+
+.conversations-btn-disabled:active > * {
+  transform: translate(0, 10%) !important;
 }
 
 .messages-settings-btn {

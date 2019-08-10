@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {LocalStorageService} from './services/local-storage.service';
 import {UserService} from './services/user.service';
-import {User} from './models/user';
 import {AuthService} from './services/auth/auth.service';
 import {Router} from '@angular/router';
 
@@ -27,7 +26,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storageService.token) {
+    if (LocalStorageService.token) {
       this.authService.requestCurrentUser();
     } else if (!this.allowedURLs.includes(window.location.href)) {
       this.router.navigate(['/']);

@@ -1,39 +1,26 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {Conversation} from '../models/conversation';
 import {Message} from '../models/message';
-import {WsMessageService} from './websocket/ws-message.service';
+import {WebSocketMessageService} from './websocket/web-socket-message.service';
 import {LocalStorageService} from './local-storage.service';
 import {OutgoingMessage} from '../models/outgoing-message';
 import {User} from '../models/user';
+import {AuthService} from './auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private _pendingMessages: Message[] = [];
-  private _loggedUsername: string;
-  private _draftMessage: OutgoingMessage;
-  private _receiver: User;
-  private _messages: Message[];
-  private _conversation: Conversation;
-  private _isMsgWindowMaximized = true;
-  private _unreadMessages: Message[];
-  unreadMessagesEmitter = new EventEmitter<Message[]>();
-  conversationClosed = new EventEmitter<boolean>();
-
   constructor(
-    private wsMessageService: WsMessageService,
-    private storageService: LocalStorageService
+    private messageService: WebSocketMessageService,
+    private storageService: LocalStorageService,
+    private authService: AuthService
   ) {
   }
 
 
   get messages(): Message[] {
     return this._messages;
-  }
-
-  set messages(value: Message[]) {
-    this._messages = value;
   }
 
   get conversation(): Conversation {
@@ -56,24 +43,12 @@ export class ChatService {
     return this._unreadMessages;
   }
 
-  set unreadMessages(value: Message[]) {
-    this._unreadMessages = value;
-  }
-
   get pendingMessages(): Message[] {
     return this._pendingMessages;
   }
 
-  set pendingMessages(value: Message[]) {
-    this._pendingMessages = value;
-  }
-
   get loggedUsername(): string {
-    return this._loggedUsername;
-  }
-
-  set loggedUsername(value: string) {
-    this._loggedUsername = value;
+    return this.authService.currentUser.username;
   }
 
   get draftMessage(): OutgoingMessage {
@@ -88,9 +63,15 @@ export class ChatService {
     return this._receiver;
   }
 
-  set receiver(value: User) {
-    this._receiver = value;
-  }
+  private _pendingMessages: Message[] = [];
+  private _draftMessage: OutgoingMessage;
+  private _receiver: User;
+  private _messages: Message[];
+  private _conversation: Conversation;
+  private _isMsgWindowMaximized = true;
+  private _unreadMessages: Message[];
+  unreadMessagesEmitter = new EventEmitter<Message[]>();
+  conversationClosed = new EventEmitter<boolean>();
 
   public static compareConversationsByTheLastMessage(conv1: Conversation, conv2: Conversation): number {
     if (!conv1.theLastMessage && !conv2.theLastMessage) {
@@ -114,8 +95,13 @@ export class ChatService {
     return msg1.date.getTime() - msg2.date.getTime();
   }
 
-  init(conversation: Conversation, isMsgWindowMaximized: boolean) {
-    this.loggedUsername = this.storageService.username;
+  private static isScrolledToBottom(): boolean {
+    const elementById = document.getElementById('msg-container');
+    // fixme: replace '30' with height of the last msg block
+    return elementById.scrollHeight - elementById.scrollTop < elementById.offsetHeight + 30;
+  }
+
+  initialize(conversation: Conversation, isMsgWindowMaximized: boolean) {
     this.conversation = conversation;
     this.setReceiver(conversation);
     this.getMessages(conversation.id);
@@ -124,13 +110,10 @@ export class ChatService {
 
   subscribeForNewMessages() {
     // console.log('%cinside subscribing for new message', 'color: blue; font-size: 20px;');
-    // fixme: websocket subscribes from anonymous window to current
-    this.wsMessageService.subscribeForNewMessages(this.conversation.id, (newMessage: Message) => {
+    this.messageService.subscribeForNewMessages(this.conversation.id, (newMessage: Message) => {
       if (!newMessage) {
         console.log('%cError: Incoming new message is null', 'color: red; font-size: 16px');
       }
-      console.log(newMessage);
-      const loggedUsername = this.storageService.username;
       // check for message duplication
       if (this.messages[0].id !== newMessage.id) {
         // check for new message duplication
@@ -139,43 +122,10 @@ export class ChatService {
           console.log('%cError: trying to add already added new message.', 'color: red; font-size: 16px;');
           return;
         }
-        // if message was sent by loggedUser, replace temporary message
-        if (newMessage.sender.username === loggedUsername) {
-          // find index of pending message to replace
-          const oldMessageIndex = this.messages.findIndex(message => {
-            if (!message.parentMessageId && message.constructor.name !== 'OutgoingMessage') {
-              return false;
-            }
-            return (message.constructor.name === 'OutgoingMessage'
-              && message.parentMessageId === newMessage.parentMessageId) || (message.id && message.id === newMessage.id);
-          });
-          if (oldMessageIndex < 0) {
-            console.log('Found index less than 0 - message not found');
-          } else if (!this.messages[oldMessageIndex].id || this.messages[oldMessageIndex].id !== newMessage.id) {
-            this.messages[oldMessageIndex] = newMessage;
-          }
-          // if there if another pending messages
-          if (this.pendingMessages.length > 0) {
-            const firstPendingMsg = this.pendingMessages.shift();
-            console.log('%cSending next pending message', 'color: blue; font-size: 16px;');
-            console.log(newMessage);
-            console.log(firstPendingMsg);
-            firstPendingMsg.parentMessageId = newMessage.id;
-            this.wsMessageService.sendPrivateMsg(firstPendingMsg);
-          }
-
+        if (newMessage.sender.username === LocalStorageService.username) {
+          this.updateTemporaryPendingMessage(newMessage);
         } else {
-          const elementById = document.getElementById('msg-container');
-          // if messages was scrolled to bottom
-          // fixme: replace '30' with height of the last msg block
-          if (elementById.scrollHeight - elementById.scrollTop < elementById.offsetHeight + 30) {
-            setTimeout(() => this.wsMessageService.saveMessagesAsRead(this.conversation.id, loggedUsername), 100);
-            this.messages.unshift(newMessage);
-          } else {
-            this.unreadMessages ?
-              this.unreadMessages.unshift(newMessage) :
-              this.unreadMessagesEmitter.emit([newMessage]);
-          }
+          this.addIncomingMessage(newMessage);
         }
         this.draftMessage.parentMessageId = newMessage.id;
       } else {
@@ -185,20 +135,50 @@ export class ChatService {
     });
   }
 
-  private getMessages(conversationId: number) {
-    this.wsMessageService.getMessagesForConversation(conversationId).subscribe((messages) => {
-      this.subscribeForNewMessages();
+  private addIncomingMessage(newMessage: Message) {
+    if (ChatService.isScrolledToBottom()) {
+      console.log('isScrolled');
+      setTimeout(() => this.messageService
+        .saveMessagesAsRead(this.conversation.id, LocalStorageService.username), 100);
+      this.messages.unshift(newMessage);
+      this.unreadMessagesEmitter.emit([]);
+    } else {
+      console.log('isUnscrolled');
+      this.unreadMessages ?
+        this.unreadMessages.unshift(newMessage) :
+        this.unreadMessagesEmitter.emit([newMessage]);
+    }
+  }
 
-      document.getElementById('chat-input').focus();
-
-      this.messages = messages.reverse();
-
-      if (this.unreadMessages && this.unreadMessages.length > 0) {
-        this.wsMessageService.saveMessagesAsRead(this.conversation.id, this.loggedUsername);
+  private updateTemporaryPendingMessage(newMessage: Message) {
+    // find index of temporary message to replace
+    const oldMessageIndex = this.messages.findIndex(message => {
+      if (!message.parentMessageId) {
+        return message.constructor.name === 'OutgoingMessage';
       }
-      // if (this.unreadMessages.get(this.selectedConversation.id)) {
-      //   this.unreadMessages.get(this.selectedConversation.id).forEach(newMessage => this.messages.unshift(newMessage));
-      // }
+      return (message.constructor.name === 'OutgoingMessage'
+        && message.parentMessageId === newMessage.parentMessageId) || (message.id && message.id === newMessage.id);
+    });
+    if (oldMessageIndex < 0) {
+      console.log('%cFound index less than 0 - message not found', 'color: red; font-size: 16px;');
+    } else if (!this.messages[oldMessageIndex].id || this.messages[oldMessageIndex].id !== newMessage.id) {
+      this.messages[oldMessageIndex] = newMessage;
+    }
+    // if there if another pending messages
+    if (this.pendingMessages.length > 0) {
+      const pendingMessage = this.pendingMessages.shift();
+      console.log('%cSending next pending message', 'color: blue; font-size: 16px;');
+      pendingMessage.parentMessageId = newMessage.id;
+      this.messageService.sendPrivateMsg(pendingMessage);
+    }
+  }
+
+  private getMessages(conversationId: number) {
+    this.messageService.getMessagesForConversation(conversationId).subscribe((messages) => {
+      this.subscribeForNewMessages();
+      document.getElementById('chat-input').focus();
+      this._messages = messages.reverse();
+      this.messageService.saveMessagesAsRead(this.conversation.id, this.loggedUsername);
       this.unreadMessagesEmitter.emit([]);
 
       this.subscribeForReadMessagesUpdates(conversationId);
@@ -206,24 +186,16 @@ export class ChatService {
   }
 
   subscribeForReadMessagesUpdates(conversationId: number) {
-    this.wsMessageService.subscribeForReadMessagesUpdates(conversationId, (readMessages: Message[]) => {
-      console.log('%cUpdating read messages', 'color:blue');
-      console.log(readMessages);
-      // console.log(this.unreadMessages.get(conversation.id));
-      // console.log(this.messages.filter(value => value.constructor.name === 'OutgoingMessage'));
-      // console.log(this.messages.filter(value => value.constructor.name !== 'OutgoingMessage'));
+    this.messageService.subscribeForReadMessagesUpdates(conversationId, (readMessages: Message[]) => {
       readMessages.forEach(message => {
         const findIndex = this.messages.findIndex(value => value.id === message.id ||
           value.parentMessageId === message.parentMessageId);
         if (findIndex >= 0) {
-          console.log('%creplacing...', 'color:blue');
-          // console.log(message);
-          // console.log(this.messages[findIndex]);
           this.messages[findIndex] = message;
         } else {
           console.log('%cnot found...', 'color:red');
-          console.log(message);
-          console.log(this.messages);
+          console.log({message});
+          console.log({messages: this.messages});
         }
         // if there is element in map with ID conversation.id, remove message from array by filter
         // otherwise create empty array
@@ -236,9 +208,8 @@ export class ChatService {
   }
 
   private setReceiver(conversation: Conversation) {
-    this.receiver = conversation.users[0].username !== this.storageService.username ?
+    this._receiver = conversation.users[0].username !== LocalStorageService.username ?
       conversation.users[0] : conversation.users[1];
-    console.log(this.receiver);
   }
 
   initDraftMessage() {
@@ -251,28 +222,31 @@ export class ChatService {
   }
 
   sendMessage() {
-    console.log(this.draftMessage);
     if (this.messages && this.messages.length > 0) {
       this.draftMessage.parentMessageId = this.messages[0].id;
     } else if (!this.messages) {
-      this.messages = [];
+      this._messages = [];
     }
-    if (this.draftMessage.recipientUsername !== this.receiver.username ||
-      this.draftMessage.conversationId !== this.conversation.id) {
-      this.draftMessage.recipientUsername = this.receiver.username;
-      this.draftMessage.conversationId = this.conversation.id;
-    }
+    this.draftMessage.recipientUsername = this.receiver.username;
+    this.draftMessage.conversationId = this.conversation.id;
     this.draftMessage.date = new Date();
     if (this.draftMessage.content && this.draftMessage.content.length > 0) {
       if (this.draftMessage.content.trim() === '') {
         this.draftMessage.content = '';
         return;
       } else if (this.messages.length === 0 || this.messages[0].constructor.name !== 'OutgoingMessage') {
-        this.wsMessageService.sendPrivateMsg(this.draftMessage);
+        this.messageService.sendPrivateMsg(this.draftMessage);
       } else if (this.messages.length > 0) {
         this.pendingMessages.push(this.draftMessage);
       }
       this.messages.unshift(this.draftMessage);
     }
+  }
+
+  clearChat() {
+    this.conversation = null;
+    this._receiver = null;
+    this._messages = null;
+    this.messageService.disconnect();
   }
 }

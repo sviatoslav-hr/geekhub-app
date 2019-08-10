@@ -15,7 +15,6 @@ export class LoginComponent implements OnInit {
   isLoggedIn = false;
   isLoginFailed = false;
   errorMessage = '';
-  roles: string[] = [];
   private loginInfo: AuthLoginInfo;
 
   constructor(
@@ -27,26 +26,24 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storageService.token) {
+    if (LocalStorageService.token) {
       this.isLoggedIn = true;
-      this.roles = this.storageService.authorities;
     }
   }
 
   onSubmit() {
     this.loginInfo = new AuthLoginInfo(
-      this.form.username,
+      LocalStorageService.username,
       this.form.password);
 
 
     this.authService.attemptAuth(this.loginInfo).subscribe(
       data => {
         console.log(data);
-        this.storageService.token = data.accessToken;
-        this.storageService.username = data.username;
-        this.storageService.authorities = data.authorities;
+        LocalStorageService.token = data.accessToken;
+        LocalStorageService.username = data.username;
+        LocalStorageService.authorities = data.authorities;
         this.goToUserPage(data.username);
-        this.roles = this.storageService.authorities;
 
 
       }, error => {

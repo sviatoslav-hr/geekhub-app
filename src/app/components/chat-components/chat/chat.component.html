@@ -29,12 +29,11 @@
       <div *ngIf="chatService.unreadMessages && chatService.unreadMessages.length > 0"
            id="new-messages-block">
         <div *ngFor="let message of chatService.unreadMessages" class="text-left"
-             [ngStyle]="message? '':{'background-color': 'red'}"
+             [ngStyle]="message? {}:{'background-color': 'red'}"
              [id]="(message.id === chatService.unreadMessages[chatService.unreadMessages.length -1].id) ? 'new-private-msg' : null">
           <div class="single-msg msg-secondary msg-bubble-left">
             <p>{{message.content}}</p>
             <span class="float-right align-text-bottom ml-1 single-msg-time">
-            <!--{{message.date | date:"MMMM d, y, h:mm:ss"}}-->
               {{message.date | date:"H:mm:ss"}}
       </span>
           </div>
@@ -77,9 +76,10 @@
 
     <!--input for new message-->
     <div class="container-fluid input-group py-1 px-2" id="chat-input-container">
-      <div *ngIf="chatService.messages && msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight > 400"
-           id="chat-scroll-down-btn" class="bg-secondary"
-           (click)="scrollChatToBottom()">
+      <div
+        *ngIf="chatService.messages && msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.offsetHeight > 400"
+        id="chat-scroll-down-btn" class="bg-secondary"
+        (click)="scrollChatToBottom()">
         <i class="fas fa-chevron-down"></i>
         <span *ngIf="getNumberOfUnreadMessages() > 0;" class="badge badge-danger position-absolute"
               style="top: -15px; right: 50%; transform: translate(-50%, 0)">
@@ -93,7 +93,8 @@
                 (keydown.enter)="sendPrivateMsg(msgInput, $event)"
                 (keydown.control.enter)="goToNewLine(msgInput)"
                 (keydown.escape)="closeConversation()"
-                [disabled]="!chatService.draftMessage || chatService.pendingMessages.length > 7" [(ngModel)]="chatService.draftMessage.content"
+                [(ngModel)]="chatService.draftMessage.content"
+                [disabled]="isDisabled()"
                 #msgInput
                 [rows]="msgInput.value.split('\n').length < 12? msgInput.value.split('\n').length : 8">
       </textarea>

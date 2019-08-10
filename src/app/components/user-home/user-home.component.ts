@@ -1,13 +1,14 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {FriendsService} from '../../services/friends.service';
-import {WsMessageService} from '../../services/websocket/ws-message.service';
-import {OutgoingMessage} from '../../models/outgoing-message';
+import {WebSocketMessageService} from '../../services/websocket/web-socket-message.service';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../../services/auth/auth.service';
+import {ChatService} from '../../services/chat.service';
+import {ConversationsService} from '../../services/conversations.service';
 
 @Component({
   selector: 'app-user-home',
@@ -15,24 +16,26 @@ import {AuthService} from '../../services/auth/auth.service';
   styleUrls: ['./user-home.component.css']
 })
 export class UserHomeComponent implements OnInit {
-  private privateMsg: OutgoingMessage;
   userHome: User = null;
   privateMsgEnabled = false;
   fileToUpload: File;
   formData = new FormData();
+
   constructor(
     private storageService: LocalStorageService,
+    private authService: AuthService,
     private userService: UserService,
     private friendsService: FriendsService,
+    private msgService: WebSocketMessageService,
+    private chatService: ChatService,
     private route: ActivatedRoute,
-    private msgService: WsMessageService,
     private http: HttpClient,
-    private authService: AuthService
+    private conversationsService: ConversationsService
   ) {
   }
 
   ngOnInit() {
-    if (this.storageService.token) {
+    if (LocalStorageService.token) {
       this.getUserFromURL();
     }
   }
@@ -129,7 +132,7 @@ export class UserHomeComponent implements OnInit {
     console.log(console.log('logged user image+++++++++++' + this.authService.currentUser.profileImage));
     if (this.userHome) {
       this.friendsService.sendFriendRequest(this.userHome.id)
-        .subscribe(value => {
+        .subscribe(() => {
           this.authService.currentUser.outgoingFriendRequests = undefined;
           this.getFriendRequests();
         }, error => console.log(error));
@@ -139,7 +142,7 @@ export class UserHomeComponent implements OnInit {
   }
 
   acceptFriendRequest() {
-    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(value => {
+    this.friendsService.acceptFriendRequest(this.userHome.id).subscribe(() => {
       this.authService.currentUser.incomingFriendRequests = undefined;
       this.authService.currentUser.friends = undefined;
       this.getFriendRequests();
@@ -148,14 +151,14 @@ export class UserHomeComponent implements OnInit {
   }
 
   cancelFriendRequest() {
-    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(value => {
+    this.friendsService.cancelFriendRequest(this.userHome.id).subscribe(() => {
       this.authService.currentUser.outgoingFriendRequests = undefined;
       this.getFriendRequests();
     });
   }
 
   removeFromFriends() {
-    this.friendsService.deleteFriend(this.userHome.id).subscribe(value => {
+    this.friendsService.deleteFriend(this.userHome.id).subscribe(() => {
       this.authService.currentUser.friends = undefined;
       this.getFriendsList();
     });
@@ -166,7 +169,7 @@ export class UserHomeComponent implements OnInit {
     console.log(files.item(0));
     console.log(this.formData);
     this.formData.append('file', files.item(0), this.fileToUpload.name);
-    this.http.post('http://localhost:8080/api/save-photo', this.formData).subscribe((val) => {
+    this.http.post('http://localhost:8080/api/save-photo', this.formData).subscribe(() => {
       this.authService.requestCurrentUser();
       this.getUserFromURL();
       this.formData.delete('file');
@@ -174,30 +177,27 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  togglePrivateMsg() {
-    this.msgService.createConversationIfNotExists(this.userHome.id)
-      .subscribe(conversation => {
-        if (conversation) {
-          this.setNewPrivateMessage(conversation.id);
-        } else {
-          console.log('Conversation equals null');
-        }
-      }, error => {
-        console.error('Something gone wrong during creating conversation :(');
-        console.log(error);
-      });
-  }
-
-  setNewPrivateMessage(conversationId: number) {
-    this.privateMsg = new OutgoingMessage();
-    this.privateMsg.conversationId = conversationId;
-    this.privateMsg.recipientUsername = this.userHome.username;
-    this.privateMsg.senderUsername = this.storageService.username;
-    this.privateMsgEnabled = !this.privateMsgEnabled;
-  }
-
-  private sendPrivateMsg() {
-    this.msgService.sendPrivateMsg(this.privateMsg);
-    this.setNewPrivateMessage(this.privateMsg.conversationId);
+  private openPrivateMsgWindow() {
+    if (!this.privateMsgEnabled) {
+      this.msgService.createConversationIfNotExists(this.userHome.id)
+        .subscribe(conversation => {
+          if (conversation) {
+            this.privateMsgEnabled = true;
+            this.chatService.initialize(conversation, false);
+            this.chatService.initDraftMessage();
+            this.chatService.conversationClosed.subscribe(() =>
+              this.privateMsgEnabled = false
+            );
+            this.conversationsService.selectedConversation = conversation;
+          } else {
+            console.log('Conversation equals null');
+          }
+        }, error => {
+          console.error('Something gone wrong during creating conversation :(');
+          console.log(error);
+        });
+    } else {
+      this.privateMsgEnabled = false;
+    }
   }
 }

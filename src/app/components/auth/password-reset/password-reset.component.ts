@@ -32,7 +32,7 @@ export class PasswordResetComponent implements OnInit {
     console.log(this.username);
 
     this.authService.sendCodeToEmail(this.username).subscribe(data => {
-        this.storageService.username = this.username;
+        LocalStorageService.username = this.username;
         // console.log(data.ok);
         console.log(data.statusText);
         console.log(data);
@@ -51,7 +51,7 @@ export class PasswordResetComponent implements OnInit {
   }
 
   onSubmitNewPassword() {
-    this.authService.sendNewPassword(this.code, this.newPassword, this.storageService.username).subscribe(data => {
+    this.authService.sendNewPassword(this.code, this.newPassword, LocalStorageService.username).subscribe(data => {
         if (data.message === 'Password was changed') {
           this.router.navigate(['/signin']);
         }

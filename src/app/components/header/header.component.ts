@@ -29,14 +29,14 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storageService.token) {
+    if (LocalStorageService.token) {
       this.roles = this.storageService.authorities;
     }
   }
 
   onSubmit() {
     this.loginInfo = new AuthLoginInfo(
-      this.form.username,
+      LocalStorageService.username,
       this.form.password);
 
     this.authService.attemptAuth(this.loginInfo).subscribe(
@@ -61,7 +61,7 @@ export class HeaderComponent implements OnInit {
 
   navigateToVerificationPage() {
     this.isPopupShown = false;
-    this.storageService.username = this.loginInfo.username;
+    LocalStorageService.username = this.loginInfo.username;
     this.router.navigate(['/verify']);
     this.authService.storePassword(this.form.password);
   }

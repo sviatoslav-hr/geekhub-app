@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {AuthLoginInfo} from './login-info';
 import {SignUpInfo} from './signup-info';
@@ -39,7 +39,7 @@ export class AuthService {
     return this.user;
   }
 
-  public isLogged(): boolean {
+  public get isLogged(): boolean {
     return !!this.user;
   }
 
@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   requestCurrentUser() {
-    const username = this.storageService.username;
+    const username = LocalStorageService.username;
     if (username) {
       this.userService.getUserByUsername(username)
         .subscribe(user => {
@@ -63,9 +63,8 @@ export class AuthService {
   }
 
   attemptAutoAuth(): Observable<JwtResponse> {
-    if (this.storedPassword && this.storageService.username) {
-      console.log('trying to auto auth with password: ' + this.storedPassword);
-      const credentials = {username: this.storageService.username, password: this.storedPassword};
+    if (this.storedPassword && LocalStorageService.username) {
+      const credentials = {username: LocalStorageService.username, password: this.storedPassword};
       return this.attemptAuth(credentials).pipe(map((data) => {
         this.storedPassword = null;
         return data;
@@ -78,12 +77,11 @@ export class AuthService {
     return this.http.post<JwtResponse>(this.loginUrl, credentials, httpOptions)
       .pipe(map(response => {
         // login successful if there's a response token in the response
-        console.log(response);
         if (response && response.accessToken) {
           // store user details and response token in local storage to keep user logged in between page refreshes
-          this.storageService.token = response.accessToken;
-          this.storageService.username = response.username;
-          this.storageService.authorities = response.authorities;
+          LocalStorageService.token = response.accessToken;
+          LocalStorageService.username = response.username;
+          LocalStorageService.authorities = response.authorities;
           this.requestCurrentUser();
         }
         return response;
@@ -92,7 +90,7 @@ export class AuthService {
 
   public logOut() {
     this.user = null;
-    this.storageService.clear();
+    LocalStorageService.clear();
     this.router.navigate(['/']);
   }
 

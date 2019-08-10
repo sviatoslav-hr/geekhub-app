@@ -20,14 +20,14 @@ export class ContentComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storageService.token) {
+    if (LocalStorageService.token) {
       this.isLoggedIn = true;
       this.getUser();
     }
   }
 
   private getUser() {
-    this.userService.getUserByUsername(this.storageService.username)
+    this.userService.getUserByUsername(LocalStorageService.username)
       .subscribe(value => this.loggedUser = value);
   }
 

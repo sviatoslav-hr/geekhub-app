@@ -16,7 +16,6 @@ export class FriendsComponent implements OnInit {
 
   constructor(
     private friendsService: FriendsService,
-    private tokenService: LocalStorageService,
   ) {
   }
 
@@ -27,7 +26,7 @@ export class FriendsComponent implements OnInit {
   }
 
   getFriends() {
-    this.friendsService.getFriendsListByUsername(this.tokenService.username)
+    this.friendsService.getFriendsListByUsername(LocalStorageService.username)
       .subscribe(friendsList => {
         this.friends = friendsList;
       });
@@ -44,21 +43,21 @@ export class FriendsComponent implements OnInit {
   }
 
   acceptFriendRequest(senderId: number) {
-    this.friendsService.acceptFriendRequest(senderId).subscribe(value => {
+    this.friendsService.acceptFriendRequest(senderId).subscribe(() => {
       this.getFriends();
       this.getIncomingFriendRequests();
     });
   }
 
   removeFromFriends(friendId: number) {
-    this.friendsService.deleteFriend(friendId).subscribe(value => {
+    this.friendsService.deleteFriend(friendId).subscribe(() => {
       this.getFriends();
       this.getIncomingFriendRequests();
     });
   }
 
   cancelFriendRequest(receiverId: number) {
-    this.friendsService.cancelFriendRequest(receiverId).subscribe(value => {
+    this.friendsService.cancelFriendRequest(receiverId).subscribe(() => {
       this.getOutgoingFriendRequests();
     });
   }

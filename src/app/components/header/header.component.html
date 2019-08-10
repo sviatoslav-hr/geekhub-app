@@ -11,7 +11,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active ml-md-5">
-        <div *ngIf="authService.isLogged()" class="">
+        <div *ngIf="authService.isLogged" class="">
           <ul class="py-0 nav navbar-nav" style="">
             <li class="active">
               <form autocomplete="off" class="form-inline py-0">
@@ -34,7 +34,7 @@
       </li>
     </ul>
 
-    <div *ngIf="!authService.isLogged()" class="nav navbar-nav">
+    <div *ngIf="!authService.isLogged" class="nav navbar-nav">
       <form class="form-inline" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
         <div class="form-row pt-2 pt-sm-1 pt-md-0">
           <div class="form-group col-md-5 pb-1 pb-md-0" style="">
@@ -50,10 +50,10 @@
         </div>
       </form>
     </div>
-    <div *ngIf="authService.isLogged()">
+    <div *ngIf="authService.isLogged">
       <ul class="nav navbar-nav">
         <li class="mr-2 mr-md-4">
-          <div *ngIf="authService.isLogged()" class="crop">
+          <div *ngIf="authService.isLogged" class="crop">
             <img [matMenuTriggerFor]="menu"
                  [src]="'http://localhost:8080/images/' + authService.currentUser.profileImage"
                  class="rounded-circle float-right avatar-image"

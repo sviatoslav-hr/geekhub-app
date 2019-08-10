@@ -30,7 +30,7 @@ export class SignUpVerificationComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.storageService.username) {
+    if (!LocalStorageService.username) {
       this.router.navigate(['/']);
     } else {
       this.censorEmail();
@@ -39,7 +39,7 @@ export class SignUpVerificationComponent implements OnInit {
 
 
   onSubmit() {
-    this.authService.verifyEmail(this.storageService.username, this.code)
+    this.authService.verifyEmail(LocalStorageService.username, this.code)
       .subscribe(() => this.authService.attemptAutoAuth()
           .subscribe(() => this.redirectToUserHome()),
         () => {
@@ -51,7 +51,7 @@ export class SignUpVerificationComponent implements OnInit {
   }
 
   redirectToUserHome() {
-    this.userService.getUserByUsername(this.storageService.username)
+    this.userService.getUserByUsername(LocalStorageService.username)
       .subscribe(value => this.router.navigate(['/id/' + value.id]),
         errorResponse => console.log(errorResponse));
   }
@@ -59,7 +59,7 @@ export class SignUpVerificationComponent implements OnInit {
   sendCodeAgain() {
     this.isSendCodeAgainBlocked = true;
     this.codeSendAgainResponse = null;
-    this.authService.sendCodeToEmail(this.storageService.username)
+    this.authService.sendCodeToEmail(LocalStorageService.username)
       .subscribe((data) => {
         console.log(data);
         this.codeSendAgainResponse = 'Code was sent successfully. Please, check your email.';
@@ -74,7 +74,7 @@ export class SignUpVerificationComponent implements OnInit {
   }
 
   censorEmail() {
-    const arr = this.storageService.username.split('@');
+    const arr = LocalStorageService.username.split('@');
     this.censoredEmail = SignUpVerificationComponent.censorWord(arr[0]) + '@' + SignUpVerificationComponent.censorWord(arr[1]);
   }
 }

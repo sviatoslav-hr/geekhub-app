@@ -73,10 +73,6 @@ export class RegisterComponent implements OnInit {
       .daysInMonth(this.signupForm.controls['birthMonth'].value, this.signupForm.controls['birthYear'].value));
   }
 
-  isDateValid(d, m, y) {
-    return m > 0 && m <= 12 && d > 0 && d <= RegisterComponent.daysInMonth(m, y);
-  }
-
   onSubmit() {
     console.log(this.signupForm);
     if (this.signupForm.invalid) {
@@ -99,7 +95,7 @@ export class RegisterComponent implements OnInit {
         data => {
           this.loading = false;
           console.log(data);
-          this.storageService.username = info.username;
+          LocalStorageService.username = info.username;
           this.authService.storePassword(info.password);
           this.router.navigate(['/verify']);
         },

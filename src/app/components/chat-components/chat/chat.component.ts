@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {WsMessageService} from '../../../services/websocket/ws-message.service';
+import {Component, OnInit} from '@angular/core';
+import {WebSocketMessageService} from '../../../services/websocket/web-socket-message.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {ChatService} from '../../../services/chat.service';
 
@@ -10,7 +10,7 @@ import {ChatService} from '../../../services/chat.service';
 })
 export class ChatComponent implements OnInit {
   constructor(
-    private messageService: WsMessageService,
+    private messageService: WebSocketMessageService,
     private storageService: LocalStorageService,
     private chatService: ChatService
   ) {
@@ -35,8 +35,8 @@ export class ChatComponent implements OnInit {
 
   closeConversation() {
     this.chatService.conversation = null;
-    this.storageService.removeSelectedConversationId();
-    this.messageService.messagesDisconnect();
+    LocalStorageService.removeSelectedConversationId();
+    this.messageService.disconnect();
     this.chatService.conversationClosed.emit(true);
   }
 
@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit {
     const msgContainer = document.getElementById('msg-container');
     // if was scrolled to block of new messages
     if (msgContainer.scrollHeight - msgContainer.scrollTop < msgContainer.offsetHeight + newMessagesBlock.offsetHeight) {
-      this.messageService.saveMessagesAsRead(this.chatService.conversation.id, this.storageService.username);
+      this.messageService.saveMessagesAsRead(this.chatService.conversation.id, LocalStorageService.username);
       this.chatService.unreadMessages.forEach(newMessage => this.chatService.messages.unshift(newMessage));
       this.chatService.unreadMessagesEmitter.emit([]);
     } else {
@@ -56,6 +56,9 @@ export class ChatComponent implements OnInit {
   private sendPrivateMsg(textarea: HTMLTextAreaElement, $event: UIEvent) {
     if ($event.type === 'keydown' && !$event.defaultPrevented) {
       $event.preventDefault();
+    }
+    if (this.isDisabled()) {
+      return;
     }
     if (textarea.value.trim() === '') {
       this.chatService.draftMessage.content = '';
@@ -73,11 +76,14 @@ export class ChatComponent implements OnInit {
     }
     textarea.value = '';
     textarea.rows = 1;
-
     this.chatService.initDraftMessage();
   }
 
   getNumberOfUnreadMessages(): number {
     return this.chatService.unreadMessages ? this.chatService.unreadMessages.length : -1;
+  }
+
+  isDisabled(): boolean {
+    return !this.chatService.draftMessage || this.chatService.pendingMessages.length > 7;
   }
 }

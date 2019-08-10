@@ -8,20 +8,22 @@
     </button>
   </mat-menu>
   <div class="conversations-header">
-    <button type="button" *ngIf="msgEnabled" class="btn rounded-0 w-25 messages-settings-btn"
+    <button type="button" *ngIf="isEnabled" class="btn rounded-0 w-25 messages-settings-btn"
             [matMenuTriggerFor]="messagesMenu">
       <i class="fas fa-bars"></i>
     </button>
     <button type="button" class="btn rounded-0 switch-conversations-btn" (click)="enableOrDisableConversations()"
-            [ngClass]="msgEnabled? {'conversations-btn-enabled w-75': true}: {'conversations-btn-disabled w-100' : true}">
-      {{msgEnabled ? '' : 'Show chats '}}
-      <i class="fas" [ngClass]="msgEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
+            [ngClass]="isEnabled? {'conversations-btn-enabled w-75': true}: {'conversations-btn-disabled w-100' : true}">
+      {{isEnabled ? '' : 'Show chats '}}
+      <i class="fas" [ngClass]="isEnabled? 'fa-chevron-up': 'fa-chevron-down'"></i>
     </button>
   </div>
-  <div id="conversations-search" *ngIf="msgEnabled">
-    <input type="search" placeholder="Search...">
+  <div id="conversations-search" *ngIf="isEnabled">
+    <label>
+      <input type="search" placeholder="Search...">
+    </label>
   </div>
-  <div *ngIf="msgEnabled"
+  <div *ngIf="isEnabled"
        class="conversations-block list-group">
     <div *ngFor="let conversation of conversations">
       <div *ngIf="conversation.theLastMessage" class="list-group-item py-1 rounded-0 pl-1 single-conversation"
@@ -31,22 +33,25 @@
            style="cursor: pointer;">
         <p class="my-0">
           <strong>{{conversation.users[0].username !== authService.currentUser.username ?
-            conversation.users[0].firstName : conversation.users[1].firstName}}
+              conversation.users[0].firstName : conversation.users[1].firstName}}
           </strong>
         </p>
         <p class="my-0 conversation-last-message-content">
           <span *ngIf="!draftMessages.get(conversation.id); else draftMsgContent">
           {{(conversation.theLastMessage.sender.username === authService.currentUser.username ? 'You: ' : '')
           + conversation.theLastMessage.content}}
-            <span *ngIf="getNumberOfUnreadMessages(conversation) > 0"
-                  style="position: absolute; bottom: 7px; right: 5px;"
-                  [innerText]="getNumberOfUnreadMessages(conversation) <= 99 ? getNumberOfUnreadMessages(conversation): '99+'"
-                  class="badge float-right"
-                  [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-secondary': true}">
-            </span>
           </span>
+          <span *ngIf="getNumberOfUnreadMessages(conversation) > 0"
+                style="position: absolute; bottom: 7px; right: 5px;"
+                [innerText]="getNumberOfUnreadMessages(conversation) <= 99 ? getNumberOfUnreadMessages(conversation): '99+'"
+                class="badge float-right"
+                [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'badge-light': true} : {'badge-secondary': true}">
+            </span>
           <ng-template #draftMsgContent>
-            <span [ngClass]="selectedConversation && conversation.id === selectedConversation.id? {'text-primary' : true}: {'text-dander': true}">Draft: </span>
+            <span [ngClass]="selectedConversation && conversation.id === selectedConversation.id?
+                  {'text-secondary': true}:{'text-danger' : true}">
+              Draft:
+            </span>
             <span class="text-white">{{draftMessages.get(conversation.id).content}}</span>
           </ng-template>
         </p>
@@ -54,7 +59,7 @@
     </div>
 
     <!--conversations loading spinner-->
-    <div *ngIf="!conversations && msgEnabled" class="spinner-border text-primary mx-auto mt-5"
+    <div *ngIf="!conversations && isEnabled" class="spinner-border text-primary mx-auto mt-5"
          role="status">
       <span class="sr-only">Loading...</span>
     </div>

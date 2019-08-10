@@ -1,5 +1,5 @@
 <div *ngIf="isLoggedIn; else loggedOut">
-  <p class="alert alert-secondary mx-auto">Logged in as {{roles[0].slice(5)}}.</p>
+  <p class="alert alert-secondary mx-auto">Logged in as {{authService.currentUser.username}}.</p>
 </div>
 
 <ng-template #loggedOut>

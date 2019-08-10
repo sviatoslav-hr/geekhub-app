@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
   }
 
   logout() {
-    this.storageService.clear();
+    LocalStorageService.clear();
     window.location.reload();
   }
 

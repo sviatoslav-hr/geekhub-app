@@ -13,7 +13,6 @@ import * as HttpStatus from 'http-status-codes';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  roles: string[] = [];
   private loginInfo: AuthLoginInfo;
   form: any = {};
   searchInput = '';
@@ -29,9 +28,6 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (LocalStorageService.token) {
-      this.roles = this.storageService.authorities;
-    }
   }
 
   onSubmit() {
@@ -42,7 +38,6 @@ export class HeaderComponent implements OnInit {
     this.authService.attemptAuth(this.loginInfo).subscribe(
       data => {
         this.goToUserPage(data.username);
-        this.roles = this.storageService.authorities;
       }, err => {
         const statusText = HttpStatus.getStatusText(err.status);
         console.log(err, statusText);

@@ -1,7 +1,7 @@
 <app-header #header></app-header>
 <!--<app-content></app-content>-->
-<app-conversations *ngIf="authService.currentUser"></app-conversations>
-<app-chat></app-chat>
+<app-conversations *ngIf="authService.isLogged"></app-conversations>
+<app-chat *ngIf="authService.isLogged"></app-chat>
 <div class="content-container">
   <router-outlet></router-outlet>
 </div>

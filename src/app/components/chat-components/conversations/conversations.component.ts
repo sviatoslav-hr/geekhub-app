@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Conversation} from '../../../models/conversation';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {ChatService} from '../../../services/chat.service';
@@ -12,7 +12,7 @@ import {Message} from '../../../models/message';
   templateUrl: './conversations.component.html',
   styleUrls: ['./conversations.component.css']
 })
-export class ConversationsComponent implements OnInit {
+export class ConversationsComponent implements OnInit, OnDestroy {
   isEnabled = false;
 
   constructor(
@@ -33,6 +33,10 @@ export class ConversationsComponent implements OnInit {
     } else {
       console.error('Please Log in to start messaging!');
     }
+  }
+
+  ngOnDestroy(): void {
+    this.conversationsService.selectedConversation = null;
   }
 
   get conversations(): Conversation[] {

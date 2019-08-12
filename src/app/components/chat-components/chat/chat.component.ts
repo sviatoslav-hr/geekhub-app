@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {WebSocketMessageService} from '../../../services/websocket/web-socket-message.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {ChatService} from '../../../services/chat.service';
@@ -9,7 +9,7 @@ import {AuthService} from '../../../services/auth/auth.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private messageService: WebSocketMessageService,
     private storageService: LocalStorageService,
@@ -19,6 +19,10 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    this.chatService.clearChat();
   }
 
   switchMsgWindow() {

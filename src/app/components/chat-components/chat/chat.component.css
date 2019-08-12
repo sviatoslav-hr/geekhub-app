@@ -146,6 +146,7 @@
 .msg-window-btn-container > button {
   color: #e7e7e7;
   padding: 0 0.9rem;
+  transition: background-color 0.3s ease;
 }
 
 .msg-window-btn-container > button:hover,

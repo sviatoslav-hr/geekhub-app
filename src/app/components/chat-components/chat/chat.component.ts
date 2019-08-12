@@ -22,7 +22,7 @@ export class ChatComponent implements OnInit {
   }
 
   switchMsgWindow() {
-    document.getElementById('chat-outer-container').removeAttribute('style');
+    // document.getElementById('chat-outer-container').removeAttribute('style');
     this.chatService.isMsgWindowMaximized = !this.chatService.isMsgWindowMaximized;
   }
 

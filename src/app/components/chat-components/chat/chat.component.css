@@ -127,6 +127,7 @@
   width: calc(100% - 160px - 160px);
   background: none;
   border-left: 1px solid #333333;
+  transform: translate3d(0, 0, 0) !important;
 }
 
 @media screen and (max-width: 928px) {

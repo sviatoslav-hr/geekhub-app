@@ -25,7 +25,7 @@
 
     <!--container for messages list-->
     <div id="msg-container" class="mr-0" (wheel)="!!chatService.unreadMessages &&
-    chatService.unreadMessages.length > 0 ? checkIfNewMessage() : null" #msgContainer>
+    chatService.unreadMessages.length > 0 ? checkIfNewMessage() : null" (click)="msgInput.focus()" #msgContainer>
       <div *ngIf="chatService.unreadMessages && chatService.unreadMessages.length > 0"
            id="new-messages-block">
         <div *ngFor="let message of chatService.unreadMessages" class="text-left"

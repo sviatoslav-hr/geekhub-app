@@ -46,7 +46,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.conversation = null;
     LocalStorageService.removeSelectedConversationId();
     this.messageService.disconnect();
-    this.chatService.conversationClosed.emit(true);
+    this.chatService.conversationClosedEmitter.emit(true);
   }
 
   checkIfNewMessage() {
@@ -55,7 +55,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     // if was scrolled to block of new messages
     if (msgContainer.scrollHeight - msgContainer.scrollTop < msgContainer.offsetHeight + newMessagesBlock.offsetHeight) {
       this.messageService.saveMessagesAsRead(this.chatService.conversation.id, this.authService.currentUser.username);
-      console.log(this.chatService.unreadMessages);
       while (this.chatService.unreadMessages.length > 0) {
         this.chatService.messages.unshift(this.chatService.unreadMessages.pop());
       }

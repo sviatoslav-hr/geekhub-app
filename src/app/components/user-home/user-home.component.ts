@@ -184,7 +184,7 @@ export class UserHomeComponent implements OnInit {
             this.privateMsgEnabled = true;
             this.chatService.initialize(conversation, false);
             this.chatService.initDraftMessage();
-            this.chatService.conversationClosed.subscribe(() =>
+            this.chatService.conversationClosedEmitter.subscribe(() =>
               this.privateMsgEnabled = false
             );
             this.conversationsService.selectedConversation = conversation;

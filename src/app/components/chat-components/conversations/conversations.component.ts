@@ -13,8 +13,6 @@ import {Message} from '../../../models/message';
   styleUrls: ['./conversations.component.css']
 })
 export class ConversationsComponent implements OnInit, OnDestroy {
-  isEnabled = false;
-
   constructor(
     private storageService: LocalStorageService,
     private chatService: ChatService,
@@ -26,10 +24,7 @@ export class ConversationsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (LocalStorageService.token) {
-      if (LocalStorageService.areConversationsEnabled) {
-        this.isEnabled = true;
-        this.conversationsService.loadConversations();
-      }
+      this.conversationsService.loadConversations();
     } else {
       console.error('Please Log in to start messaging!');
     }
@@ -52,20 +47,24 @@ export class ConversationsComponent implements OnInit, OnDestroy {
   }
 
   enableConversations() {
-    this.isEnabled = true;
-    LocalStorageService.areConversationsEnabled = this.isEnabled;
+    this.conversationsService.areEnabled = true;
     this.conversationsService.loadConversations();
   }
 
   disableConversations() {
-    this.isEnabled = false;
-    LocalStorageService.areConversationsEnabled = this.isEnabled;
-    this.conversationsService.clearConversations();
+    this.conversationsService.areEnabled = false;
+    this.conversationsService.selectedConversation = null;
+    if (this.chatService.isMsgWindowMaximized) {
+      this.chatService.clearChat();
+    }
   }
 
-  getNumberOfUnreadMessages(conversation: Conversation): number {
-    return this.conversationsService.unreadMessages.get(conversation.id) ?
-      this.conversationsService.unreadMessages.get(conversation.id).length : -1;
+  getNumberOfUnreadMessages(conversation: Conversation): string {
+    let length = 0;
+    if (this.conversationsService.unreadMessages.get(conversation.id)) {
+      length = this.conversationsService.unreadMessages.get(conversation.id).length;
+    }
+    return length > 0 ? (length > 99 ? '99+' : length.toString()) : '';
   }
 
 

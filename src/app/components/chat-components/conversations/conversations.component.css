@@ -75,7 +75,7 @@
 
 .conversations-btn-disabled > * {
   transition: all 0.3s ease-in-out !important;
-  display: block !important;
+  display: inline-block !important;
 }
 
 .conversations-btn-disabled:active > * {

@@ -5,6 +5,7 @@ const USERNAME_KEY = 'AuthUsername';
 const AUTHORITIES_KEY = 'AuthAuthorities';
 const ARE_CONVERSATIONS_ENABLED_KEY = 'AreConversationEnabled';
 const SELECTED_CONVERSATION_KEY = 'SelectedConversationId';
+const IS_CHAT_WINDOW_MAXIMIZED_KEY = 'IsChatWindowMaximized';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,15 @@ export class LocalStorageService {
   public static set areConversationsEnabled(value: boolean) {
     window.localStorage.removeItem(ARE_CONVERSATIONS_ENABLED_KEY);
     window.localStorage.setItem(ARE_CONVERSATIONS_ENABLED_KEY, value + '');
+  }
+
+  public static get isChatWindowMaximized(): boolean {
+    return (localStorage.getItem(IS_CHAT_WINDOW_MAXIMIZED_KEY) === 'true');
+  }
+
+  public static set isChatWindowMaximized(value: boolean) {
+    window.localStorage.removeItem(IS_CHAT_WINDOW_MAXIMIZED_KEY);
+    window.localStorage.setItem(IS_CHAT_WINDOW_MAXIMIZED_KEY, value + '');
   }
 
   public static get selectedConversationId(): number {

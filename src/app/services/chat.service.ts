@@ -18,6 +18,16 @@ export class ChatService {
   ) {
   }
 
+  private _pendingMessages: Message[] = [];
+  private _draftMessage: OutgoingMessage;
+  private _receiver: User;
+  private _messages: Message[];
+  private _conversation: Conversation;
+  private _isMsgWindowMaximized = true;
+  private _unreadMessages: Message[];
+  readonly unreadMessagesEmitter = new EventEmitter<Message[]>();
+  readonly conversationClosedEmitter = new EventEmitter<boolean>();
+  readonly chatMaximizedEmitter = new EventEmitter<boolean>();
 
   get messages(): Message[] {
     return this._messages;
@@ -36,6 +46,7 @@ export class ChatService {
   }
 
   set isMsgWindowMaximized(value: boolean) {
+    this.chatMaximizedEmitter.emit(value);
     this._isMsgWindowMaximized = value;
   }
 
@@ -65,16 +76,6 @@ export class ChatService {
   get receiver(): User {
     return this._receiver;
   }
-
-  private _pendingMessages: Message[] = [];
-  private _draftMessage: OutgoingMessage;
-  private _receiver: User;
-  private _messages: Message[];
-  private _conversation: Conversation;
-  private _isMsgWindowMaximized = true;
-  private _unreadMessages: Message[];
-  unreadMessagesEmitter = new EventEmitter<Message[]>();
-  conversationClosed = new EventEmitter<boolean>();
 
   public static compareConversationsByTheLastMessage(conv1: Conversation, conv2: Conversation): number {
     if (!conv1.theLastMessage && !conv2.theLastMessage) {

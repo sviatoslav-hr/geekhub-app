@@ -84,7 +84,6 @@ export class ConversationsService {
   private subscribeForUpdates() {
     this.webSocketConversationsService.subscribeForConversationsUpdates(this.authService.currentUser.username,
       (conversation: Conversation) => {
-        console.log(new Date().toTimeString(), this._conversations, conversation);
         const foundIndex = this._conversations.findIndex(value => value.id === conversation.id);
         // foundIndex = -1 if upcoming conversation is new and was not found in array
         if (foundIndex >= 0) {

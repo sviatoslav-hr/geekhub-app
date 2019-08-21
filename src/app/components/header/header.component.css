@@ -1,16 +1,12 @@
 .logo-orange {
-  background: orange;
+  background: #f90;
   border-radius: 5px;
-  /*padding: 4px 5px;*/
 }
 
 .logo {
   font-size: 19px;
 }
 
-/*.navbar-brand{*/
-/*float: left;*/
-/*}*/
 .login-container {
   float: right;
 }
@@ -46,24 +42,35 @@
   margin-right: 8px;
 }
 
-.navbar {
-  /*padding: 3px 1rem !important;*/
-}
-
-/*@media only screen and (min-width: 400px) {*/
-/*.sign-in-form{*/
-/*margin-top: 3px;*/
-/*}*/
-/*}*/
-
 .avatar-image {
   height: 40px;
   width: 40px;
   border-radius: 50% !important;
   object-fit: cover;
+  box-shadow: 0 0 0 0.08rem #cccdce;
 }
 
 .fade.show {
   display: block !important;
   background-color: rgba(0, 0, 0, 0.75);
+}
+
+.form-inline .form-row input.form-control {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border: none;
+  box-shadow: none !important;
+}
+
+.form-inline .form-row input.form-control::placeholder {
+  color: #6c757d !important;
+  font-family: Helvetica, Arial, sans-serif !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+  -webkit-text-fill-color: yellow !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

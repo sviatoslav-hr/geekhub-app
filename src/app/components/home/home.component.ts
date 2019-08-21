@@ -21,11 +21,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  logout() {
-    LocalStorageService.clear();
-    window.location.reload();
+    if (this.authService.isLogged) {
+      this.getUsers();
+    }
   }
 
   getUsers() {
@@ -34,12 +32,7 @@ export class HomeComponent implements OnInit {
       .subscribe(users => this.usersList = users, error => console.log(error));
   }
 
-  emptyUsers() {
-    this.usersEnabled = false;
-    this.usersList = null;
-  }
-
   isLoggedIn(): boolean {
-    return !!this.authService.currentUser;
+    return this.authService.isLogged;
   }
 }

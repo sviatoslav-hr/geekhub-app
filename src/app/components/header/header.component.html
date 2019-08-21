@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark py-1">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark py-1" style="height: 48px">
   <a [routerLink]="'/'" class="logo ml-md-4" style="text-decoration: none">
-    <span style="color: white"><b>Geek </b></span>
-    <span style="color: black" class="logo-orange px-1"><b style="font-weight: bolder">hub</b></span>
+    <span class="text-white"><b>Geek </b></span>
+    <span style="color: black" class="logo-orange px-1"><b class="font-weight-bolder">hub</b></span>
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@
                   <div *ngFor="let user of users"
                        class="bg-lightyellow list-group-item list-group-item-action list-group-item-secondary app"
                        style="width: 200px">
-                    <a [href]="'/id/' + user.id" class="color-black">
+                    <a [routerLink]="'/id/' + user.id" class="color-black">
                       {{user.firstName + ' ' + user.lastName}}
                     </a>
                   </div>
@@ -37,7 +37,7 @@
     <div *ngIf="!authService.isLogged" class="nav navbar-nav">
       <form class="form-inline" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
         <div class="form-row pt-2 pt-sm-1 pt-md-0">
-          <div class="form-group col-md-5 pb-1 pb-md-0" style="">
+          <div class="form-group col-md-5 pb-1 pb-md-0">
             <input id="mailId" class="form-control" name="username" [(ngModel)]="form.username"
                    type="text" placeholder="email" aria-label="Search">
           </div>
@@ -45,7 +45,7 @@
             <input id="passId" name="password" class="form-control" [(ngModel)]="form.password"
                    type="password" placeholder="password" aria-label="Search">
           </div>
-          <div class="form-group col-md-2"><input class="btn border-light text-light" type="submit"
+          <div class="form-group col-md-2"><input class="btn btn-orange" type="submit"
                                                   value="Sign in"></div>
         </div>
       </form>
@@ -53,14 +53,16 @@
     <div *ngIf="authService.isLogged">
       <ul class="nav navbar-nav">
         <li class="mr-2 mr-md-4">
-          <div *ngIf="authService.isLogged" class="crop">
+          <div *ngIf="authService.isLogged">
             <img [matMenuTriggerFor]="menu"
                  [src]="'http://localhost:8080/images/' + authService.currentUser.profileImage"
                  class="rounded-circle float-right avatar-image cursor-pointer"
                  alt="avatar image">
           </div>
           <mat-menu class="mt-1" style="position: fixed; overflow: hidden;" #menu="matMenu">
-            <button class="py-0" mat-menu-item>{{authService.currentUser.username}}</button>
+            <button class="py-0" mat-menu-item [routerLink]="'/id/' + authService.currentUser.id">
+              {{authService.currentUser.username}}
+            </button>
             <mat-divider></mat-divider>
             <button class="py-0" mat-menu-item>Settings</button>
             <mat-divider></mat-divider>

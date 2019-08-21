@@ -1,29 +1,35 @@
-<div *ngIf="isLoggedIn(); else loggedOut">
-  <div class="container">
+<ng-template #loggedOut>
+  <app-register></app-register>
+</ng-template>
+
+<div *ngIf="isLoggedIn(); else loggedOut" style="background-color: #17191a">
+  <div class="container text-light">
     <p class="logo-header">GeekHub</p>
     <h3 class="font-weight-bold">Main page</h3>
   </div>
   <div class="container py-3">
-    <button class="btn btn-secondary" (click)="logout()">Logout</button>
-
-    <button class="btn ml-5" [ngClass]="usersEnabled? 'btn-danger': 'btn-primary'"
-            (click)="usersEnabled? emptyUsers(): getUsers()" [textContent]="usersEnabled? 'Hide users': 'Show users'">
-    </button>
-  </div>
-  <div class="list-group my-2" *ngIf="usersEnabled && usersList; else loadingUsers">
-    <div *ngFor="let user of usersList" class="list-group-item list-group-item-action">
-      <a [routerLink]="'/id/' + user.id">{{user.lastName + ' ' + user.firstName}}</a>
-    </div>
-  </div>
-  <ng-template #loadingUsers>
-    <div *ngIf="usersEnabled" class="container text-center pt-4">
-      <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+    <table *ngIf="usersEnabled && usersList; else loadingUsers" class="table table-dark my-2 w-auto">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col" class="px-5">User</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of usersList">
+        <th scope="row">{{user.id}}</th>
+        <td class="px-5">
+          <a [routerLink]="'/id/' + user.id" class="text-orange">{{user.firstName + ' ' + user.lastName}}</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <ng-template #loadingUsers>
+      <div *ngIf="usersEnabled" class="container text-center pt-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
+  </div>
 </div>
-
-<ng-template #loggedOut>
-  <app-register></app-register>
-</ng-template>

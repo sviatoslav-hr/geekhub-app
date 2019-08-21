@@ -1,178 +1,67 @@
-<div class="row mx-0" *ngIf="authService.currentUser && userHome">
-
-  <div *ngIf="userHome" class="emp-profile">
-    <form method="post" class="pt-3">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="profile-img">
-            <img class="rounded" [src]="'http://localhost:8080/images/' + userHome.profileImage" alt="profile"/>
-            <div *ngIf="authService.currentUser .id == userHome.id" class="file btn btn-lg btn-primary">
-              Change Photo
-              <input type="file" name="file" accept="image/*"
-                     (change)="uploadImage($event.target.files)"/>
-            </div>
-          </div>
-          <div class="mx-auto my-1">
-            <div *ngIf="authService.isLogged && userHome && (authService.currentUser.id === userHome.id)">
-              <a routerLink="profile" class="btn btn-secondary" style="text-decoration: none;">Edit Profile</a>
-            </div>
-
-            <div *ngIf="authService.isLogged && userHome && (authService.currentUser.id !== userHome.id)">
-              <ng-container *ngIf="checkFriend(); else notFriends">
-                <button class="btn btn-danger" (click)="removeFromFriends()">Remove from friends list</button>
-              </ng-container>
-
-              <ng-template #notFriends>
-                <ng-container *ngIf="checkIncomingRequests(); else ifOutgoingRequests">
-                  <button class="btn btn-success" style="text-decoration: none;" (click)="acceptFriendRequest()">
-                    Accept request
-                  </button>
-                </ng-container>
-
-                <ng-template #ifOutgoingRequests>
-                  <ng-container *ngIf="checkOutgoingRequests(); else noFriendRequests">
-                    <button class="btn btn-danger" style="text-decoration: none;" (click)="cancelFriendRequest()">
-                      Cancel request
-                    </button>
-                  </ng-container>
-                </ng-template>
-
-                <ng-template #noFriendRequests>
-                  <button class="btn btn-success" style="text-decoration: none;" (click)="sendFriendRequest()">
-                    Send friend request
-                  </button>
-                </ng-template>
-              </ng-template>
-
-              <button class="btn my-1 btn-primary"
-                      style="text-decoration: none;" (click)="openPrivateMsgWindow()" [disabled]="privateMsgEnabled">
-                Write Message
-              </button>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="profile-head">
-            <h5>
-              {{userHome.firstName + ' ' + userHome.lastName}}
-            </h5>
-            <h6>
-              Web Developer and Designer
-            </h6>
-          </div>
-        </div>
+<div class="row w-100 user-page-container mx-0 px-xl-5" *ngIf="authService.isLogged && userHome">
+  <div class="col-12 px-0" id="user-info-bg">
+    <img
+      src="https://thewallpaper.co//wp-content/uploads/2016/10/full-screen-high-definition-desktop-backgrounds-nature-hd-full-hd-download-high-definiton-wallpapers-desktop-images-windows-10-backgrounds-colourful-computer-wallpapers-colours-artwork.jpg"
+      alt="user info background">
+  </div>
+  <div class="col-xl col-12 px-0" id="user-avatar-container">
+    <div class="user-page-avatar">
+      <img [src]="'http://localhost:8080/images/' + userHome.profileImage" alt="profile" class="cursor-pointer"/>
+      <div *ngIf="authService.currentUser .id == userHome.id" class="change-avatar cursor-pointer" (click)="avatar.click()">
+        <h4 class="align-middle">Change</h4>
+        <input  #avatar type="file" class="d-none" accept="image/*" (change)="uploadImage($event.target.files)"/>
       </div>
-      <div class="row">
-        <!--<div class="col-md-4">-->
-        <!--<div class="profile-work">-->
-        <!--<p>WORK LINK</p>-->
-        <!--<a href="">Website Link</a><br/>-->
-        <!--<a href="">Bootsnipp Profile</a><br/>-->
-        <!--<a href="">Bootply Profile</a>-->
-        <!--<p>SKILLS</p>-->
-        <!--<a href="">Web Designer</a><br/>-->
-        <!--<a href="">Web Developer</a><br/>-->
-        <!--<a href="">WordPress</a><br/>-->
-        <!--<a href="">WooCommerce</a><br/>-->
-        <!--<a href="">PHP, .Net</a><br/>-->
-        <!--</div>-->
-        <!--</div>-->
-        <div class="col-md-8 offset-md-4">
-          <div *ngIf="userHome" class="tab-content profile-tab" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-              <div class="row">
-                <div class="col-md-6">
-                  <label>User Id</label>
-                </div>
-                <div class="col-md-6">
-                  <p>{{userHome.id}}</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Name</label>
-                </div>
-                <div class="col-md-6">
-                  <p>{{userHome.firstName + ' ' + userHome.lastName}}</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Email</label>
-                </div>
-                <div class="col-md-6">
-                  <p>{{userHome.username}}</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Phone</label>
-                </div>
-                <div class="col-md-6">
-                  <p>123 456 7890</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Profession</label>
-                </div>
-                <div class="col-md-6">
-                  <p>Web Developer and Designer</p>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Experience</label>
-                </div>
-                <div class="col-md-6">
-                  <p>Expert</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Hourly Rate</label>
-                </div>
-                <div class="col-md-6">
-                  <p>10$/hr</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Total Projects</label>
-                </div>
-                <div class="col-md-6">
-                  <p>230</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>English Level</label>
-                </div>
-                <div class="col-md-6">
-                  <p>Expert</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>Availability</label>
-                </div>
-                <div class="col-md-6">
-                  <p>6 months</p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <label>Your Bio</label><br/>
-                  <p>Your detail description</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
+    </div>
+  </div>
+  <div class="user-info col-xl col-12" id="user-info-container">
+    <p class="user-info-name">{{userHome.firstName + ' ' + userHome.lastName}}</p>
+    <h5>ID: {{userHome.id}}</h5>
+    <h5>Birth Date: {{userHome.birthDate}}</h5>
+  </div>
+
+  <!-- ASIDE -->
+  <aside class="col-xl col-12 py-3" id="aside-info-container">
+    <h5 class="text-secondary pb-1"><i class="fas fa-envelope"></i>
+      <span class="underline text-orange pl-2">{{userHome.username}}</span>
+    </h5>
+
+    <div *ngIf="authService.isLogged && userHome && (authService.currentUser.id !== userHome.id)">
+      <button class="btn btn-orange my-1 mr-2" (click)="openPrivateMsgWindow()" [disabled]="privateMsgEnabled">
+        Chat <i class="far fa-comment-dots"></i>
+      </button>
+
+      <ng-container *ngIf="checkIfFriend(); else notFriends">
+        <button class="btn btn-orange" (click)="removeFromFriends()">
+          Remove <i class="fas fa-user-times"></i>
+        </button>
+      </ng-container>
+
+      <ng-template #notFriends>
+        <ng-container *ngIf="checkIncomingRequests(); else ifOutgoingRequests">
+          <button class="btn btn-orange" (click)="acceptFriendRequest()">
+            Accept <i class="fas fa-user-check"></i>
+          </button>
+        </ng-container>
+
+        <ng-template #ifOutgoingRequests>
+          <ng-container *ngIf="checkOutgoingRequests(); else noFriendRequests">
+            <button class="btn btn-orange" (click)="cancelFriendRequest()">
+              Cancel <i class="fas fa-user-times"></i>
+            </button>
+          </ng-container>
+        </ng-template>
+
+        <ng-template #noFriendRequests>
+          <button class="btn btn-orange" (click)="sendFriendRequest()">
+            Friend request <i class="fas fa-user-alt"></i>
+          </button>
+        </ng-template>
+      </ng-template>
+    </div>
+  </aside>
+
+  <!-- POSTS -->
+  <div class="col-xl col-12" id="post-container">
+    <h1 class="text-white"><u>POSTS ARE HERE MTHFKRS</u></h1>
   </div>
 </div>

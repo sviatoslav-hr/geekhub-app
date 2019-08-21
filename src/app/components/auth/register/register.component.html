@@ -1,4 +1,4 @@
-<div class="container-fluid stylish-form">
+<div class="container-fluid stylish-form rounded-bottom">
   <form name="form" [formGroup]="signupForm" novalidate
         class="inner-section inside-form rounded form-row">
     <h2 class="col-12 text-center text-white">SIGN UP</h2>
@@ -60,7 +60,7 @@
       <div *ngIf="loading" class="spinner-border text-warning mr-2" role="status">
         <span class="sr-only">Loading...</span>
       </div>
-      <button class="btn btn-warning btn-neutral btn-round btn-lg" (click)="onSubmit()">
+      <button class="btn btn-orange btn-round btn-lg" (click)="onSubmit()">
         Get Started
       </button>
     </div>

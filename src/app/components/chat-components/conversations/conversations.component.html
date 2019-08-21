@@ -1,7 +1,7 @@
 <button type="button" class="btn switch-conversations-btn conversations-btn-disabled conversations-width"
         (click)="enableConversations()" [ngClass]="{'d-none text-white': conversationsService.areEnabled}">
   <span>
-    <span>Show chats
+    <span>SHOW CHATS
       <span *ngIf="conversationsService.hasUnreadMessages" class="badge badge-danger mr-1">
       {{conversationsService.unreadMessagesNumber}}
   </span>

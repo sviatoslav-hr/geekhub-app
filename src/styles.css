@@ -3,7 +3,7 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 
 body {
-  background: gainsboro;
+  background: #000000;
   display: flex;
   flex-flow: column;
 }
@@ -32,4 +32,33 @@ body, html {
 
 .trans-01-ease {
   transition: all 0.1s ease;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.text-orange {
+  color: #f90 !important;
+}
+
+
+
+.btn-orange {
+  font-weight: bolder !important;
+  color: #212529 !important;
+  background-color: #f90 !important;
+  padding-right: 1rem !important;
+  padding-left: 1rem !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: all 0.25s ease;
+}
+
+.btn-orange:hover {
+  background-color: #e08a00 !important;
+}
+
+.btn-orange:active{
+  background-color: #d17900 !important;
 }

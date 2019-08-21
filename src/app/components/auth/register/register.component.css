@@ -1,6 +1,7 @@
 .stylish-form {
   /*background-image:url('https://lut.im/cOs9CbKe42/DT8DT06CeJkRsyWC.jpg');*/
   padding: 10px;
+  background-color: #17191a;
 }
 
 .stylish-form h2 {
@@ -35,16 +36,20 @@
   padding: 0 10px;
 }
 
+.inside-form input,
 .inside-form input:hover,
 .inside-form input:focus,
 .inside-form input:active,
+.inside-form select,
 .inside-form select:hover,
 .inside-form select:focus,
 .inside-form select:active,
+.inside-form .input-group .input-group-prepend > .input-group-text,
 .inside-form .input-group .input-group-prepend > .input-group-text:hover,
 .inside-form .input-group .input-group-prepend > .input-group-text:focus,
 .inside-form .input-group .input-group-prepend > .input-group-text:active {
   font-size: 17px !important;
+  box-shadow: none !important;
 }
 
 .inside-form input::placeholder {
@@ -54,7 +59,7 @@
 
 .inside-form * {
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 17px;
+  font-size: 17px !important;
 }
 
 .has-error {
@@ -106,7 +111,10 @@
   padding: 8px 23px;
 }
 
-.btn-neutral, .btn-neutral:focus, .btn-neutral:hover {
-  background-color: orange;
-  color: #212529;
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+  -webkit-text-fill-color: yellow !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

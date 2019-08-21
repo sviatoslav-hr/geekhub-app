@@ -70,4 +70,9 @@ export class HeaderComponent implements OnInit {
       this.users = data;
     });
   }
+
+  redirectTo(url: string) {
+    console.log('redirecting...');
+    this.router.navigate([url]);
+  }
 }

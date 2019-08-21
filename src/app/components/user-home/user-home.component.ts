@@ -35,13 +35,23 @@ export class UserHomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    // FIXME: replace expression with safer one
     if (LocalStorageService.token) {
       this.getUserFromURL();
     }
   }
 
   getUserFromURL() {
-    const id = +this.route.snapshot.paramMap.get('id');
+    this.route.params.subscribe(params => {
+      const id = +params['id'];
+      if (id && (!this.userHome || this.userHome.id !== id)) {
+        this.userHome = undefined;
+        this.getUserById(id);
+      }
+    });
+  }
+
+  getUserById(id: number) {
     this.userService.getUserById(id).subscribe(value => {
       this.userHome = value;
     }, error => error.log);
@@ -112,7 +122,7 @@ export class UserHomeComponent implements OnInit {
     return false;
   }
 
-  checkFriend(): boolean {
+  checkIfFriend(): boolean {
     if (this.authService.currentUser.friends) {
       for (const friend of this.authService.currentUser.friends) {
         if (friend.id === this.userHome.id) {
@@ -122,7 +132,7 @@ export class UserHomeComponent implements OnInit {
     } else {
       this.getFriendsList();
       if (this.authService.currentUser.friends) {
-        this.checkFriend();
+        this.checkIfFriend();
       }
     }
     return false;

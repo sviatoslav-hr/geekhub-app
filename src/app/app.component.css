@@ -9,15 +9,12 @@ app-header {
   overflow-x: hidden;
   z-index: 0;
   padding-left: 160px;
-  padding-right: 220px;
+  padding-right: 160px;
   padding-top: 48px;
-  /*padding-left: 320px;*/
-  /*padding-right: 320px;*/
-  /*padding: 60px 3% 3%;*/
 }
 @media screen and (max-width: 928px) {
   .content-container {
-    padding-right: 0px;
+    padding-right: 0 !important;
   }
 }
   /*@media (min-width: 600px) and (max-width: 800px) {*/
